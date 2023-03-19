@@ -10,6 +10,7 @@ using Server.Engines.Help;
 using Server.Engines.MLQuests;
 using Server.Engines.MLQuests.Gumps;
 using Server.Engines.PartySystem;
+using Server.Engines.PlayerMurderSystem;
 using Server.Engines.Quests;
 using Server.Ethics;
 using Server.Factions;
@@ -177,13 +178,11 @@ namespace Server.Mobiles
         private DateTime m_LastYoungHeal = DateTime.MinValue;
 
         private DateTime m_LastYoungMessage = DateTime.MinValue;
-        private TimeSpan m_LongTermElapse;
 
         private MountBlock _mountBlock;
 
         private DateTime m_NextJustAward;
 
-        private int m_NextMovementTime;
         private int m_NextProtectionCheck = 10;
         private DateTime m_NextSmithBulkOrder;
         private DateTime m_NextTailorBulkOrder;
@@ -194,7 +193,6 @@ namespace Server.Mobiles
         private int m_NonAutoreinsuredItems;
 
         private DateTime m_SavagePaintExpiration;
-        private TimeSpan m_ShortTermElapse;
 
         private DateTime[] m_StuckMenuUses;
 
@@ -212,8 +210,6 @@ namespace Server.Mobiles
             BOBFilter = new BOBFilter();
 
             m_GameTime = TimeSpan.Zero;
-            m_ShortTermElapse = TimeSpan.FromHours(8.0);
-            m_LongTermElapse = TimeSpan.FromHours(40.0);
 
             JusticeProtectors = new List<Mobile>();
             m_GuildRank = RankDefinition.Lowest;
@@ -1727,25 +1723,14 @@ namespace Server.Mobiles
                 }
             }
 
-            var speed = ComputeMovementSpeed(d);
-
             if (!Alive)
             {
                 MovementImpl.IgnoreMovableImpassables = true;
             }
-
             var res = base.Move(d);
-
             MovementImpl.IgnoreMovableImpassables = false;
 
-            if (!res)
-            {
-                return false;
-            }
-
-            m_NextMovementTime += speed;
-
-            return true;
+            return res;
         }
 
         public override bool CheckMovement(Direction d, out int newZ)
@@ -2914,6 +2899,7 @@ namespace Server.Mobiles
 
             switch (version)
             {
+                case 30:
                 case 29:
                     {
                         if (reader.ReadBool())
@@ -3156,9 +3142,19 @@ namespace Server.Mobiles
                     }
                 case 1:
                     {
-                        m_LongTermElapse = reader.ReadTimeSpan();
-                        m_ShortTermElapse = reader.ReadTimeSpan();
-                        m_GameTime = reader.ReadTimeSpan();
+                        if (version < 30)
+                        {
+                            var longTermElapse = reader.ReadTimeSpan();
+                            var shortTermElapse = reader.ReadTimeSpan();
+                            m_GameTime = reader.ReadTimeSpan();
+
+                            PlayerMurderSystem.ManuallyAdd(this, shortTermElapse, longTermElapse);
+                        }
+                        else
+                        {
+                            m_GameTime = reader.ReadTimeSpan();
+                        }
+
                         goto case 0;
                     }
                 case 0:
@@ -3209,7 +3205,6 @@ namespace Server.Mobiles
                 }
             }
 
-            CheckKillDecay();
             CheckAtrophies();
 
             if (Hidden) // Hiding is the only buff where it has an effect that's serialized.
@@ -3243,7 +3238,7 @@ namespace Server.Mobiles
 
             base.Serialize(writer);
 
-            writer.Write(29); // version
+            writer.Write(30); // version
 
             if (m_StuckMenuUses != null)
             {
@@ -3364,31 +3359,9 @@ namespace Server.Mobiles
 
             writer.Write((int)Flags);
 
-            writer.Write(m_LongTermElapse);
-            writer.Write(m_ShortTermElapse);
+            // Version 30 removes Short/Long term murder elapse
+
             writer.Write(GameTime);
-        }
-
-        // Do we need to run an after serialize?
-        public override bool ShouldExecuteAfterSerialize => ShouldKillDecay() || ShouldAtrophy();
-
-        public override void AfterSerialize()
-        {
-            base.AfterSerialize();
-
-            CheckKillDecay();
-            CheckAtrophies();
-        }
-
-        public bool ShouldAtrophy()
-        {
-            var sacrifice = SacrificeVirtue.ShouldAtrophy(this);
-            var justice = JusticeVirtue.ShouldAtrophy(this);
-            var compassion = CompassionVirtue.ShouldAtrophy(this);
-            var valor = ValorVirtue.ShouldAtrophy(this);
-            var titles = ChampionTitleInfo.ShouldAtrophy(this);
-
-            return sacrifice || justice || compassion || valor || titles;
         }
 
         public void CheckAtrophies()
@@ -3398,35 +3371,6 @@ namespace Server.Mobiles
             CompassionVirtue.CheckAtrophy(this);
             ValorVirtue.CheckAtrophy(this);
             ChampionTitleInfo.CheckAtrophy(this);
-        }
-
-        public bool ShouldKillDecay() => m_ShortTermElapse < GameTime || m_LongTermElapse < GameTime;
-
-        public void CheckKillDecay()
-        {
-            if (m_ShortTermElapse < GameTime)
-            {
-                m_ShortTermElapse += TimeSpan.FromHours(8);
-                if (ShortTermMurders > 0)
-                {
-                    --ShortTermMurders;
-                }
-            }
-
-            if (m_LongTermElapse < GameTime)
-            {
-                m_LongTermElapse += TimeSpan.FromHours(40);
-                if (Kills > 0)
-                {
-                    --Kills;
-                }
-            }
-        }
-
-        public void ResetKillTime()
-        {
-            m_ShortTermElapse = GameTime + TimeSpan.FromHours(8);
-            m_LongTermElapse = GameTime + TimeSpan.FromHours(40);
         }
 
         public override bool CanSee(Mobile m)
