@@ -205,7 +205,6 @@ namespace Server.Mobiles
             VisibilityList = new List<Mobile>();
             PermaFlags = new List<Mobile>();
             m_AntiMacroTable = new Dictionary<Skill, Dictionary<object, CountAndTimeStamp>>();
-            RecentlyReported = new List<Mobile>();
 
             BOBFilter = new BOBFilter();
 
@@ -381,8 +380,6 @@ namespace Server.Mobiles
         public Player EthicPlayer { get; set; }
 
         public PlayerState FactionPlayerState { get; set; }
-
-        public List<Mobile> RecentlyReported { get; set; }
 
         public List<Mobile> AutoStabled { get; private set; }
 
@@ -3167,8 +3164,6 @@ namespace Server.Mobiles
                         break;
                     }
             }
-
-            RecentlyReported ??= new List<Mobile>();
 
             if (!CharacterCreation.VerifyProfession(Profession))
             {

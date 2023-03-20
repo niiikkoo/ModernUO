@@ -121,7 +121,7 @@ public static class PlayerMurderSystem
 
     private class MurdererTimer : Timer
     {
-        public MurdererTimer() : base(TimeSpan.FromMinutes(10.0), TimeSpan.FromMinutes(10.0))
+        public MurdererTimer() : base(TimeSpan.FromMinutes(5.0), TimeSpan.FromMinutes(5.0))
         {
         }
 

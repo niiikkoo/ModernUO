@@ -10,6 +10,9 @@ namespace Server.Engines.PlayerMurderSystem;
 
 public class ReportMurdererGump : Gump
 {
+    // Recently reported
+    private static readonly HashSet<(Mobile, Mobile)> _recentlyReported = new();
+
     private readonly List<Mobile> _killers;
     private int _idx;
 
@@ -34,7 +37,7 @@ public class ReportMurdererGump : Gump
         {
             if (ai.Attacker.Player && ai.CanReportMurder && !ai.Reported)
             {
-                if (!Core.SE || !((PlayerMobile)m).RecentlyReported.Contains(ai.Attacker))
+                if (!Core.SE || !_recentlyReported.Contains((m, ai.Attacker)))
                 {
                     killers.Add(ai.Attacker);
                     ai.Reported = true;
@@ -93,6 +96,11 @@ public class ReportMurdererGump : Gump
         }
     }
 
+    private void RemoveRecentlyReported(Mobile from, Mobile killer)
+    {
+        _recentlyReported.Remove((from, killer));
+    }
+
     private void BuildGump()
     {
         AddBackground(265, 205, 320, 290, 5054);
@@ -138,8 +146,15 @@ public class ReportMurdererGump : Gump
 
                         if (Core.SE)
                         {
-                            from.RecentlyReported.Add(killer);
-                            Timer.StartTimer(TimeSpan.FromMinutes(10), () => from.RecentlyReported.Remove(killer));
+                            if (_recentlyReported.Add((from, killer)))
+                            {
+                                Timer.DelayCall(
+                                    TimeSpan.FromMinutes(10),
+                                    RemoveRecentlyReported,
+                                    from,
+                                    killer
+                                );
+                            }
                         }
 
                         if (killer is PlayerMobile pk)
@@ -169,7 +184,7 @@ public class ReportMurdererGump : Gump
         _idx++;
         if (_idx < _killers.Count)
         {
-            from.SendGump(new ReportMurdererGump( _killers, _idx));
+            from.SendGump(new ReportMurdererGump(_killers, _idx));
         }
     }
 
