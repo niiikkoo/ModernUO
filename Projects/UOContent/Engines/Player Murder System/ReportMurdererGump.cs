@@ -96,11 +96,6 @@ public class ReportMurdererGump : Gump
         }
     }
 
-    private void RemoveRecentlyReported(Mobile from, Mobile killer)
-    {
-        _recentlyReported.Remove((from, killer));
-    }
-
     private void BuildGump()
     {
         AddBackground(265, 205, 320, 290, 5054);
@@ -150,7 +145,7 @@ public class ReportMurdererGump : Gump
                             {
                                 Timer.DelayCall(
                                     TimeSpan.FromMinutes(10),
-                                    RemoveRecentlyReported,
+                                    static (f, k) => _recentlyReported.Remove((f, k)),
                                     from,
                                     killer
                                 );
