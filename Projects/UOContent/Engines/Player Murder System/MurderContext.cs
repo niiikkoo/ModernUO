@@ -61,11 +61,6 @@ public partial class MurderContext
 
     public bool CheckStart()
     {
-        if (Player.NetState == null)
-        {
-            return false;
-        }
-
         _nextElapse = DateTime.MaxValue;
 
         var now = Core.Now;

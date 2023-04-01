@@ -41,13 +41,10 @@ public static class PlayerMurderSystem
 
     private static void OnLogin(Mobile m)
     {
-        if (m is PlayerMobile pm && GetContext(pm, out var context))
+        if (m is PlayerMobile pm && GetContext(pm, out var context) && !context.CheckStart())
         {
-            if (!context.CheckStart())
-            {
-                // This will probably never happen unless another system clears all of the kills but doesn't clean up.
-                _murderContexts.Remove(pm);
-            }
+            // This will probably never happen unless another system clears all of the kills but doesn't clean up.
+            _murderContexts.Remove(pm);
         }
     }
 
@@ -108,7 +105,7 @@ public static class PlayerMurderSystem
                 player.Kills > 0 && (!resetKillTime || context.LongTermElapse == TimeSpan.MaxValue)
             );
 
-            if (context.CheckStart())
+            if (context.CheckStart() && player.NetState != null)
             {
                 _contextTerms.Add(context);
             }
