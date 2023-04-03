@@ -421,9 +421,6 @@ public class Mobile : IHued, IComparable<Mobile>, ISpawnable, IObjectPropertyLis
 
     public List<Mobile> Stabled { get; private set; }
 
-    [CommandProperty(AccessLevel.Counselor, AccessLevel.GameMaster)]
-    public VirtueInfo Virtues { get; private set; }
-
     public object Party { get; set; }
 
     public List<SkillMod> SkillMods => _skillMods;
@@ -2272,7 +2269,7 @@ public class Mobile : IHued, IComparable<Mobile>, ISpawnable, IObjectPropertyLis
 
     public virtual void Serialize(IGenericWriter writer)
     {
-        writer.Write(33); // version
+        writer.Write(34); // version
 
         writer.WriteDeltaTime(LastStrGain);
         writer.WriteDeltaTime(LastIntGain);
@@ -2315,7 +2312,7 @@ public class Mobile : IHued, IComparable<Mobile>, ISpawnable, IObjectPropertyLis
 
         writer.Write(CantWalk);
 
-        VirtueInfo.Serialize(writer, Virtues);
+        // VirtueInfo.Serialize(writer, Virtues);
 
         writer.Write(Thirst);
         writer.Write(BAC);
@@ -6067,6 +6064,7 @@ public class Mobile : IHued, IComparable<Mobile>, ISpawnable, IObjectPropertyLis
 
         switch (version)
         {
+            case 34:
             case 33:
                 {
                     // Removed created
@@ -6154,7 +6152,25 @@ public class Mobile : IHued, IComparable<Mobile>, ISpawnable, IObjectPropertyLis
             case 19: // Just removed variables
             case 18:
                 {
-                    Virtues = new VirtueInfo(reader);
+                    // Virtues = new VirtueInfo(reader);
+
+                    if (version < 34)
+                    {
+                        int mask = reader.ReadByte();
+
+                        if (mask != 0)
+                        {
+                            var virtueValues = new int[8];
+
+                            for (var i = 0; i < 8; ++i)
+                            {
+                                if ((mask & (1 << i)) != 0)
+                                {
+                                    virtueValues[i] = reader.ReadInt();
+                                }
+                            }
+                        }
+                    }
 
                     goto case 17;
                 }
@@ -6283,10 +6299,10 @@ public class Mobile : IHued, IComparable<Mobile>, ISpawnable, IObjectPropertyLis
                         Stabled = new List<Mobile>();
                     }
 
-                    if (version < 18)
-                    {
-                        Virtues = new VirtueInfo();
-                    }
+                    // if (version < 18)
+                    // {
+                    //     Virtues = new VirtueInfo();
+                    // }
 
                     if (version < 11)
                     {
@@ -7713,7 +7729,7 @@ public class Mobile : IHued, IComparable<Mobile>, ISpawnable, IObjectPropertyLis
         AutoPageNotify = true;
         Aggressors = new List<AggressorInfo>();
         Aggressed = new List<AggressorInfo>();
-        Virtues = new VirtueInfo();
+        // Virtues = new VirtueInfo();
         Stabled = new List<Mobile>();
         DamageEntries = new List<DamageEntry>();
 

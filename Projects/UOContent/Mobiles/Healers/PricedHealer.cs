@@ -38,7 +38,7 @@ namespace Server.Mobiles
             m.FixedEffect(0x376A, 10, 16);
 
             m.CloseGump<ResurrectGump>();
-            m.SendGump(new ResurrectGump(m, this, Price));
+            m.SendGump(new ResurrectGump(this, Price));
         }
 
         public override bool CheckResurrect(Mobile m) => true;

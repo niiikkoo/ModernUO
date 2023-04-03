@@ -20,18 +20,19 @@ namespace Server
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool ShouldAtrophy(PlayerMobile pm) => pm.LastCompassionLoss + LossDelay < Core.Now;
+        public static bool CanAtrophy(VirtueInfo info) => info?.LastCompassionLoss + LossDelay < Core.Now;
 
         public static void CheckAtrophy(PlayerMobile pm)
         {
-            if (ShouldAtrophy(pm))
+            var virtues = pm.Virtues;
+            if (CanAtrophy(virtues))
             {
-                if (VirtueHelper.Atrophy(pm, VirtueName.Compassion, LossAmount))
+                if (VirtueSystem.Atrophy(pm, VirtueName.Compassion, LossAmount))
                 {
                     pm.SendLocalizedMessage(1114420); // You have lost some Compassion.
                 }
 
-                pm.LastCompassionLoss = Core.Now;
+                virtues.LastCompassionLoss = Core.Now;
             }
         }
     }

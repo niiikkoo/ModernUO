@@ -1724,7 +1724,7 @@ namespace Server.Items
 
             if (attacker is PlayerMobile pmAttacker && !(Core.ML && defender is PlayerMobile))
             {
-                if (pmAttacker.HonorActive && pmAttacker.InRange(defender, 1))
+                if (pmAttacker.Virtues?.HonorActive == true && pmAttacker.InRange(defender, 1))
                 {
                     percentageBonus += 25;
                 }

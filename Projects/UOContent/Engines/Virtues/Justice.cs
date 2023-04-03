@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Server.Gumps;
 using Server.Mobiles;
@@ -12,6 +13,19 @@ namespace Server
     {
         private const int LossAmount = 950;
         private static readonly TimeSpan LossDelay = TimeSpan.FromDays(7.0);
+
+        private static readonly Dictionary<PlayerMobile, PlayerMobile> _justiceProtectors = new();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsProtected(PlayerMobile pm) => _justiceProtectors.ContainsKey(pm);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static PlayerMobile GetJusticeProtector(PlayerMobile protectee) =>
+            _justiceProtectors.TryGetValue(protectee, out var protector) ? protector : null;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool CancelProtection(PlayerMobile protectee, out PlayerMobile protector) =>
+            _justiceProtectors.Remove(protectee, out protector);
 
         public static void Initialize()
         {
@@ -47,7 +61,7 @@ namespace Server
                 return;
             }
 
-            if (!VirtueHelper.IsSeeker(protector, VirtueName.Justice))
+            if (!VirtueSystem.IsSeeker(protector, VirtueName.Justice))
             {
                 protector.SendLocalizedMessage(1049610); // You must reach the first path in this virtue to invoke it.
             }
@@ -55,7 +69,7 @@ namespace Server
             {
                 protector.SendLocalizedMessage(1049370); // You must wait a while before offering your protection again.
             }
-            else if (protector.JusticeProtectors.Count > 0)
+            else if (_justiceProtectors.ContainsKey(protector))
             {
                 protector.SendLocalizedMessage(1049542); // You cannot protect someone while being protected.
             }
@@ -79,7 +93,7 @@ namespace Server
 
             var pm = obj as PlayerMobile;
 
-            if (!VirtueHelper.IsSeeker(protector, VirtueName.Justice))
+            if (!VirtueSystem.IsSeeker(protector, VirtueName.Justice))
             {
                 protector.SendLocalizedMessage(1049610); // You must reach the first path in this virtue to invoke it.
             }
@@ -87,7 +101,7 @@ namespace Server
             {
                 protector.SendLocalizedMessage(1049370); // You must wait a while before offering your protection again.
             }
-            else if (protector.JusticeProtectors.Count > 0)
+            else if (_justiceProtectors.ContainsKey(protector))
             {
                 protector.SendLocalizedMessage(1049542); // You cannot protect someone while being protected.
             }
@@ -107,7 +121,7 @@ namespace Server
             {
                 protector.SendLocalizedMessage(1049436); // That player cannot be protected.
             }
-            else if (pm.JusticeProtectors.Count > 0)
+            else if (_justiceProtectors.ContainsKey(pm))
             {
                 protector.SendLocalizedMessage(1049369); // You cannot protect that player right now.
             }
@@ -123,7 +137,7 @@ namespace Server
 
         public static void OnVirtueAccepted(PlayerMobile protector, PlayerMobile protectee)
         {
-            if (!VirtueHelper.IsSeeker(protector, VirtueName.Justice))
+            if (!VirtueSystem.IsSeeker(protector, VirtueName.Justice))
             {
                 protector.SendLocalizedMessage(1049610); // You must reach the first path in this virtue to invoke it.
             }
@@ -131,7 +145,7 @@ namespace Server
             {
                 protector.SendLocalizedMessage(1049370); // You must wait a while before offering your protection again.
             }
-            else if (protector.JusticeProtectors.Count > 0)
+            else if (_justiceProtectors.ContainsKey(protector))
             {
                 protector.SendLocalizedMessage(1049542); // You cannot protect someone while being protected.
             }
@@ -147,13 +161,13 @@ namespace Server
             {
                 protector.SendLocalizedMessage(1049436); // That player cannot be protected.
             }
-            else if (protectee.JusticeProtectors.Count > 0)
+            else if (_justiceProtectors.ContainsKey(protectee))
             {
                 protector.SendLocalizedMessage(1049369); // You cannot protect that player right now.
             }
             else
             {
-                protectee.JusticeProtectors.Add(protector);
+                _justiceProtectors[protectee] = protector;
 
                 var args = $"{protector.Name}\t{protectee.Name}";
 
@@ -176,32 +190,32 @@ namespace Server
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool ShouldAtrophy(PlayerMobile pm) => pm.LastJusticeLoss + LossDelay < Core.Now;
-
+        public static bool CanAtrophy(VirtueInfo info) => info?.LastJusticeLoss + LossDelay < Core.Now;
 
         public static void CheckAtrophy(PlayerMobile pm)
         {
-            if (ShouldAtrophy(pm))
+            var virtues = pm.Virtues;
+            if (CanAtrophy(virtues))
             {
-                if (VirtueHelper.Atrophy(pm, VirtueName.Justice, LossAmount))
+                if (VirtueSystem.Atrophy(pm, VirtueName.Justice, LossAmount))
                 {
                     pm.SendLocalizedMessage(1049373); // You have lost some Justice.
                 }
 
-                pm.LastJusticeLoss = Core.Now;
+                virtues.LastJusticeLoss = Core.Now;
             }
         }
     }
 
     public class AcceptProtectorGump : Gump
     {
-        private readonly PlayerMobile m_Protectee;
-        private readonly PlayerMobile m_Protector;
+        private readonly PlayerMobile _protectee;
+        private readonly PlayerMobile _protector;
 
         public AcceptProtectorGump(PlayerMobile protector, PlayerMobile protectee) : base(150, 50)
         {
-            m_Protector = protector;
-            m_Protectee = protectee;
+            _protector = protector;
+            _protectee = protectee;
 
             Closable = false;
 
@@ -212,14 +226,8 @@ namespace Server
             AddImageTiled(15, 15, 365, 190, 2624);
             AddAlphaRegion(15, 15, 365, 190);
 
-            AddHtmlLocalized(
-                30,
-                20,
-                360,
-                25,
-                1049365, // Another player is offering you their <a href="?ForceTopic88">protection</a>:
-                0x7FFF
-            );
+            // Another player is offering you their <a href="?ForceTopic88">protection</a>:
+            AddHtmlLocalized(30, 20, 360, 25, 1049365, 0x7FFF);
             AddLabel(90, 55, 1153, protector.Name);
 
             AddImage(50, 45, 9005);
@@ -254,11 +262,11 @@ namespace Server
 
                 if (okay)
                 {
-                    JusticeVirtue.OnVirtueAccepted(m_Protector, m_Protectee);
+                    JusticeVirtue.OnVirtueAccepted(_protector, _protectee);
                 }
                 else
                 {
-                    JusticeVirtue.OnVirtueRejected(m_Protector, m_Protectee);
+                    JusticeVirtue.OnVirtueRejected(_protector, _protectee);
                 }
             }
         }

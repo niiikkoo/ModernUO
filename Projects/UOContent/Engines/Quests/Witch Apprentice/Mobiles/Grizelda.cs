@@ -165,7 +165,7 @@ namespace Server.Engines.Quests.Hag
                                 {
                                     var gainedPath = false;
 
-                                    if (VirtueHelper.Award(
+                                    if (VirtueSystem.Award(
                                         player,
                                         VirtueName.Sacrifice,
                                         250,

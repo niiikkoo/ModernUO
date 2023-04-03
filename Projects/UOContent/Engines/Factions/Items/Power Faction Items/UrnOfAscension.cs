@@ -39,7 +39,7 @@ namespace Server
                     {
                         Faction.ClearSkillLoss(mob);
 
-                        mob.SendGump(new ResurrectGump(mob, from));
+                        mob.SendGump(new ResurrectGump(from));
                         used = true;
                     }
                 }

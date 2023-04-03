@@ -1,16 +1,17 @@
 using Server.Gumps;
+using Server.Mobiles;
 using Server.Network;
 
 namespace Server
 {
     public class VirtueInfoGump : Gump
     {
-        private readonly Mobile m_Beholder;
+        private readonly PlayerMobile m_Beholder;
         private readonly int m_Desc;
         private readonly string m_Page;
         private readonly VirtueName m_Virtue;
 
-        public VirtueInfoGump(Mobile beholder, VirtueName virtue, int description, string webPage = null) : base(0, 0)
+        public VirtueInfoGump(PlayerMobile beholder, VirtueName virtue, int description, string webPage = null) : base(0, 0)
         {
             m_Beholder = beholder;
             m_Virtue = virtue;
@@ -30,7 +31,7 @@ namespace Server
 
             AddPage(1);
 
-            var maxValue = VirtueHelper.GetMaxAmount(m_Virtue);
+            var maxValue = VirtueSystem.GetMaxAmount(m_Virtue);
 
             int valueDesc;
             int dots;

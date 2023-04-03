@@ -1,13 +1,14 @@
 using Server.Gumps;
+using Server.Mobiles;
 using Server.Network;
 
 namespace Server
 {
     public class VirtueStatusGump : Gump
     {
-        private readonly Mobile m_Beholder;
+        private readonly PlayerMobile m_Beholder;
 
-        public VirtueStatusGump(Mobile beholder) : base(0, 0)
+        public VirtueStatusGump(PlayerMobile beholder) : base(0, 0)
         {
             m_Beholder = beholder;
 

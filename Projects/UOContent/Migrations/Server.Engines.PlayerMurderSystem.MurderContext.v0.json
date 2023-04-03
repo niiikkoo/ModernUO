@@ -1,0 +1,16 @@
+{
+  "version": 0,
+  "type": "Server.Engines.PlayerMurderSystem.MurderContext",
+  "properties": [
+    {
+      "name": "ShortTermElapse",
+      "type": "System.TimeSpan",
+      "rule": "PrimitiveTypeMigrationRule"
+    },
+    {
+      "name": "LongTermElapse",
+      "type": "System.TimeSpan",
+      "rule": "PrimitiveTypeMigrationRule"
+    }
+  ]
+}

@@ -125,7 +125,7 @@ public partial class AnkhOfSacrificeComponent : AddonComponent
 
     private class AnkhResurrectGump : ResurrectGump
     {
-        public AnkhResurrectGump(Mobile owner, ResurrectMessage msg) : base(owner, owner, msg)
+        public AnkhResurrectGump(Mobile owner, ResurrectMessage msg) : base(owner, msg)
         {
         }
 

@@ -415,28 +415,26 @@ namespace Server.Engines.CannedEvil
 
             // Justice reward
             var pm = (PlayerMobile)killer;
-            for (var j = 0; j < pm.JusticeProtectors.Count; ++j)
+            var prot = JusticeVirtue.GetJusticeProtector(pm);
+            if (prot == null || prot.Map != killer.Map || prot.Kills >= 5 || prot.Criminal ||
+                !JusticeVirtue.CheckMapRegion(killer, prot))
             {
-                Mobile prot = pm.JusticeProtectors[j];
-                if (prot.Map != killer.Map || prot.Kills >= 5 || prot.Criminal || !JusticeVirtue.CheckMapRegion(killer, prot))
-                {
-                    continue;
-                }
+                return;
+            }
 
-                var chance = VirtueHelper.GetLevel(prot, VirtueName.Justice) switch
-                {
-                    VirtueLevel.Seeker   => 60,
-                    VirtueLevel.Follower => 80,
-                    VirtueLevel.Knight   => 100,
-                    _                    => 0
-                };
+            var chance = VirtueSystem.GetLevel(prot, VirtueName.Justice) switch
+            {
+                VirtueLevel.Seeker   => 60,
+                VirtueLevel.Follower => 80,
+                VirtueLevel.Knight   => 100,
+                _                    => 0
+            };
 
-                if (chance > Utility.Random(100))
-                {
-                    prot.SendLocalizedMessage(1049368); // You have been rewarded for your dedication to Justice!
-                    ScrollofTranscendence SoTFduplicate = new ScrollofTranscendence (SoTF.Skill, SoTF.Value);
-                    prot.AddToBackpack(SoTFduplicate);
-                }
+            if (chance > 0 && chance > Utility.Random(100))
+            {
+                prot.SendLocalizedMessage(1049368); // You have been rewarded for your dedication to Justice!
+                ScrollofTranscendence SoTFduplicate = new ScrollofTranscendence (SoTF.Skill, SoTF.Value);
+                prot.AddToBackpack(SoTFduplicate);
             }
         }
 
@@ -464,28 +462,25 @@ namespace Server.Engines.CannedEvil
 
             // Justice reward
             var pm = (PlayerMobile)killer;
-            for (var j = 0; j < pm.JusticeProtectors.Count; ++j)
+            var prot = JusticeVirtue.GetJusticeProtector(pm);
+            if (prot == null || prot.Map != killer.Map || prot.Kills >= 5 || prot.Criminal ||
+                !JusticeVirtue.CheckMapRegion(killer, prot))
             {
-                Mobile prot = pm.JusticeProtectors[j];
-                if (prot.Map != killer.Map || prot.Kills >= 5 || prot.Criminal || !JusticeVirtue.CheckMapRegion(killer, prot))
-                {
-                    continue;
-                }
+                return;
+            }
 
-                var chance = VirtueHelper.GetLevel(prot, VirtueName.Justice) switch
-                {
-                    VirtueLevel.Seeker   => 60,
-                    VirtueLevel.Follower => 80,
-                    VirtueLevel.Knight   => 100,
-                    _                    => 0
-                };
+            var chance = VirtueSystem.GetLevel(prot, VirtueName.Justice) switch
+            {
+                VirtueLevel.Seeker   => 60,
+                VirtueLevel.Follower => 80,
+                VirtueLevel.Knight   => 100,
+                _                    => 0
+            };
 
-                if (chance > Utility.Random(100))
-                {
-                    prot.SendLocalizedMessage(1049368); // You have been rewarded for your dedication to Justice!
-                    //PowerScroll PSduplicate = new PowerScroll (PS.Skill, PS.Value);
-                    prot.AddToBackpack(CreateRandomFelPS());
-                }
+            if (chance > 0 && chance > Utility.Random(100))
+            {
+                prot.SendLocalizedMessage(1049368); // You have been rewarded for your dedication to Justice!
+                prot.AddToBackpack(CreateRandomFelPS());
             }
         }
 
@@ -589,7 +584,7 @@ namespace Server.Engines.CannedEvil
 
                                 int pointsToGain = mobSubLevel * 40;
 
-                                if (VirtueHelper.Award(pm, VirtueName.Valor, pointsToGain, ref gainedPath))
+                                if (VirtueSystem.Award(pm, VirtueName.Valor, pointsToGain, ref gainedPath))
                                 {
                                     if (gainedPath)
                                     {

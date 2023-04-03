@@ -1309,7 +1309,7 @@ namespace Server.Mobiles
                 return false;
             }
 
-            if (m is PlayerMobile mobile && mobile.HonorActive)
+            if (m is PlayerMobile { Virtues.HonorActive: true })
             {
                 return false;
             }

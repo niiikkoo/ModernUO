@@ -111,16 +111,16 @@ namespace Server.Mobiles
             {
                 var m = toGive[i];
 
-                if (m is not PlayerMobile)
+                if (m is not PlayerMobile pm)
                 {
                     continue;
                 }
 
                 var gainedPath = false;
 
-                var pointsToGain = 800;
+                const int pointsToGain = 800;
 
-                if (VirtueHelper.Award(m, VirtueName.Valor, pointsToGain, ref gainedPath))
+                if (VirtueSystem.Award(pm, VirtueName.Valor, pointsToGain, ref gainedPath))
                 {
                     if (gainedPath)
                     {
@@ -178,41 +178,39 @@ namespace Server.Mobiles
                 return;
             }
 
-            for (var j = 0; j < pm.JusticeProtectors.Count; ++j)
+            var prot = JusticeVirtue.GetJusticeProtector(pm);
+
+            if (prot == null || prot.Map != pm.Map || prot.Kills >= 5 || prot.Criminal ||
+                !JusticeVirtue.CheckMapRegion(pm, prot))
             {
-                var prot = pm.JusticeProtectors[j];
+                return;
+            }
 
-                if (prot.Map != pm.Map || prot.Kills >= 5 || prot.Criminal || !JusticeVirtue.CheckMapRegion(pm, prot))
+            var chance = VirtueSystem.GetLevel(prot, VirtueName.Justice) switch
+            {
+                VirtueLevel.Seeker   => 60,
+                VirtueLevel.Follower => 80,
+                VirtueLevel.Knight   => 100,
+                _                    => 0
+            };
+
+            if (chance > 0 && chance > Utility.Random(100))
+            {
+                var powerScroll = new PowerScroll(ps.Skill, ps.Value);
+
+                prot.SendLocalizedMessage(1049368); // You have been rewarded for your dedication to Justice!
+
+                if (!Core.SE || prot.Alive)
                 {
-                    continue;
+                    prot.AddToBackpack(powerScroll);
                 }
-
-                var chance = VirtueHelper.GetLevel(prot, VirtueName.Justice) switch
+                else if (prot.Corpse?.Deleted == false)
                 {
-                    VirtueLevel.Seeker   => 60,
-                    VirtueLevel.Follower => 80,
-                    VirtueLevel.Knight   => 100,
-                    _                    => 0
-                };
-
-                if (chance > Utility.Random(100))
+                    prot.Corpse.DropItem(powerScroll);
+                }
+                else
                 {
-                    var powerScroll = new PowerScroll(ps.Skill, ps.Value);
-
-                    prot.SendLocalizedMessage(1049368); // You have been rewarded for your dedication to Justice!
-
-                    if (!Core.SE || prot.Alive)
-                    {
-                        prot.AddToBackpack(powerScroll);
-                    }
-                    else if (prot.Corpse?.Deleted == false)
-                    {
-                        prot.Corpse.DropItem(powerScroll);
-                    }
-                    else
-                    {
-                        prot.AddToBackpack(powerScroll);
-                    }
+                    prot.AddToBackpack(powerScroll);
                 }
             }
         }

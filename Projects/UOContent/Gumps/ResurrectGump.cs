@@ -21,24 +21,19 @@ namespace Server.Gumps
         private readonly int m_Price;
 
         public ResurrectGump(Mobile owner, double hitsScalar)
-            : this(owner, owner, ResurrectMessage.Generic, false, hitsScalar)
+            : this(owner, ResurrectMessage.Generic, false, hitsScalar)
         {
         }
 
-        public ResurrectGump(Mobile owner, ResurrectMessage msg) : this(owner, owner, msg)
-        {
-        }
-
-        public ResurrectGump(Mobile owner, bool fromSacrifice = false)
-            : this(owner, owner, ResurrectMessage.Generic, fromSacrifice)
+        public ResurrectGump(Mobile owner, bool fromSacrifice)
+            : this(owner, ResurrectMessage.Generic, fromSacrifice)
         {
         }
 
         public ResurrectGump(
-            Mobile owner, Mobile healer, ResurrectMessage msg = ResurrectMessage.Generic,
+            Mobile healer, ResurrectMessage msg = ResurrectMessage.Generic,
             bool fromSacrifice = false, double hitsScalar = 0.0
-        )
-            : base(100, 0)
+        ) : base(100, 0)
         {
             m_Healer = healer;
             m_FromSacrifice = fromSacrifice;
@@ -63,8 +58,7 @@ namespace Server.Gumps
             AddHtmlLocalized(100, 230, 110, 35, 1011011); // CONTINUE
         }
 
-        public ResurrectGump(Mobile owner, Mobile healer, int price)
-            : base(150, 50)
+        public ResurrectGump(Mobile healer, int price) : base(150, 50)
         {
             m_Healer = healer;
             m_Price = price;
@@ -95,23 +89,11 @@ namespace Server.Gumps
             AddRadio(30, 175, 9727, 9730, false, 0);
             AddHtmlLocalized(65, 178, 300, 25, 1060016, 0x7FFF); // I'd rather stay dead, you scoundrel!!!
 
-            AddHtmlLocalized(
-                30,
-                20,
-                360,
-                35,
-                1060017,
-                0x7FFF
-            ); // Wishing to rejoin the living, are you?  I can restore your body... for a price of course...
+            // Wishing to rejoin the living, are you?  I can restore your body... for a price of course...
+            AddHtmlLocalized(30, 20, 360, 35, 1060017, 0x7FFF);
 
-            AddHtmlLocalized(
-                30,
-                105,
-                345,
-                40,
-                1060018,
-                0x5B2D
-            ); // Do you accept the fee, which will be withdrawn from your bank?
+            // Do you accept the fee, which will be withdrawn from your bank?
+            AddHtmlLocalized(30, 105, 345, 40, 1060018, 0x5B2D);
 
             AddImage(65, 72, 5605);
 
@@ -156,20 +138,16 @@ namespace Server.Gumps
                 {
                     if (Banker.Withdraw(from, m_Price))
                     {
-                        from.SendLocalizedMessage(
-                            1060398,
-                            m_Price.ToString()
-                        ); // ~1_AMOUNT~ gold has been withdrawn from your bank box.
-                        from.SendLocalizedMessage(
-                            1060022,
-                            Banker.GetBalance(from).ToString()
-                        ); // You have ~1_AMOUNT~ gold in cash remaining in your bank box.
+                        // ~1_AMOUNT~ gold has been withdrawn from your bank box.
+                        from.SendLocalizedMessage(1060398, m_Price.ToString());
+
+                        // You have ~1_AMOUNT~ gold in cash remaining in your bank box.
+                        from.SendLocalizedMessage(1060022, Banker.GetBalance(from).ToString());
                     }
                     else
                     {
-                        from.SendLocalizedMessage(
-                            1060020
-                        ); // Unfortunately, you do not have enough cash in your bank to cover the cost of the healing.
+                        // Unfortunately, you do not have enough cash in your bank to cover the cost of the healing.
+                        from.SendLocalizedMessage(1060020);
                         return;
                     }
                 }
@@ -185,9 +163,9 @@ namespace Server.Gumps
 
             from.Resurrect();
 
-            if (m_Healer != null && from != m_Healer)
+            if (from != m_Healer && m_Healer is PlayerMobile pmHealer)
             {
-                var level = VirtueHelper.GetLevel(m_Healer, VirtueName.Compassion);
+                var level = VirtueSystem.GetLevel(pmHealer, VirtueName.Compassion);
 
                 from.Hits = level switch
                 {
@@ -198,12 +176,16 @@ namespace Server.Gumps
                 };
             }
 
-            if (m_FromSacrifice && from is PlayerMobile mobile)
+            if (m_FromSacrifice && from is PlayerMobile pm)
             {
-                mobile.AvailableResurrects -= 1;
+                var virtues = pm.Virtues;
+                if (virtues != null)
+                {
+                    virtues.AvailableResurrects -= 1;
+                }
 
-                var pack = mobile.Backpack;
-                var corpse = mobile.Corpse;
+                var pack = pm.Backpack;
+                var corpse = pm.Corpse;
 
                 if (pack != null && corpse != null)
                 {
