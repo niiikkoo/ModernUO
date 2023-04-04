@@ -6152,8 +6152,6 @@ public class Mobile : IHued, IComparable<Mobile>, ISpawnable, IObjectPropertyLis
             case 19: // Just removed variables
             case 18:
                 {
-                    // Virtues = new VirtueInfo(reader);
-
                     if (version < 34)
                     {
                         int mask = reader.ReadByte();
@@ -6169,6 +6167,8 @@ public class Mobile : IHued, IComparable<Mobile>, ISpawnable, IObjectPropertyLis
                                     virtueValues[i] = reader.ReadInt();
                                 }
                             }
+
+                            AssemblyHandler.Invoke("FixVirtue", new object[] { this, virtueValues });
                         }
                     }
 

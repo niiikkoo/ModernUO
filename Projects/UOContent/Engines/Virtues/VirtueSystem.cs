@@ -30,6 +30,24 @@ public static class VirtueSystem
 {
     private static readonly Dictionary<PlayerMobile, VirtueInfo> _contexts = new();
 
+    public static void FixVirtue(Mobile m, int[] virtueValues)
+    {
+        if (m is not PlayerMobile pm)
+        {
+            return;
+        }
+
+        var virtues = pm.GetOrCreateVirtues();
+        for (var i = 0; i < virtueValues.Length; i++)
+        {
+            var val = virtueValues[i];
+            if (val > 0)
+            {
+                virtues.SetValue(i, val);
+            }
+        }
+    }
+
     public static void Configure()
     {
         GenericPersistence.Register("Virtues", Serialize, Deserialize);

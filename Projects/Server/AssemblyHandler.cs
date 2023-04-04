@@ -149,6 +149,25 @@ public static class AssemblyHandler
         }
     }
 
+    public static void Invoke(string method, object[] parameters)
+    {
+        var invoke = new List<MethodInfo>();
+
+        Core.Assembly.AddMethods(method, invoke);
+
+        for (var i = 0; i < Assemblies.Length; i++)
+        {
+            Assemblies[i].AddMethods(method, invoke);
+        }
+
+        invoke.Sort(new CallPriorityComparer());
+
+        for (var i = 0; i < invoke.Count; ++i)
+        {
+            invoke[i].Invoke(null, parameters);
+        }
+    }
+
     private static void AddMethods(this Assembly assembly, string method, List<MethodInfo> list)
     {
         var types = assembly.GetTypes();
