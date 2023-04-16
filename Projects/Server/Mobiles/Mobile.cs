@@ -1844,7 +1844,7 @@ public class Mobile : IHued, IComparable<Mobile>, ISpawnable, IObjectPropertyLis
         get => Math.Clamp(m_Str + GetStatOffset(StatType.Str), 1, 65000);
         set
         {
-            if (_statMods.Count == 0)
+            if (_statMods == null || _statMods.Count == 0)
             {
                 RawStr = value;
             }
@@ -1902,7 +1902,7 @@ public class Mobile : IHued, IComparable<Mobile>, ISpawnable, IObjectPropertyLis
         get => Math.Clamp(m_Dex + GetStatOffset(StatType.Dex), 0, 65000);
         set
         {
-            if (_statMods.Count == 0)
+            if (_statMods == null || _statMods.Count == 0)
             {
                 RawDex = value;
             }
@@ -1960,7 +1960,7 @@ public class Mobile : IHued, IComparable<Mobile>, ISpawnable, IObjectPropertyLis
         get => Math.Clamp(m_Int + GetStatOffset(StatType.Int), 0, 65000);
         set
         {
-            if (_statMods.Count == 0)
+            if (_statMods == null || _statMods.Count == 0)
             {
                 RawInt = value;
             }
