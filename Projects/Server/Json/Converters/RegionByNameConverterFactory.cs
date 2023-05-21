@@ -1,8 +1,8 @@
 /*************************************************************************
  * ModernUO                                                              *
- * Copyright (C) 2019-2022 - ModernUO Development Team                   *
+ * Copyright 2019-2023 - ModernUO Development Team                       *
  * Email: hi@modernuo.com                                                *
- * File: GumpPage.cs                                                     *
+ * File: RegionByNameConverterFactory.cs                                 *
  *                                                                       *
  * This program is free software: you can redistribute it and/or modify  *
  * it under the terms of the GNU General Public License as published by  *
@@ -13,28 +13,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
  *************************************************************************/
 
-using System.Buffers;
-using Server.Collections;
+using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
-namespace Server.Gumps;
+namespace Server.Json;
 
-public class GumpPage : GumpEntry
+public class RegionByNameConverterFactory : JsonConverterFactory
 {
-    private static byte[] _page0 = Gump.StringToBuffer("{ page 0 }");
+    public override bool CanConvert(Type typeToConvert) => typeToConvert == typeof(Region);
 
-    public GumpPage(int page) => Page = page;
-
-    public int Page { get; set; }
-
-    public override void AppendTo(ref SpanWriter writer, OrderedHashSet<string> strings, ref int entries, ref int switches)
-    {
-        if (Page == 0)
-        {
-            writer.Write(_page0);
-        }
-        else
-        {
-            writer.WriteAscii($"{{ page {Page} }}");
-        }
-    }
+    public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options) =>
+        new RegionByNameConverter();
 }
