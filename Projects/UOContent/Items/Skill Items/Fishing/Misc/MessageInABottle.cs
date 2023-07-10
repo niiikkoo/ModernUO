@@ -18,7 +18,7 @@ public partial class MessageInABottle : Item
     public MessageInABottle(Map map, int level) : base(0x099F)
     {
         Weight = 1.0;
-        TargetMap = map ?? Map.Trammel;
+        TargetMap = map ?? Map.Gaia;
         _level = level;
     }
 

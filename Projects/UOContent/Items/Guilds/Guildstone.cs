@@ -1,5 +1,4 @@
 using ModernUO.Serialization;
-using Server.Factions;
 using Server.Guilds;
 using Server.Gumps;
 using Server.Multis;
@@ -168,22 +167,6 @@ public partial class Guildstone : Item, IAddon, IChoppable
         }
         else if (_guild.Accepted.Contains(from))
         {
-            var guildState = PlayerState.Find(_guild.Leader);
-            var targetState = PlayerState.Find(from);
-
-            var guildFaction = guildState?.Faction;
-            var targetFaction = targetState?.Faction;
-
-            if (guildFaction != targetFaction || targetState?.IsLeaving == true)
-            {
-                return;
-            }
-
-            if (guildState != null && targetState != null)
-            {
-                targetState.Leaving = guildState.Leaving;
-            }
-
             _guild.Remove(_guild.Accepted, from);
             _guild.AddMember(from);
 

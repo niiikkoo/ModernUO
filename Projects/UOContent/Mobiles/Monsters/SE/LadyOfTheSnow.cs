@@ -1,7 +1,6 @@
 using ModernUO.Serialization;
 using System;
 using System.Collections.Generic;
-using Server.Engines.Plants;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -46,11 +45,6 @@ namespace Server.Mobiles
 
             PackReg(3);
             PackItem(new Necklace());
-
-            if (Utility.RandomDouble() < 0.25)
-            {
-                PackItem(Seed.RandomBonsaiSeed());
-            }
         }
 
         public override string CorpseName => "a lady of the snow corpse";

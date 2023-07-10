@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using Server.Engines.ConPVP;
 using Server.Engines.PartySystem;
-using Server.Factions;
 using Server.Guilds;
 using Server.Items;
 using Server.Mobiles;
@@ -85,58 +83,7 @@ namespace Server.Misc
                 pmTarg = bcTarg.SummonMaster as PlayerMobile;
             }
 
-            if (pmFrom != null && pmTarg != null)
-            {
-                if (pmFrom.DuelContext != pmTarg.DuelContext &&
-                    (pmFrom.DuelContext?.Started == true || pmTarg.DuelContext?.Started == true))
-                {
-                    return false;
-                }
-
-                if (pmFrom.DuelContext != null && pmFrom.DuelContext == pmTarg.DuelContext &&
-                    (pmFrom.DuelContext.StartedReadyCountdown && !pmFrom.DuelContext.Started || pmFrom.DuelContext.Tied ||
-                     pmFrom.DuelPlayer.Eliminated || pmTarg.DuelPlayer.Eliminated))
-                {
-                    return false;
-                }
-
-                if (pmFrom.DuelPlayer?.Eliminated == false && pmFrom.DuelContext?.IsSuddenDeath == true)
-                {
-                    return false;
-                }
-
-                if (pmFrom.DuelContext != null && pmFrom.DuelContext == pmTarg.DuelContext &&
-                    pmFrom.DuelContext.m_Tournament?.IsNotoRestricted == true &&
-                    pmFrom.DuelPlayer != null && pmTarg.DuelPlayer != null &&
-                    pmFrom.DuelPlayer.Participant != pmTarg.DuelPlayer.Participant)
-                {
-                    return false;
-                }
-
-                if (pmFrom.DuelContext?.Started == true && pmFrom.DuelContext == pmTarg.DuelContext)
-                {
-                    return true;
-                }
-            }
-
-            if (pmFrom?.DuelContext?.Started == true || pmTarg?.DuelContext?.Started == true)
-            {
-                return false;
-            }
-
-            if (from.Region.IsPartOf<SafeZone>() || target.Region.IsPartOf<SafeZone>())
-            {
-                return false;
-            }
-
             var map = from.Map;
-
-            var targetFaction = Faction.Find(target, true);
-
-            if ((!Core.ML || map == Faction.Facet) && targetFaction != null && Faction.Find(from, true) != targetFaction)
-            {
-                return false;
-            }
 
             if ((map?.Rules & MapRules.BeneficialRestrictions) == 0)
             {
@@ -151,11 +98,6 @@ namespace Server.Misc
             if (bcTarg?.Controlled == false)
             {
                 return false; // Players cannot heal uncontrolled mobiles
-            }
-
-            if (pmFrom?.Young == true && pmTarg?.Young != true)
-            {
-                return false; // Young players cannot perform beneficial actions towards older players
             }
 
             if (from.Guild is Guild fromGuild && target.Guild is Guild targetGuild &&
@@ -190,45 +132,6 @@ namespace Server.Misc
                 pmTarg = bcTarg.SummonMaster as PlayerMobile;
             }
 
-            if (pmFrom != null && pmTarg != null)
-            {
-                if (pmFrom.DuelContext != pmTarg.DuelContext &&
-                    (pmFrom.DuelContext?.Started == true || pmTarg.DuelContext?.Started == true))
-                {
-                    return false;
-                }
-
-                if (pmFrom.DuelContext != null && pmFrom.DuelContext == pmTarg.DuelContext &&
-                    (pmFrom.DuelContext.StartedReadyCountdown && !pmFrom.DuelContext.Started || pmFrom.DuelContext.Tied ||
-                     pmFrom.DuelPlayer.Eliminated || pmTarg.DuelPlayer.Eliminated))
-                {
-                    return false;
-                }
-
-                if (pmFrom.DuelContext != null && pmFrom.DuelContext == pmTarg.DuelContext &&
-                    pmFrom.DuelContext.m_Tournament?.IsNotoRestricted == true &&
-                    pmFrom.DuelPlayer != null && pmTarg.DuelPlayer != null &&
-                    pmFrom.DuelPlayer.Participant == pmTarg.DuelPlayer.Participant)
-                {
-                    return false;
-                }
-
-                if (pmFrom.DuelContext?.Started == true && pmFrom.DuelContext == pmTarg.DuelContext)
-                {
-                    return true;
-                }
-            }
-
-            if (pmFrom?.DuelContext?.Started == true || pmTarg?.DuelContext?.Started == true)
-            {
-                return false;
-            }
-
-            if (from.Region.IsPartOf<SafeZone>() || target.Region.IsPartOf<SafeZone>())
-            {
-                return false;
-            }
-
             var map = from.Map;
 
             if ((map?.Rules & MapRules.HarmfulRestrictions) == 0)
@@ -239,12 +142,6 @@ namespace Server.Misc
             if (!from.Player && !(from is BaseCreature bc && bc.GetMaster() != null &&
                                   bc.GetMaster().AccessLevel == AccessLevel.Player))
             {
-                if (!CheckAggressor(from.Aggressors, target) && !CheckAggressed(from.Aggressed, target) &&
-                    pmTarg?.CheckYoungProtection(from) == true)
-                {
-                    return false;
-                }
-
                 return true; // Uncontrolled NPCs are only restricted by the young system
             }
 
@@ -309,8 +206,6 @@ namespace Server.Misc
             var sourceGuild = GetGuildFor(source.Guild as Guild, source);
             var targetGuild = GetGuildFor(target.Guild, target.Owner);
 
-            var srcFaction = Faction.Find(source, true, true);
-            var trgFaction = Faction.Find(target.Owner, true, true);
             var list = target.Aggressors;
 
             if (sourceGuild != null && targetGuild != null)
@@ -328,11 +223,6 @@ namespace Server.Misc
 
             if (target.Owner is BaseCreature creature)
             {
-                if (srcFaction != null && trgFaction != null && srcFaction != trgFaction && source.Map == Faction.Facet)
-                {
-                    return Notoriety.Enemy;
-                }
-
                 if (CheckHouseFlag(source, creature, target.Location, target.Map))
                 {
                     return Notoriety.CanBeAttacked;
@@ -374,17 +264,6 @@ namespace Server.Misc
                 return Notoriety.Criminal;
             }
 
-            if (srcFaction != null && trgFaction != null && srcFaction != trgFaction && source.Map == Faction.Facet)
-            {
-                for (var i = 0; i < list.Count; ++i)
-                {
-                    if (list[i] == source || list[i] is BaseFactionGuard)
-                    {
-                        return Notoriety.Enemy;
-                    }
-                }
-            }
-
             if (CheckHouseFlag(source, target.Owner, target.Location, target.Map))
             {
                 return Notoriety.CanBeAttacked;
@@ -418,15 +297,6 @@ namespace Server.Misc
 
             var pmFrom = source as PlayerMobile;
             var pmTarg = target as PlayerMobile;
-
-            if (pmFrom != null && pmTarg != null)
-            {
-                if (pmFrom.DuelContext?.StartedBeginCountdown == true && !pmFrom.DuelContext.Finished &&
-                    pmFrom.DuelContext == pmTarg.DuelContext)
-                {
-                    return pmFrom.DuelContext.IsAlly(pmFrom, pmTarg) ? Notoriety.Ally : Notoriety.Enemy;
-                }
-            }
 
             if (target.AccessLevel > AccessLevel.Player)
             {
@@ -487,14 +357,6 @@ namespace Server.Misc
                 {
                     return Notoriety.Enemy;
                 }
-            }
-
-            var srcFaction = Faction.Find(source, true, true);
-            var trgFaction = Faction.Find(target, true, true);
-
-            if (srcFaction != null && trgFaction != null && srcFaction != trgFaction && source.Map == Faction.Facet)
-            {
-                return Notoriety.Enemy;
             }
 
             if (Stealing.ClassicMode && pmTarg?.PermaFlags.Contains(source) == true)

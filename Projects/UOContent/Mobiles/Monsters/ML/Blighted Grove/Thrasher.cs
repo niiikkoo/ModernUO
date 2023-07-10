@@ -9,8 +9,6 @@ namespace Server.Mobiles
         [Constructible]
         public Thrasher()
         {
-            IsParagon = true;
-
             Hue = 0x497;
 
             SetStr(93, 327);
@@ -39,7 +37,6 @@ namespace Server.Mobiles
         public override string CorpseName => "a Thrasher corpse";
         public override string DefaultName => "Thrasher";
 
-        public override bool GivesMLMinorArtifact => true;
         public override int Hides => 48;
         public override int Meat => 1;
 

@@ -1,5 +1,4 @@
 using System;
-using Server.Engines.ConPVP;
 using Server.Items;
 using Server.Mobiles;
 using Server.Targeting;
@@ -57,14 +56,6 @@ namespace Server.SkillHandlers
                 if (targeted is not Mobile targ)
                 {
                     from.SendLocalizedMessage(1049528); // You cannot calm that!
-                }
-                else if (from.Region.IsPartOf<SafeZone>())
-                {
-                    from.SendMessage("You may not peacemake in this area.");
-                }
-                else if (targ.Region.IsPartOf<SafeZone>())
-                {
-                    from.SendMessage("You may not peacemake there.");
                 }
                 else if (!m_Instrument.IsChildOf(from.Backpack))
                 {

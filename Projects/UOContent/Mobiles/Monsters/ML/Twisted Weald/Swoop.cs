@@ -12,7 +12,6 @@ namespace Server.Mobiles
         [Constructible]
         public Swoop()
         {
-            IsParagon = true;
             Hue = 0xE0;
 
             AI = AIType.AI_Melee;
@@ -84,7 +83,6 @@ namespace Server.Mobiles
         public override string DefaultName => "Swoop";
 
         public override bool CanFly => true;
-        public override bool GivesMLMinorArtifact => true;
         public override int Feathers => 72;
 
         public override void GenerateLoot()

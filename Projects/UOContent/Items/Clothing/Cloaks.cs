@@ -1,5 +1,4 @@
 using ModernUO.Serialization;
-using Server.Engines.VeteranRewards;
 
 namespace Server.Items
 {
@@ -110,7 +109,7 @@ namespace Server.Items
 
     [Flippable]
     [SerializationGenerator(0, false)]
-    public partial class RewardCloak : BaseCloak, IRewardItem
+    public partial class RewardCloak : BaseCloak
     {
         [InvalidateProperties]
         [SerializableField(0)]
@@ -159,21 +158,6 @@ namespace Server.Items
             from.SendLocalizedMessage(sender.FailMessage);
             return false;
         }
-
-        public override void GetProperties(IPropertyList list)
-        {
-            base.GetProperties(list);
-
-            if (Core.ML && IsRewardItem)
-            {
-                // X Year Veteran Reward
-                list.Add(RewardSystem.GetRewardYearLabel(this, new object[] { Hue, _number }));
-            }
-        }
-
-        public override bool CanEquip(Mobile m) =>
-            base.CanEquip(m) &&
-            (!IsRewardItem || RewardSystem.CheckIsUsableBy(m, this, new object[] { Hue, _number }));
 
         [AfterDeserialization]
         private void AfterDeserialization()

@@ -1,15 +1,10 @@
 using ModernUO.Serialization;
-using Server.Engines.VeteranRewards;
 
 namespace Server.Items
 {
-    [SerializationGenerator(1, false)]
-    public partial class FurnitureDyeTub : DyeTub, IRewardItem
+    [SerializationGenerator(0, false)]
+    public partial class FurnitureDyeTub : DyeTub
     {
-        [SerializableField(0)]
-        [SerializedCommandProperty(AccessLevel.GameMaster)]
-        private bool _isRewardItem;
-
         [Constructible]
         public FurnitureDyeTub() => LootType = LootType.Blessed;
 
@@ -17,34 +12,6 @@ namespace Server.Items
         public override bool AllowFurniture => true;
         public override int TargetMessage => 501019; // Select the furniture to dye.
         public override int FailMessage => 501021;   // That is not a piece of furniture.
-        public override int LabelNumber => 1041246;  // Furniture Dye Tub
-
-        public override void OnDoubleClick(Mobile from)
-        {
-            if (_isRewardItem && !RewardSystem.CheckIsUsableBy(from, this))
-            {
-                return;
-            }
-
-            base.OnDoubleClick(from);
-        }
-
-        public override void GetProperties(IPropertyList list)
-        {
-            base.GetProperties(list);
-
-            if (Core.ML && _isRewardItem)
-            {
-                list.Add(1076217); // 1st Year Veteran Reward
-            }
-        }
-
-        private void Deserialize(IGenericReader reader, int version)
-        {
-            if (LootType == LootType.Regular)
-            {
-                LootType = LootType.Blessed;
-            }
-        }
+        public override int LabelNumber => 1041246;  // Furniture Dye Tubz
     }
 }

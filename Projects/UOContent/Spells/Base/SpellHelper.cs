@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Server.Engines.CannedEvil;
-using Server.Engines.ConPVP;
 using Server.Engines.PartySystem;
-using Server.Factions;
 using Server.Guilds;
 using Server.Items;
 using Server.Misc;
@@ -82,25 +79,7 @@ namespace Server.Spells
 
         private static readonly TravelValidator[] m_Validators =
         {
-            IsFeluccaT2A,
-            IsKhaldun,
-            IsIlshenar,
-            IsTrammelWind,
-            IsFeluccaWind,
-            IsFeluccaDungeon,
-            IsTrammelSolenHive,
-            IsFeluccaSolenHive,
-            IsCrystalCave,
-            IsDoomGauntlet,
-            IsDoomFerry,
-            IsSafeZone,
-            IsFactionStronghold,
-            IsChampionSpawn,
-            IsTokunoDungeon,
-            IsLampRoom,
-            IsGuardianRoom,
-            IsHeartwood,
-            IsMLDungeon
+            IsDungeon
         };
 
         // TODO: Move to configuration
@@ -109,38 +88,31 @@ namespace Server.Spells
             /* T2A(Fel), Khaldun, Ilshenar, Wind(Tram), Wind(Fel), Dungeons(Fel), Solen(Tram), Solen(Fel), CrystalCave(Malas), Gauntlet(Malas), Gauntlet(Ferry), SafeZone, Stronghold, ChampionSpawn, Dungeons(Tokuno[Malas]), LampRoom(Doom), GuardianRoom(Doom), Heartwood, MLDungeons */
             /* Recall From */
             {
-                false, false, true, true, false, false, true, false, false, false, false, true, true, false, true, false,
-                false, false, false
+                false
             },
             /* Recall To */
             {
-                false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-                false, false, false, false
+                false
             },
             /* Gate From */
             {
-                false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-                false, false, false, false
+                false
             },
             /* Gate To */
             {
-                false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-                false, false, false, false
+                false
             },
             /* Mark In */
             {
-                false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,
-                false, false, false, false
+                false
             },
             /* Tele From */
             {
-                true, true, true, true, true, true, true, true, false, true, true, true, false, true, true, true, true,
-                false, true
+                true
             },
             /* Tele To */
             {
-                true, true, true, true, true, true, true, true, false, true, false, false, false, true, true, true, true,
-                false, false
+                true
             }
         };
 
@@ -441,15 +413,6 @@ namespace Server.Spells
             var bcFrom = from as BaseCreature;
             var bcTarg = to as BaseCreature;
 
-            var pmFrom = (bcFrom?.Summoned == true ? bcFrom.SummonMaster : from) as PlayerMobile;
-            var pmTarg = (bcTarg?.Summoned == true ? bcTarg.SummonMaster : to) as PlayerMobile;
-
-            if (pmFrom?.DuelContext != null && pmFrom.DuelContext == pmTarg?.DuelContext && pmFrom.DuelContext.Started &&
-                pmFrom.DuelPlayer != null && pmTarg?.DuelPlayer != null)
-            {
-                return pmFrom.DuelPlayer.Participant != pmTarg.DuelPlayer.Participant;
-            }
-
             var fromGuild = GetGuildFor(from);
             var toGuild = GetGuildFor(to);
 
@@ -684,148 +647,11 @@ namespace Server.Spells
             return true;
         }
 
-        public static bool IsWindLoc(Point3D loc)
-        {
-            int x = loc.X, y = loc.Y;
-
-            return x >= 5120 && y >= 0 && x < 5376 && y < 256;
-        }
-
-        public static bool IsFeluccaWind(Map map, Point3D loc) => map == Map.Felucca && IsWindLoc(loc);
-
-        public static bool IsTrammelWind(Map map, Point3D loc) => map == Map.Trammel && IsWindLoc(loc);
-
-        public static bool IsIlshenar(Map map, Point3D loc) => map == Map.Ilshenar;
-
-        public static bool IsSolenHiveLoc(Point3D loc)
-        {
-            int x = loc.X, y = loc.Y;
-
-            return x >= 5640 && y >= 1776 && x < 5935 && y < 2039;
-        }
-
-        public static bool IsTrammelSolenHive(Map map, Point3D loc) => map == Map.Trammel && IsSolenHiveLoc(loc);
-
-        public static bool IsFeluccaSolenHive(Map map, Point3D loc) => map == Map.Felucca && IsSolenHiveLoc(loc);
-
-        public static bool IsFeluccaT2A(Map map, Point3D loc)
-        {
-            int x = loc.X, y = loc.Y;
-
-            return map == Map.Felucca && x >= 5120 && y >= 2304 && x < 6144 && y < 4096;
-        }
-
-        public static bool IsAnyT2A(Map map, Point3D loc)
-        {
-            int x = loc.X, y = loc.Y;
-
-            return (map == Map.Trammel || map == Map.Felucca) && x >= 5120 && y >= 2304 && x < 6144 && y < 4096;
-        }
-
-        public static bool IsFeluccaDungeon(Map map, Point3D loc)
+        public static bool IsDungeon(Map map, Point3D loc)
         {
             var region = Region.Find(loc, map);
-            return region.IsPartOf<DungeonRegion>() && region.Map == Map.Felucca;
+            return region.IsPartOf<DungeonRegion>();
         }
-
-        public static bool IsKhaldun(Map map, Point3D loc) => Region.Find(loc, map).Name == "Khaldun";
-
-        public static bool IsCrystalCave(Map map, Point3D loc)
-        {
-            if (map != Map.Malas || loc.Z >= -80)
-            {
-                return false;
-            }
-
-            int x = loc.X, y = loc.Y;
-
-            return x >= 1182 && y >= 437 && x < 1211 && y < 470
-                   || x >= 1156 && y >= 470 && x < 1211 && y < 503
-                   || x >= 1176 && y >= 503 && x < 1208 && y < 509
-                   || x >= 1188 && y >= 509 && x < 1201 && y < 513;
-        }
-
-        public static bool IsSafeZone(Map map, Point3D loc) =>
-            Region.Find(loc, map).IsPartOf<SafeZone>() &&
-            m_TravelType is TravelCheckType.TeleportTo or TravelCheckType.TeleportFrom
-            && (m_TravelCaster as PlayerMobile)?.DuelPlayer?.Eliminated == false;
-
-        public static bool IsFactionStronghold(Map map, Point3D loc) => Region.Find(loc, map).IsPartOf<StrongholdRegion>();
-
-        public static bool IsChampionSpawn(Map map, Point3D loc) => Region.Find(loc, map).IsPartOf<ChampionSpawnRegion>();
-
-        public static bool IsDoomFerry(Map map, Point3D loc)
-        {
-            if (map != Map.Malas)
-            {
-                return false;
-            }
-
-            int x = loc.X, y = loc.Y;
-
-            return x >= 426 && y >= 314 && x <= 430 && y <= 331 || x >= 406 && y >= 247 && x <= 410 && y <= 264;
-        }
-
-        public static bool IsTokunoDungeon(Map map, Point3D loc)
-        {
-            // The tokuno dungeons are really inside malas
-            if (map != Map.Malas)
-            {
-                return false;
-            }
-
-            int x = loc.X, y = loc.Y, z = loc.Z;
-
-            var r1 = x >= 0 && y >= 0 && x <= 128 && y <= 128;
-            var r2 = x >= 45 && y >= 320 && x < 195 && y < 710;
-
-            return r1 || r2;
-        }
-
-        public static bool IsDoomGauntlet(Map map, Point3D loc)
-        {
-            if (map != Map.Malas)
-            {
-                return false;
-            }
-
-            int x = loc.X - 256, y = loc.Y - 304;
-
-            return x >= 0 && y >= 0 && x < 256 && y < 256;
-        }
-
-        public static bool IsLampRoom(Map map, Point3D loc)
-        {
-            if (map != Map.Malas)
-            {
-                return false;
-            }
-
-            int x = loc.X, y = loc.Y;
-
-            return x >= 465 && y >= 92 && x < 474 && y < 102;
-        }
-
-        public static bool IsGuardianRoom(Map map, Point3D loc)
-        {
-            if (map != Map.Malas)
-            {
-                return false;
-            }
-
-            int x = loc.X, y = loc.Y;
-
-            return x >= 356 && y >= 5 && x < 375 && y < 25;
-        }
-
-        public static bool IsHeartwood(Map map, Point3D loc)
-        {
-            int x = loc.X, y = loc.Y;
-
-            return (map == Map.Trammel || map == Map.Felucca) && x >= 6911 && y >= 254 && x < 7167 && y < 511;
-        }
-
-        public static bool IsMLDungeon(Map map, Point3D loc) => MondainsLegacy.IsMLRegion(Region.Find(loc, map));
 
         public static bool IsInvalid(Map map, Point3D loc)
         {
@@ -846,14 +672,6 @@ namespace Server.Spells
             if (map == null)
             {
                 return false;
-            }
-
-            if (Region.Find(loc, map).GetRegion<SafeZone>() != null)
-            {
-                if (caster is PlayerMobile pm && (pm.DuelContext?.Started != true || pm.DuelPlayer?.Eliminated != false))
-                {
-                    return true;
-                }
             }
 
             var reg = Region.Find(loc, map).GetRegion<GuardedRegion>();
@@ -1168,12 +986,6 @@ namespace Server.Spells
 
         public static bool CheckCast(Mobile caster, Spell spell)
         {
-            if (Sigil.ExistsOn(caster))
-            {
-                caster.SendLocalizedMessage(1061632); // You can't do that while carrying the sigil.
-                return false;
-            }
-
             if (!caster.CanBeginAction<PolymorphSpell>())
             {
                 caster.SendLocalizedMessage(1061628); // You can't do that while polymorphed.
@@ -1196,11 +1008,7 @@ namespace Server.Spells
                 return false;
             }
 
-            if (Sigil.ExistsOn(caster))
-            {
-                caster.SendLocalizedMessage(1061632); // You can't do that while carrying the sigil.
-            }
-            else if (!caster.CanBeginAction<PolymorphSpell>())
+            if (!caster.CanBeginAction<PolymorphSpell>())
             {
                 caster.SendLocalizedMessage(1061628); // You can't do that while polymorphed.
             }

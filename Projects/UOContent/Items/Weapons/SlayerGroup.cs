@@ -25,10 +25,10 @@ namespace Server.Items
                 typeof(EvilMage),
                 typeof(EvilMageLord),
                 typeof(FrostTroll),
-                typeof(MeerCaptain),
+                /*typeof(MeerCaptain),
                 typeof(MeerEternal),
                 typeof(MeerMage),
-                typeof(MeerWarrior),
+                typeof(MeerWarrior),*/
                 typeof(Ogre),
                 typeof(OgreLord),
                 typeof(Orc),
@@ -44,7 +44,7 @@ namespace Server.Items
                 typeof(SavageShaman),
                 typeof(Savage),
                 typeof(Titan),
-                typeof(Troglodyte),
+                //typeof(Troglodyte),
                 typeof(Troll)
             );
             humanoid.Entries = new[]
@@ -74,13 +74,13 @@ namespace Server.Items
                 typeof(Ghoul),
                 typeof(GoreFiend),
                 typeof(HellSteed),
-                typeof(LadyOfTheSnow),
+                //typeof(LadyOfTheSnow),
                 typeof(Lich),
                 typeof(LichLord),
                 typeof(Mummy),
-                typeof(PestilentBandage),
+                //typeof(PestilentBandage),
                 typeof(Revenant),
-                typeof(RevenantLion),
+                //typeof(RevenantLion),
                 typeof(RottingCorpse),
                 typeof(Shade),
                 typeof(ShadowKnight),
@@ -98,17 +98,17 @@ namespace Server.Items
             fey.Super = new SlayerEntry(
                 SlayerName.Fey,
                 typeof(Centaur),
-                typeof(CuSidhe),
+                //typeof(CuSidhe),
                 typeof(EtherealWarrior),
                 typeof(Kirin),
-                typeof(LordOaks),
+                //typeof(LordOaks),
                 typeof(Pixie),
                 typeof(Silvani),
                 typeof(Treefellow),
                 typeof(Unicorn),
-                typeof(Wisp),
+                typeof(Wisp)/*
                 typeof(MLDryad),
-                typeof(Satyr)
+                typeof(Satyr)*/
             );
             fey.Entries = Array.Empty<SlayerEntry>();
 
@@ -132,9 +132,9 @@ namespace Server.Items
                 typeof(SummonedFireElemental),
                 typeof(GoldenElemental),
                 typeof(IceElemental),
-                typeof(KazeKemono),
+                //typeof(KazeKemono),
                 typeof(PoisonElemental),
-                typeof(RaiJu),
+                //typeof(RaiJu),
                 typeof(SandVortex),
                 typeof(ShadowIronElemental),
                 typeof(SnowElemental),
@@ -183,7 +183,7 @@ namespace Server.Items
                     typeof(DemonKnight),
                     typeof(Devourer),
                     typeof(EnslavedGargoyle),
-                    typeof(FanDancer),
+                    //typeof(FanDancer),
                     typeof(FireGargoyle),
                     typeof(Gargoyle),
                     typeof(GargoyleDestroyer),
@@ -194,12 +194,12 @@ namespace Server.Items
                     typeof(Imp),
                     typeof(Impaler),
                     typeof(Moloch),
-                    typeof(Oni),
+                    //typeof(Oni),
                     typeof(Ravager),
-                    typeof(Semidar),
+                    //typeof(Semidar),
                     typeof(StoneGargoyle),
-                    typeof(Succubus),
-                    typeof(TsukiWolf)
+                    typeof(Succubus)/*,
+                    typeof(TsukiWolf)*/
                 );
 
                 abyss.Entries = new[]
@@ -281,7 +281,7 @@ namespace Server.Items
             arachnid.Opposition = new[] { reptilian };
             arachnid.FoundOn = new[]
             {
-                typeof(AncientWyrm), typeof(GreaterDragon), typeof(Dragon), typeof(OphidianMatriarch), typeof(ShadowWyrm)
+                typeof(AncientWyrm), /*typeof(GreaterDragon),*/ typeof(Dragon), typeof(OphidianMatriarch), typeof(ShadowWyrm)
             };
             arachnid.Super = new SlayerEntry(
                 SlayerName.ArachnidDoom,
@@ -289,7 +289,7 @@ namespace Server.Items
                 typeof(FrostSpider),
                 typeof(GiantBlackWidow),
                 typeof(GiantSpider),
-                typeof(Mephitis),
+                //ypeof(Mephitis),
                 typeof(Scorpion),
                 typeof(TerathanAvenger),
                 typeof(TerathanDrone),
@@ -304,8 +304,8 @@ namespace Server.Items
                     typeof(DreadSpider),
                     typeof(FrostSpider),
                     typeof(GiantBlackWidow),
-                    typeof(GiantSpider),
-                    typeof(Mephitis)
+                    typeof(GiantSpider)/*,
+                    typeof(Mephitis)*/
                 ),
                 new SlayerEntry(
                     SlayerName.Terathan,
@@ -322,17 +322,17 @@ namespace Server.Items
                 SlayerName.ReptilianDeath,
                 typeof(AncientWyrm),
                 typeof(DeepSeaSerpent),
-                typeof(GreaterDragon),
+                //typeof(GreaterDragon),
                 typeof(Dragon),
                 typeof(Drake),
-                typeof(GiantIceWorm),
+                //typeof(GiantIceWorm),
                 typeof(IceSerpent),
                 typeof(GiantSerpent),
                 typeof(Hiryu),
                 typeof(IceSnake),
-                typeof(JukaLord),
+                /*typeof(JukaLord),
                 typeof(JukaMage),
-                typeof(JukaWarrior),
+                typeof(JukaWarrior),*/
                 typeof(LavaSerpent),
                 typeof(LavaSnake),
                 typeof(LesserHiryu),
@@ -342,9 +342,9 @@ namespace Server.Items
                 typeof(OphidianMage),
                 typeof(OphidianMatriarch),
                 typeof(OphidianWarrior),
-                typeof(Reptalon),
+                //typeof(Reptalon),
                 typeof(SeaSerpent),
-                typeof(Serado),
+                //typeof(Serado),
                 typeof(SerpentineDragon),
                 typeof(ShadowWyrm),
                 typeof(SilverSerpent),
@@ -352,20 +352,20 @@ namespace Server.Items
                 typeof(Snake),
                 typeof(SwampDragon),
                 typeof(WhiteWyrm),
-                typeof(Wyvern),
-                typeof(Yamandon)
+                typeof(Wyvern)/*,
+                typeof(Yamandon)*/
             );
             reptilian.Entries = new[]
             {
                 new SlayerEntry(
                     SlayerName.DragonSlaying,
                     typeof(AncientWyrm),
-                    typeof(GreaterDragon),
+                    //typeof(GreaterDragon),
                     typeof(Dragon),
                     typeof(Drake),
                     typeof(Hiryu),
                     typeof(LesserHiryu),
-                    typeof(Reptalon),
+                    //typeof(Reptalon),
                     typeof(SerpentineDragon),
                     typeof(ShadowWyrm),
                     typeof(SkeletalDragon),
@@ -385,17 +385,17 @@ namespace Server.Items
                 new SlayerEntry(
                     SlayerName.SnakesBane,
                     typeof(DeepSeaSerpent),
-                    typeof(GiantIceWorm),
+                    //typeof(GiantIceWorm),
                     typeof(GiantSerpent),
                     typeof(IceSerpent),
                     typeof(IceSnake),
                     typeof(LavaSerpent),
                     typeof(LavaSnake),
                     typeof(SeaSerpent),
-                    typeof(Serado),
+                    //typeof(Serado),
                     typeof(SilverSerpent),
-                    typeof(Snake),
-                    typeof(Yamandon)
+                    typeof(Snake)/*,
+                    typeof(Yamandon)*/
                 )
             };
 

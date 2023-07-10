@@ -52,8 +52,6 @@ namespace Server.Mobiles
 
         public override string CorpseName => "a shadow knight corpse";
 
-        public override bool IgnoreYoungProtection => Core.ML;
-
         public override OppositionGroup OppositionGroup => OppositionGroup.FeyAndUndead;
 
         public override bool BardImmune => !Core.SE;

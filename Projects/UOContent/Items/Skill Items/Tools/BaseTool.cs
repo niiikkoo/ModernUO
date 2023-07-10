@@ -116,14 +116,14 @@ public abstract partial class BaseTool : Item, IUsesRemaining, ICraftable
     {
         var check = m.FindItemOnLayer(Layer.OneHanded);
 
-        if (check is BaseTool && check != tool && check is not AncientSmithyHammer)
+        if (check is BaseTool && check != tool)
         {
             return false;
         }
 
         check = m.FindItemOnLayer(Layer.TwoHanded);
 
-        return check is not BaseTool || check == tool || check is AncientSmithyHammer;
+        return check is not BaseTool || check == tool;
     }
 
     public override void OnSingleClick(Mobile from)

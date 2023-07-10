@@ -377,7 +377,7 @@ public class DefCooking : CraftSystem
         /* End Barbecue */
 
         /* Begin Chocolatiering */
-        if (Core.ML)
+        /*if (Core.ML)
         {
             index = AddCraft(
                 typeof(DarkChocolate),
@@ -430,7 +430,7 @@ public class DefCooking : CraftSystem
             SetBeverageType(index, BeverageType.Milk);
             SetItemHue(index, 0x47E);
             SetNeededExpansion(index, Expansion.ML);
-        }
+        }*/
 
         /* End Chocolatiering */
     }

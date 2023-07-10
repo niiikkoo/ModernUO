@@ -1,5 +1,4 @@
 using ModernUO.Serialization;
-using Server.Engines.Plants;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -39,11 +38,6 @@ namespace Server.Mobiles
 
             Fame = 22000;
             Karma = -22000;
-
-            if (Utility.RandomDouble() < .50)
-            {
-                PackItem(Seed.RandomBonsaiSeed());
-            }
 
             PackItem(new Eggs(2));
         }

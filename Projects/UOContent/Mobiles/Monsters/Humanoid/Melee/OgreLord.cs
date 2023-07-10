@@ -1,6 +1,4 @@
 using ModernUO.Serialization;
-using Server.Ethics;
-using Server.Factions;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -43,8 +41,6 @@ namespace Server.Mobiles
         }
 
         public override string CorpseName => "an ogre lords corpse";
-        public override Faction FactionAllegiance => Minax.Instance;
-        public override Ethic EthicAllegiance => Ethic.Evil;
 
         public override string DefaultName => "an ogre lord";
 

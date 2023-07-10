@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using ModernUO.Serialization;
 using Server.Engines.Craft;
-using Server.Ethics;
-using Server.Factions;
 using Server.Network;
 using Server.Utilities;
 
@@ -25,7 +23,7 @@ namespace Server.Items
 
     [SerializationGenerator(7, false)]
     public abstract partial class BaseClothing
-        : Item, IDyable, IScissorable, IFactionItem, ICraftable, IWearableDurability, IAosItem
+        : Item, IDyable, IScissorable, ICraftable, IWearableDurability, IAosItem
     {
         [SerializableFieldSaveFlag(0)]
         private bool ShouldSerializeResource() => _resource != DefaultResource;
@@ -104,8 +102,6 @@ namespace Server.Items
 
         // Field 10
         private int _strReq = -1;
-
-        private FactionItem _factionState;
 
         public BaseClothing(int itemID, Layer layer, int hue = 0) : base(itemID)
         {
@@ -233,33 +229,11 @@ namespace Server.Items
             return true;
         }
 
-        public FactionItem FactionItemState
-        {
-            get => _factionState;
-            set
-            {
-                _factionState = value;
-
-                if (_factionState == null)
-                {
-                    Hue = 0;
-                }
-
-                LootType = _factionState == null ? LootType.Regular : LootType.Blessed;
-            }
-        }
-
         public virtual bool Scissor(Mobile from, Scissors scissors)
         {
             if (!IsChildOf(from.Backpack))
             {
                 from.SendLocalizedMessage(502437); // Items you wish to cut must be in your backpack.
-                return false;
-            }
-
-            if (Ethic.IsImbued(this))
-            {
-                from.SendLocalizedMessage(502440); // Scissors can not be used on that to produce anything.
                 return false;
             }
 
@@ -421,16 +395,8 @@ namespace Server.Items
             this.MarkDirty();
         }
 
-        public override bool AllowSecureTrade(Mobile from, Mobile to, Mobile newOwner, bool accepted) =>
-            Ethic.CheckTrade(from, to, newOwner, this) && base.AllowSecureTrade(from, to, newOwner, accepted);
-
         public override bool CanEquip(Mobile from)
         {
-            if (!Ethic.CheckEquip(from, this))
-            {
-                return false;
-            }
-
             if (from.AccessLevel < AccessLevel.GameMaster)
             {
                 if (RequiredRace != null && from.Race != RequiredRace)
@@ -714,11 +680,6 @@ namespace Server.Items
                 list.Add(1050043, _crafter); // crafted by ~1_NAME~
             }
 
-            if (_factionState != null)
-            {
-                list.Add(1041350); // faction item
-            }
-
             if (_quality == ClothingQuality.Exceptional)
             {
                 list.Add(1060636); // exceptional
@@ -934,11 +895,6 @@ namespace Server.Items
                 {
                     attrs.Add(new EquipInfoAttribute(1049643)); // cursed
                 }
-            }
-
-            if (_factionState != null)
-            {
-                attrs.Add(new EquipInfoAttribute(1041350)); // faction item
             }
 
             if (_quality == ClothingQuality.Exceptional)

@@ -55,7 +55,7 @@ namespace Server.Multis
                 AddMobile(Brigands, 6, Utility.RandomMinMax(-7, 7), Utility.RandomMinMax(-7, 7), 0);
             }
 
-            BaseCreature bc = Utility.Random(2) switch
+            /*aseCreature bc = Utility.Random(2) switch
             {
                 0 => new Noble(),
                 _ => new SeekerOfAdventure()
@@ -63,7 +63,7 @@ namespace Server.Multis
 
             bc.IsPrisoner = true;
             bc.CantWalk = true;
-            m_Prisoner = bc;
+            m_Prisoner = bc;*/
 
             m_Prisoner.YellHue = Utility.RandomList(0x57, 0x67, 0x77, 0x87, 0x117);
             AddMobile(m_Prisoner, 2, Utility.RandomMinMax(-2, 2), Utility.RandomMinMax(-2, 2), 0);

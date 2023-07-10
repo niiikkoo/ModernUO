@@ -1,4 +1,3 @@
-using Server.Factions;
 using Server.Gumps;
 using Server.Mobiles;
 using Server.Network;
@@ -47,15 +46,10 @@ namespace Server.Guilds
             AddHtmlLocalized(70, 151, 150, 20, 1063084, 0x0); // <i>Guild Faction</i>
 
             GuildType gt;
-            Faction f;
 
             if ((gt = guild.Type) != GuildType.Regular)
             {
                 AddHtml(233, 152, 320, 26, gt.ToString());
-            }
-            else if ((f = Faction.Find(guild.Leader)) != null)
-            {
-                AddHtml(233, 152, 320, 26, f.ToString());
             }
 
             AddImageTiled(65, 196, 480, 4, 0x238D);

@@ -48,7 +48,6 @@ namespace Server.Mobiles
         }
 
         public override string CorpseName => "a darknight creeper corpse";
-        public override bool IgnoreYoungProtection => Core.ML;
 
         public override bool BardImmune => !Core.SE;
         public override bool Unprovokable => Core.SE;

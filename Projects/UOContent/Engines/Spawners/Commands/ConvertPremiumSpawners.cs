@@ -167,7 +167,7 @@ namespace Server.Engines.Spawners
         {
             var spawnersList = new List<Spawner>();
             var mapId = mapIdOverride != -1 ? mapIdOverride : int.Parse(parts[10]);
-            Map[] maps = mapId == 0 ? new[] { Map.Felucca, Map.Trammel } : new[] { Map.Maps[mapId - 1] };
+            Map[] maps = mapId == 0 ? new[] { Map.Gaia } : new[] { Map.Maps[mapId - 1] };
 
             foreach (var map in maps)
             {

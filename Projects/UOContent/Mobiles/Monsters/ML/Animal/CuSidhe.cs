@@ -57,7 +57,7 @@ namespace Server.Mobiles
 
             if (Utility.RandomDouble() < 0.2)
             {
-                PackItem(new TreasureMap(5, Map.Trammel));
+                PackItem(new TreasureMap(5, Map.Gaia));
             }
 
             // if (Utility.RandomDouble() < 0.1)
@@ -82,26 +82,6 @@ namespace Server.Mobiles
         public override void GenerateLoot()
         {
             AddLoot(LootPack.AosFilthyRich, 5);
-        }
-
-        public override void OnDoubleClick(Mobile from)
-        {
-            if (from.Race != Race.Elf && from == ControlMaster && from.AccessLevel == AccessLevel.Player)
-            {
-                var pads = from.FindItemOnLayer(Layer.Shoes);
-
-                if (pads is PadsOfTheCuSidhe)
-                {
-                    from.SendLocalizedMessage(1071981); // Your boots allow you to mount the Cu Sidhe.
-                }
-                else
-                {
-                    from.SendLocalizedMessage(1072203); // Only Elves may use this.
-                    return;
-                }
-            }
-
-            base.OnDoubleClick(from);
         }
 
         public override WeaponAbility GetWeaponAbility() => WeaponAbility.BleedAttack;

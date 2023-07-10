@@ -15,7 +15,7 @@
       "Zombie", "Walrus", "RestlessSoul",
       "CrystalElemental", "DarknightCreeper", "MoundOfMaggots",
       "Juggernaut", "Yamandon", "Serado",
-      "GreaterDragon", "PlagueBeastLord"
+      "GreaterDragon"
     ]
   },
   {
@@ -25,8 +25,7 @@
     "types": [
       "AcidElemental", "AgapiteElemental", "Alligator",
       "AncientLich", "Betrayer", "Bird",
-      "BlackBear", "BlackSolenInfiltratorQueen", "BlackSolenInfiltratorWarrior",
-      "BlackSolenQueen", "BlackSolenWarrior", "BlackSolenWorker",
+      "BlackBear",
       "BloodElemental", "Boar", "Bogling",
       "BoneMagi", "Brigand", "BronzeElemental",
       "BrownBear", "Bull", "BullFrog",
@@ -58,8 +57,7 @@
       "PackLlama", "Panther", "Pig",
       "PlagueSpawn", "PolarBear", "Rabbit",
       "Ratman", "RatmanArcher", "RatmanMage",
-      "RedSolenInfiltratorQueen", "RedSolenInfiltratorWarrior", "RedSolenQueen",
-      "RedSolenWarrior", "RedSolenWorker", "RidableLlama",
+      "RidableLlama",
       "Ridgeback", "Scorpion", "SeaSerpent",
       "SerpentineDragon", "Shade", "ShadowIronElemental",
       "ShadowWisp", "ShadowWyrm", "Sheep",
@@ -77,18 +75,14 @@
       "KhaldunZealot", "KhaldunSummoner", "SavageRidgeback",
       "LichLord", "SkeletalKnight", "SummonedDaemon",
       "SummonedEarthElemental", "SummonedWaterElemental", "SummonedFireElemental",
-      "MeerWarrior", "MeerEternal", "MeerMage",
-      "MeerCaptain", "JukaLord", "JukaMage",
-      "JukaWarrior", "AbysmalHorror", "BoneDemon",
+      "AbysmalHorror", "BoneDemon",
       "Devourer", "FleshGolem", "Gibberling",
       "GoreFiend", "Impaler", "PatchworkSkeleton",
       "Ravager", "ShadowKnight", "SkitteringHopper",
       "Treefellow", "VampireBat", "WailingBanshee",
-      "WandererOfTheVoid", "Cursed", "GrimmochDrummel",
-      "LysanderGathenwale", "MorgBergen", "ShadowFiend",
-      "SpectralArmour", "TavaraSewel", "ArcaneDaemon",
-      "Doppleganger", "EnslavedGargoyle", "ExodusMinion",
-      "ExodusOverseer", "GargoyleDestroyer", "GargoyleEnforcer",
+      "WandererOfTheVoid", "Cursed", "ShadowFiend",
+      "SpectralArmour", "ArcaneDaemon",
+      "Doppleganger", "EnslavedGargoyle", "GargoyleDestroyer", "GargoyleEnforcer",
       "Moloch", "BakeKitsune", "DeathwatchBeetleHatchling",
       "Kappa", "KazeKemono", "DeathwatchBeetle",
       "TsukiWolf", "YomotsuElder", "YomotsuPriest",
@@ -120,10 +114,8 @@
       "Grobu", "Gnaw", "Guile",
       "Irk", "Spite", "LadyLissith",
       "LadySabrix", "Malefic", "Silk",
-      "Virulent", "SeaHorse", "UnholyFamiliar",
-      "HolyFamiliar", "GiantIceWorm", "Phoenix",
-      "Succubus", "EnragedRabbit", "EnragedHind",
-      "EnragedHart", "EnragedBlackBear", "EnragedEagle",
+      "Virulent", "SeaHorse", "GiantIceWorm", "Phoenix",
+      "Succubus",
       "RagingGrizzlyBear", "CorrosiveSlime", "DarkWisp",
       "DarkGuardian", "HarrowerTentacles", "ServantOfSemidar",
       "Reptalon"
@@ -138,11 +130,8 @@
       "Rikktor", "Semidar", "EnergyVortex",
       "EliteNinja", "Pixie", "SilverSerpent",
       "VorpalBunny", "FleshRenderer", "KhaldunRevenant",
-      "FactionDragoon", "FactionKnight", "FactionPaladin",
-      "FactionHenchman", "FactionMercenary", "FactionNecromancer",
-      "FactionSorceress", "FactionWizard", "FactionBerserker",
-      "FactionPaladin", "Leviathan", "FireBeetle",
-      "FanDancer", "FactionDeathKnight", "Revenant"
+      "Leviathan", "FireBeetle",
+      "FanDancer", "Revenant"
     ]
   }
 ]

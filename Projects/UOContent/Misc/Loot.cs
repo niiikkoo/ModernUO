@@ -230,7 +230,7 @@ namespace Server
             typeof(ArcaneEmpowermentScroll)
         };
 
-        public static Type[] GrimmochJournalTypes { get; } =
+        /*public static Type[] GrimmochJournalTypes { get; } =
         {
             typeof(GrimmochJournal1), typeof(GrimmochJournal2), typeof(GrimmochJournal3),
             typeof(GrimmochJournal6), typeof(GrimmochJournal7), typeof(GrimmochJournal11),
@@ -250,7 +250,7 @@ namespace Server
             typeof(TavarasJournal9), typeof(TavarasJournal11), typeof(TavarasJournal14),
             typeof(TavarasJournal16), typeof(TavarasJournal16b), typeof(TavarasJournal17),
             typeof(TavarasJournal19)
-        };
+        };*/
 
         public static Type[] NewWandTypes { get; } =
         {
@@ -721,11 +721,11 @@ namespace Server
             return Construct(types, Utility.RandomMinMax(minIndex, maxIndex)) as SpellScroll;
         }
 
-        public static BaseBook RandomGrimmochJournal() => Construct(GrimmochJournalTypes) as BaseBook;
+        /*public static BaseBook RandomGrimmochJournal() => Construct(GrimmochJournalTypes) as BaseBook;
 
         public static BaseBook RandomLysanderNotebook() => Construct(LysanderNotebookTypes) as BaseBook;
 
-        public static BaseBook RandomTavarasJournal() => Construct(TavarasJournalTypes) as BaseBook;
+        public static BaseBook RandomTavarasJournal() => Construct(TavarasJournalTypes) as BaseBook;*/
 
         public static BaseBook RandomLibraryBook() => Construct(LibraryBookTypes) as BaseBook;
 

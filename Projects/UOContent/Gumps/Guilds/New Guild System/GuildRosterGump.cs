@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Server.Factions;
 using Server.Gumps;
 using Server.Mobiles;
 using Server.Network;
@@ -123,12 +122,6 @@ namespace Server.Guilds
             var pm = from as PlayerMobile;
             var targ = targeted as PlayerMobile;
 
-            var guildState = PlayerState.Find(g.Leader);
-            var targetState = PlayerState.Find(targ);
-
-            var guildFaction = guildState?.Faction;
-            var targetFaction = targetState?.Faction;
-
             if (pm == null || !IsMember(pm, guild) || !pm.GuildRank.GetFlag(RankFlags.CanInvitePlayer))
             {
                 from.SendLocalizedMessage(503301); // You don't have permission to do that.
@@ -153,30 +146,6 @@ namespace Server.Guilds
             else if (targ.HasGump<BaseGuildGump>() || targ.HasGump<CreateGuildGump>())
             {
                 pm.SendLocalizedMessage(1063052, targ.Name); // ~1_val~ is currently considering another guild invitation.
-            }
-            else if (targ.Young && guildFaction != null)
-            {
-                pm.SendLocalizedMessage(1070766); // You cannot invite a young player to your faction-aligned guild.
-            }
-            else if (guildFaction != targetFaction)
-            {
-                if (guildFaction == null)
-                {
-                    pm.SendLocalizedMessage(1013027); // That player cannot join a non-faction guild.
-                }
-                else if (targetFaction == null)
-                {
-                    pm.SendLocalizedMessage(1013026); // That player must be in a faction before joining this guild.
-                }
-                else
-                {
-                    pm.SendLocalizedMessage(1013028); // That person has a different faction affiliation.
-                }
-            }
-            else if (targetState?.IsLeaving == true)
-            {
-                // OSI does this quite strangely, so we'll just do it this way
-                pm.SendMessage("That person is quitting their faction and so you may not recruit them.");
             }
             else
             {

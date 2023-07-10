@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using ModernUO.Serialization;
 using Server.ContextMenus;
-using Server.Engines.ConPVP;
 using Server.Engines.Harvest;
 
 namespace Server.Items
@@ -64,8 +63,7 @@ namespace Server.Items
 
             if (!Core.AOS && (attacker.Player || attacker.Body.IsHuman) && Layer == Layer.TwoHanded &&
                 attacker.Skills.Anatomy.Value >= 80 &&
-                attacker.Skills.Anatomy.Value / 400.0 >= Utility.RandomDouble() &&
-                DuelContext.AllowSpecialAbility(attacker, "Concussion Blow", false))
+                attacker.Skills.Anatomy.Value / 400.0 >= Utility.RandomDouble())
             {
                 var mod = defender.GetStatMod("Concussion");
 

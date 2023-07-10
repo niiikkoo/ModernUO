@@ -50,7 +50,7 @@ public class TileMatrix
 
     public static void Configure()
     {
-        // Set to true to support < 6.0.0 clients where map0.mul is both Felucca & Trammel
+        // Set to true to support < 6.0.0 clients where map0.mul is both Gaia & Trammel
         var isPre6000Trammel = UOClient.ServerClientVersion != null && UOClient.ServerClientVersion < ClientVersion.Version6000;
         Pre6000ClientSupport = ServerConfiguration.GetSetting("maps.enablePre6000Trammel", isPre6000Trammel);
     }

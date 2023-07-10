@@ -41,12 +41,6 @@ namespace Server.Mobiles
 
         public override bool CheckCustomReqs(PlayerMobile pm)
         {
-            if (pm.Young)
-            {
-                SayTo(pm, 502089); // You cannot be a member of the Thieves' Guild while you are Young.
-                return false;
-            }
-
             if (pm.Kills > 0)
             {
                 SayTo(pm, 501050); // This guild is for cunning thieves, not oafish cutthroats.

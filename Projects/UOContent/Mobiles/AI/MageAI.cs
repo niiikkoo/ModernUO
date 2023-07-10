@@ -61,7 +61,7 @@ public class MageAI : BaseAI
     {
     }
 
-    public virtual bool SmartAI => m_Mobile is BaseVendor or BaseEscortable or Changeling;
+    public virtual bool SmartAI => m_Mobile is BaseVendor /*or Changeling*/;
 
     public virtual bool IsNecromancer => Core.AOS && m_Mobile.Skills.Necromancy.Value > 50;
 

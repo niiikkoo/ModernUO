@@ -47,16 +47,6 @@ namespace Server.Mobiles
             return true;
         }
 
-        public override void OnDeath(Container c)
-        {
-            base.OnDeath(c);
-
-            if (Utility.RandomBool())
-            {
-                c.DropItem(new FragmentOfAMap());
-            }
-        }
-
         public override void Serialize(IGenericWriter writer)
         {
             base.Serialize(writer);

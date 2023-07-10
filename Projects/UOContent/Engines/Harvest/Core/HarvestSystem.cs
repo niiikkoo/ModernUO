@@ -174,7 +174,7 @@ namespace Server.Engines.Harvest
                             var feluccaRacialAmount = (int)Math.Ceiling(feluccaAmount * 1.1);
 
                             var eligableForRacialBonus = def.RaceBonus && from.Race == Race.Human;
-                            var inFelucca = map == Map.Felucca;
+                            var inFelucca = map == Map.Gaia;
 
                             if (eligableForRacialBonus && inFelucca && bank.Current >= feluccaRacialAmount &&
                                 Utility.RandomDouble() < 0.1)

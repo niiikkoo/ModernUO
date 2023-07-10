@@ -43,8 +43,7 @@ namespace Server
 
                         try
                         {
-                            new TreasureRegion(x, y, Map.Felucca);
-                            new TreasureRegion(x, y, Map.Trammel);
+                            new TreasureRegion(x, y, Map.Gaia);
                         }
                         catch (Exception e)
                         {

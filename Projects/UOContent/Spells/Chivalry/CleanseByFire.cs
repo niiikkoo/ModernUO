@@ -1,5 +1,4 @@
 using System;
-using Server.Engines.ConPVP;
 using Server.Targeting;
 
 namespace Server.Spells.Chivalry
@@ -100,17 +99,6 @@ namespace Server.Spells.Chivalry
             }
 
             FinishSequence();
-        }
-
-        public override bool CheckCast()
-        {
-            if (DuelContext.CheckSuddenDeath(Caster))
-            {
-                Caster.SendMessage(0x22, "You cannot cast this spell when in sudden death.");
-                return false;
-            }
-
-            return base.CheckCast();
         }
 
         public override void OnCast()

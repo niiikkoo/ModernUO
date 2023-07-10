@@ -40,7 +40,7 @@ public static class StaffDress
         pm.FacialHairItemID = 0;
         pm.Blessed = true;
         pm.DisplayGuildTitle = false;
-        pm.DisplayChampionTitle = false;
+
         if (pm.Mount != null)
         {
             pm.Mount.Rider = null;

@@ -65,17 +65,6 @@ public partial class TreasureMapChest : LockableContainer
 
     public override int LabelNumber => 3000541;
 
-    public static Type[] Artifacts { get; } =
-    {
-        typeof(CandelabraOfSouls), typeof(GoldBricks), typeof(PhillipsWoodenSteed),
-        typeof(ArcticDeathDealer), typeof(BlazeOfDeath), typeof(BurglarsBandana),
-        typeof(CavortingClub), typeof(DreadPirateHat),
-        typeof(EnchantedTitanLegBone), typeof(GwennosHarp), typeof(IolosLute),
-        typeof(LunaLance), typeof(NightsKiss), typeof(NoxRangersHeavyCrossbow),
-        typeof(PolarBearMask), typeof(VioletCourage), typeof(HeartOfTheLion),
-        typeof(ColdBlood), typeof(AlchemistsBauble)
-    };
-
     [CommandProperty(AccessLevel.GameMaster)]
     public DateTime DeleteTime => _expireTimer.Next;
 
@@ -166,7 +155,7 @@ public partial class TreasureMapChest : LockableContainer
 
             if (Utility.RandomDouble() < 0.75)
             {
-                cont.DropItem(new TreasureMap(0, Map.Trammel));
+                cont.DropItem(new TreasureMap(0, Map.Gaia));
             }
         }
         else
@@ -282,11 +271,6 @@ public partial class TreasureMapChest : LockableContainer
         {
             var item = Loot.RandomGem();
             cont.DropItem(item);
-        }
-
-        if (level == 6 && Core.AOS)
-        {
-            cont.DropItem(Artifacts.RandomElement().CreateInstance<Item>());
         }
     }
 

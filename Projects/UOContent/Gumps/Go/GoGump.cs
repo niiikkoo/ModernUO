@@ -7,12 +7,7 @@ namespace Server.Gumps
 {
     public class GoGump : Gump
     {
-        private static LocationTree Felucca;
-        private static LocationTree Trammel;
-        private static LocationTree Ilshenar;
-        private static LocationTree Malas;
-        private static LocationTree Tokuno;
-        private static LocationTree TerMur;
+        private static LocationTree Gaia;
 
         private static readonly int PrevLabelOffsetX = PrevWidth + 1;
         private static readonly int PrevLabelOffsetY = 0;
@@ -169,32 +164,7 @@ namespace Server.Gumps
 
         public static void DisplayTo(Mobile from)
         {
-            LocationTree tree;
-
-            if (from.Map == Map.Ilshenar)
-            {
-                tree = Ilshenar ??= new LocationTree("ilshenar", Map.Ilshenar);
-            }
-            else if (from.Map == Map.Felucca)
-            {
-                tree = Felucca ??= new LocationTree("felucca", Map.Felucca);
-            }
-            else if (from.Map == Map.Trammel)
-            {
-                tree = Trammel ??= new LocationTree("trammel", Map.Trammel);
-            }
-            else if (from.Map == Map.Malas)
-            {
-                tree = Malas ??= new LocationTree("malas", Map.Malas);
-            }
-            else if (from.Map == Map.Tokuno)
-            {
-                tree = Tokuno ??= new LocationTree("tokuno", Map.Tokuno);
-            }
-            else
-            {
-                tree = TerMur ??= new LocationTree("termur", Map.TerMur);
-            }
+            LocationTree tree = Gaia ??= new LocationTree("gaia", Map.Gaia);
 
             if (!tree.LastBranch.TryGetValue(from, out var branch))
             {

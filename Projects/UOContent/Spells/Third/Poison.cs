@@ -64,11 +64,7 @@ namespace Server.Spells.Third
 
                         if (Caster is PlayerMobile pm)
                         {
-                            if (pm.DuelContext?.Started != true || pm.DuelContext.Finished ||
-                                pm.DuelContext.Ruleset.GetOption("Skills", "Poisoning"))
-                            {
-                                total += pm.Skills.Poisoning.Value;
-                            }
+                            total += pm.Skills.Poisoning.Value;
                         }
                         else
                         {

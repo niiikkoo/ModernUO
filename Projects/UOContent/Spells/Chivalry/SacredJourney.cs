@@ -1,5 +1,4 @@
 using System;
-using Server.Factions;
 using Server.Items;
 using Server.Misc;
 using Server.Mobiles;
@@ -40,11 +39,7 @@ namespace Server.Spells.Chivalry
 
         public void Effect(Point3D loc, Map map, bool checkMulti)
         {
-            if (Sigil.ExistsOn(Caster))
-            {
-                Caster.SendLocalizedMessage(1061632); // You can't do that while carrying the sigil.
-            }
-            else if (map == null || !Core.AOS && Caster.Map != map)
+            if (map == null || !Core.AOS && Caster.Map != map)
             {
                 Caster.SendLocalizedMessage(1005569); // You can not recall to another facet.
             }
@@ -56,11 +51,7 @@ namespace Server.Spells.Chivalry
             {
                 failureMessage.SendMessageTo(Caster);
             }
-            else if (map == Map.Felucca && Caster is PlayerMobile { Young: true } mobile)
-            {
-                mobile.SendLocalizedMessage(1049543); // You decide against traveling to Felucca while you are still young.
-            }
-            else if (Caster.Kills >= 5 && map != Map.Felucca)
+            else if (Caster.Kills >= 5 && map != Map.Gaia)
             {
                 Caster.SendLocalizedMessage(1019004); // You are not allowed to travel there.
             }
@@ -129,12 +120,6 @@ namespace Server.Spells.Chivalry
         {
             if (!base.CheckCast())
             {
-                return false;
-            }
-
-            if (Sigil.ExistsOn(Caster))
-            {
-                Caster.SendLocalizedMessage(1061632); // You can't do that while carrying the sigil.
                 return false;
             }
 

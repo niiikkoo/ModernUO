@@ -16,7 +16,7 @@ namespace UOContent.Tests
         [InlineData(ProtocolChanges.None)]
         public void TestSendMapDetails(ProtocolChanges changes)
         {
-            var mapItem = new MapItem(Map.Trammel);
+            var mapItem = new MapItem(Map.Gaia);
 
             var ns = PacketTestUtilities.CreateTestNetState();
             ns.ProtocolChanges = changes;
@@ -36,7 +36,7 @@ namespace UOContent.Tests
         [InlineData(7, 0, 0, 0)]
         public void TestSendMapCommand(int command, int number, int x, int y)
         {
-            var mapItem = new MapItem(Map.Trammel);
+            var mapItem = new MapItem(Map.Gaia);
 
             var expected = new MapCommand(mapItem, command, number, x, y).Compile();
 

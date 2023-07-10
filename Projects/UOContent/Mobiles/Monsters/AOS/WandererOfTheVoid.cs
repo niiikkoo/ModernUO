@@ -46,7 +46,7 @@ namespace Server.Mobiles
 
             for (var i = 0; i < count; ++i)
             {
-                PackItem(new TreasureMap(3, Map.Trammel));
+                PackItem(new TreasureMap(3, Map.Gaia));
             }
         }
 

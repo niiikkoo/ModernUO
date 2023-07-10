@@ -66,7 +66,7 @@ namespace Server.Spells.Spellweaving
         }
 
         private static bool IsSanctuary(Point3D p, Map m) =>
-            (m == Map.Trammel || m == Map.Felucca) && p.X == 6267 && p.Y == 131;
+            m == Map.Gaia && p.X == 6267 && p.Y == 131;
 
         private static bool IsValidLocation(Point3D location, Map map)
         {

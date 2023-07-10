@@ -1,10 +1,9 @@
 using System;
-using Server.Engines.CannedEvil;
 using Server.Items;
 
 namespace Server.Mobiles
 {
-    public class Rikktor : BaseChampion
+    public class Rikktor : BaseCreature
     {
         [Constructible]
         public Rikktor() : base(AIType.AI_Melee)
@@ -43,30 +42,6 @@ namespace Server.Mobiles
         public Rikktor(Serial serial) : base(serial)
         {
         }
-
-        public override ChampionSkullType SkullType => ChampionSkullType.Power;
-
-        public override Type[] UniqueList => new[] { typeof(CrownOfTalKeesh) };
-
-        public override Type[] SharedList => new[]
-        {
-            typeof(TheMostKnowledgePerson),
-            typeof(BraveKnightOfTheBritannia),
-            typeof(LieutenantOfTheBritannianRoyalGuard)
-        };
-
-        public override Type[] DecorativeList => new[]
-        {
-            typeof(LavaTile),
-            typeof(MonsterStatuette),
-            typeof(MonsterStatuette)
-        };
-
-        public override MonsterStatuetteType[] StatueTypes => new[]
-        {
-            MonsterStatuetteType.OphidianArchMage,
-            MonsterStatuetteType.OphidianWarrior
-        };
 
         public override string DefaultName => "Rikktor";
 

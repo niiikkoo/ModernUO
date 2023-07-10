@@ -1,10 +1,6 @@
 using System;
 using System.Collections.Generic;
 using ModernUO.Serialization;
-using Server.Engines.Plants;
-using Server.Engines.Quests;
-using Server.Engines.Quests.Hag;
-using Server.Engines.Quests.Matriarch;
 using Server.Mobiles;
 using Server.Multis;
 using Server.Targeting;
@@ -401,7 +397,7 @@ public abstract partial class BaseBeverage : Item, IHasQuantity
                 bev.Quantity = 0;
             }
         }
-        else if (targ is BaseWaterContainer bwc)
+        /*else if (targ is BaseWaterContainer bwc)
         {
             if (Quantity == 0 || Content == BeverageType.Water && !IsFull)
             {
@@ -416,7 +412,7 @@ public abstract partial class BaseBeverage : Item, IHasQuantity
                     from.PlaySound(0x4E);
                 }
             }
-        }
+        }*/
         else if (targ is Item item)
         {
             var src = item as IWaterSource;
@@ -461,41 +457,6 @@ public abstract partial class BaseBeverage : Item, IHasQuantity
                 Content = BeverageType.Milk;
                 Quantity = MaxQuantity;
                 from.SendLocalizedMessage(1080197); // You fill the container with milk.
-            }
-        }
-        else if (targ is LandTarget target)
-        {
-            var tileID = target.TileID;
-
-            if (from is PlayerMobile player)
-            {
-                var qs = player.Quest;
-
-                if (qs is not WitchApprenticeQuest)
-                {
-                    return;
-                }
-
-                var obj = qs.FindObjective<FindIngredientObjective>();
-
-                if (obj?.Completed == true && obj.Ingredient == Ingredient.SwampWater)
-                {
-                    var contains = false;
-
-                    for (var i = 0; !contains && i < _swampTiles.Length; i += 2)
-                    {
-                        contains = tileID >= _swampTiles[i] && tileID <= _swampTiles[i + 1];
-                    }
-
-                    if (contains)
-                    {
-                        Delete();
-
-                        // You dip the container into the disgusting swamp water, collecting enough for the Hag's vile stew.
-                        player.SendLocalizedMessage(1055035);
-                        obj.Complete();
-                    }
-                }
             }
         }
     }
@@ -574,7 +535,7 @@ public abstract partial class BaseBeverage : Item, IHasQuantity
 
             --Quantity;
         }
-        else if (targ is BaseWaterContainer bwc)
+        /*else if (targ is BaseWaterContainer bwc)
         {
             if (Content != BeverageType.Water)
             {
@@ -596,42 +557,7 @@ public abstract partial class BaseBeverage : Item, IHasQuantity
                     from.PlaySound(0x4E);
                 }
             }
-        }
-        else if (targ is PlantItem item)
-        {
-            item.Pour(from, this);
-        }
-        else if (targ is AddonComponent component &&
-                 component.Addon is WaterVatEast or WaterVatSouth &&
-                 Content == BeverageType.Water)
-        {
-            if (from is PlayerMobile { Quest: SolenMatriarchQuest qs })
-            {
-                QuestObjective obj = qs.FindObjective<GatherWaterObjective>();
-
-                if (obj?.Completed == false)
-                {
-                    var vat = component.Addon;
-
-                    if (vat.X > 5784 && vat.X < 5814 && vat.Y > 1903 && vat.Y < 1934 &&
-                        (qs.RedSolen && vat.Map == Map.Trammel || !qs.RedSolen && vat.Map == Map.Felucca))
-                    {
-                        if (obj.CurProgress + Quantity > obj.MaxProgress)
-                        {
-                            var delta = obj.MaxProgress - obj.CurProgress;
-
-                            Quantity -= delta;
-                            obj.CurProgress = obj.MaxProgress;
-                        }
-                        else
-                        {
-                            obj.CurProgress += Quantity;
-                            Quantity = 0;
-                        }
-                    }
-                }
-            }
-        }
+        }*/
         else
         {
             from.SendLocalizedMessage(500846); // Can't pour it there.

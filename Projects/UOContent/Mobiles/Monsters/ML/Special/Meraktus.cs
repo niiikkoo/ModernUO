@@ -1,12 +1,11 @@
 using System;
-using Server.Engines.CannedEvil;
 using Server.Items;
 using ModernUO.Serialization;
 
 namespace Server.Mobiles;
 
 [SerializationGenerator(1, false)]
-public partial class Meraktus : BaseChampion
+public partial class Meraktus : BaseCreature
 {
     [SerializableField(0)]
     private Mobile[] _followers;
@@ -98,19 +97,6 @@ public partial class Meraktus : BaseChampion
     }
 
     public override string CorpseName => "the remains of Meraktus";
-    public override ChampionSkullType SkullType => ChampionSkullType.Pain;
-
-    public override Type[] UniqueList => new[] { typeof(Subdue) };
-    public override Type[] SharedList => Array.Empty<Type>();
-
-    public override Type[] DecorativeList => new[]
-    {
-        typeof(ArtifactLargeVase),
-        typeof(ArtifactVase),
-        typeof(MinotaurStatueDeed)
-    };
-
-    public override MonsterStatuetteType[] StatueTypes => new[] { MonsterStatuetteType.Minotaur };
 
     public override string DefaultName => "Meraktus";
 
@@ -167,16 +153,10 @@ public partial class Meraktus : BaseChampion
         c.DropItem(
             Utility.Random(3) switch
             {
-                0 => new MinotaurHedge(),
                 1 => new LightYarn(),
                 _ => new BonePile() // 2
             }
         );
-
-        if (Utility.RandomBool())
-        {
-            c.DropItem(new TormentedChains());
-        }
 
         if (Utility.RandomDouble() < 0.025)
         {

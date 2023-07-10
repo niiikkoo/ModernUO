@@ -53,12 +53,7 @@ namespace Server.Commands
                     }
                 }
 
-                Map[] brit = { Map.Felucca, Map.Trammel };
-                Map[] fel = { Map.Felucca };
-                Map[] tram = { Map.Trammel };
-                Map[] ilsh = { Map.Ilshenar };
-                Map[] malas = { Map.Malas };
-                Map[] tokuno = { Map.Tokuno };
+                Map[] gaia = { Map.Gaia };
 
                 for (var i = 0; i < list.Count; ++i)
                 {
@@ -66,12 +61,8 @@ namespace Server.Commands
 
                     var maps = e.m_Map switch
                     {
-                        0 => brit,
-                        1 => fel,
-                        2 => tram,
-                        3 => ilsh,
-                        4 => malas,
-                        5 => tokuno,
+                        0 => gaia,
+                        1 => gaia,
                         _ => null
                     };
 
@@ -117,16 +108,6 @@ namespace Server.Commands
             else
             {
                 sign = new Sign(itemID) { Name = name };
-            }
-
-            if (map == Map.Malas)
-            {
-                sign.Hue = location.X switch
-                {
-                    >= 965 when location.Y >= 502 && location.X <= 1012 && location.Y <= 537  => 0x47E,
-                    >= 1960 when location.Y >= 1278 && location.X < 2106 && location.Y < 1413 => 0x44E,
-                    _                                                                         => sign.Hue
-                };
             }
 
             sign.MoveToWorld(location, map);

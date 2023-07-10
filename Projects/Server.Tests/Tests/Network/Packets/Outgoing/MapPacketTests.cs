@@ -32,7 +32,7 @@ namespace Server.Tests.Network
         }
 
         [Theory]
-        [InlineData("Felucca")]
+        [InlineData("Gaia")]
         [InlineData("Malas")]
         public void TestMapChange(string mapName)
         {

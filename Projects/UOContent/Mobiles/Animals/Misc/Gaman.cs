@@ -57,10 +57,5 @@ namespace Server.Mobiles
 
         public override int GetDeathSound() => 0x4F5;
 
-        public override void OnDeath(Container c)
-        {
-            base.OnDeath(c);
-            c.DropItem(new GamanHorns(Utility.RandomBool() ? 1 : 2));
-        }
     }
 }

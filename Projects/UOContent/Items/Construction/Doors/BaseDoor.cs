@@ -447,14 +447,7 @@ public abstract partial class BaseDoor : Item, ILockable, ITelekinesisable
             }
             else
             {
-                if (Hue == 0x44E && Map == Map.Malas) // doom door into healer room in doom
-                {
-                    SendLocalizedMessageTo(from, 1060014); // Only the dead may pass.
-                }
-                else
-                {
-                    from.LocalOverheadMessage(MessageType.Regular, 0x3B2, 502503); // That is locked.
-                }
+                from.LocalOverheadMessage(MessageType.Regular, 0x3B2, 502503); // That is locked.
 
                 return;
             }

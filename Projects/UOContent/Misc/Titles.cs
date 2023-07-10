@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-using Server.Engines.CannedEvil;
 using Server.Mobiles;
 
 namespace Server.Misc
@@ -309,45 +308,6 @@ namespace Server.Misc
             else
             {
                 title.Append(beheld.Name);
-            }
-
-            if (beheld is PlayerMobile mobile && mobile.DisplayChampionTitle)
-            {
-                var info = mobile.ChampionTitles;
-
-                if (info.Harrower > 0)
-                {
-                    title.Append($": {HarrowerTitles[Math.Min(HarrowerTitles.Length, info.Harrower) - 1]} of Evil");
-                }
-                else
-                {
-                    int highestValue = 0, highestType = 0;
-                    for (var i = 0; i < ChampionSpawnInfo.Table.Length; i++)
-                    {
-                        var v = info.GetValue(i);
-
-                        if (v > highestValue)
-                        {
-                            highestValue = v;
-                            highestType = i;
-                        }
-                    }
-
-                    var offset = highestValue switch
-                    {
-                        > 800 => 3,
-                        > 300 => highestValue / 300,
-                        _     => 0
-                    };
-
-                    if (offset > 0)
-                    {
-                        var champInfo = ChampionSpawnInfo.GetInfo((ChampionSpawnType)highestType);
-                        title.Append(
-                            $": {champInfo.LevelNames[Math.Min(offset, champInfo.LevelNames.Length) - 1]} of the {champInfo.Name}"
-                        );
-                    }
-                }
             }
 
             var customTitle = beheld.Title?.Trim();

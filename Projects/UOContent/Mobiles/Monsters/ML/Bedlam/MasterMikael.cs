@@ -8,8 +8,6 @@ namespace Server.Mobiles
         [Constructible]
         public MasterMikael()
         {
-            IsParagon = true;
-
             Hue = 0x8FD;
 
             SetStr(93, 122);
@@ -62,16 +60,15 @@ namespace Server.Mobiles
         public override void OnDeath( Container c )
         {
           base.OnDeath( c );
-    
+
           if (Utility.RandomDouble() < 0.15)
             c.DropItem( new DisintegratingThesisNotes() );
-    
+
           if (Utility.RandomDouble() < 0.1)
             c.DropItem( new ParrotItem() );
         }
         */
 
-        public override bool GivesMLMinorArtifact => true;
 
         public override void GenerateLoot()
         {

@@ -9,7 +9,6 @@ namespace Server.Mobiles
         [Constructible]
         public Pyre()
         {
-            IsParagon = true;
 
             Hue = 0x489;
 
@@ -46,7 +45,6 @@ namespace Server.Mobiles
         public override string CorpseName => "a Pyre corpse";
         public override string DefaultName => "Pyre";
 
-        public override bool GivesMLMinorArtifact => true;
         public override int TreasureMapLevel => 5;
         public override bool HasAura => true;
 

@@ -29,5 +29,5 @@ public class DungeonRegion : BaseRegion
         global = LightCycle.DungeonLevel;
     }
 
-    public override bool CanUseStuckMenu(Mobile m) => Map != Map.Felucca && base.CanUseStuckMenu(m);
+    public override bool CanUseStuckMenu(Mobile m) => Map != Map.Gaia && base.CanUseStuckMenu(m);
 }

@@ -1,10 +1,9 @@
 using System;
-using Server.Engines.CannedEvil;
 using Server.Items;
 
 namespace Server.Mobiles;
 
-public class LordOaks : BaseChampion
+public class LordOaks : BaseCreature
 {
     private BaseCreature m_Queen;
     private bool m_SpawnedQueen;
@@ -48,31 +47,6 @@ public class LordOaks : BaseChampion
     public LordOaks(Serial serial) : base(serial)
     {
     }
-
-    public override ChampionSkullType SkullType => ChampionSkullType.Enlightenment;
-
-    public override Type[] UniqueList => new[] { typeof(OrcChieftainHelm) };
-
-    public override Type[] SharedList => new[]
-    {
-        typeof(RoyalGuardSurvivalKnife),
-        typeof(DjinnisRing),
-        typeof(LieutenantOfTheBritannianRoyalGuard),
-        typeof(SamaritanRobe),
-        typeof(DetectiveBoots),
-        typeof(TheMostKnowledgePerson)
-    };
-
-    public override Type[] DecorativeList => new[]
-    {
-        typeof(WaterTile),
-        typeof(WindSpirit),
-        typeof(Pier),
-        typeof(DirtPatch)
-    };
-
-    public override MonsterStatuetteType[] StatueTypes => Array.Empty<MonsterStatuetteType>();
-
     public override string DefaultName => "Lord Oaks";
 
     public override bool AutoDispel => true;

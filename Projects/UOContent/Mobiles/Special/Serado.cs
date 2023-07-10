@@ -1,11 +1,9 @@
 using System;
-using Server.Engines.CannedEvil;
-using Server.Engines.Plants;
 using Server.Items;
 
 namespace Server.Mobiles
 {
-    public class Serado : BaseChampion
+    public class Serado : BaseCreature
     {
         [Constructible]
         public Serado() : base(AIType.AI_Melee)
@@ -41,29 +39,11 @@ namespace Server.Mobiles
 
             Fame = 22500;
             Karma = -22500;
-
-            PackItem(Seed.RandomBonsaiSeed());
         }
 
         public Serado(Serial serial) : base(serial)
         {
         }
-
-        public override ChampionSkullType SkullType => ChampionSkullType.Power;
-
-        public override Type[] UniqueList => new[] { typeof(Pacify) };
-
-        public override Type[] SharedList => new[]
-        {
-            typeof(BraveKnightOfTheBritannia),
-            typeof(DetectiveBoots),
-            typeof(EmbroideredOakLeafCloak),
-            typeof(LieutenantOfTheBritannianRoyalGuard)
-        };
-
-        public override Type[] DecorativeList => new[] { typeof(Futon), typeof(SwampTile) };
-
-        public override MonsterStatuetteType[] StatueTypes => Array.Empty<MonsterStatuetteType>();
 
         public override string DefaultName => "Serado";
 

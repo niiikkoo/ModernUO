@@ -1,5 +1,4 @@
 using System;
-using Server.Factions;
 using Server.Mobiles;
 
 namespace Server.Misc;
@@ -181,11 +180,6 @@ public static class SkillCheck
 
     private static bool AllowGain(Mobile from, Skill skill, object obj)
     {
-        if (Core.AOS && Faction.InSkillLoss(from)) // Changed some time between the introduction of AoS and SE.
-        {
-            return false;
-        }
-
         return from is not PlayerMobile mobile || AntiMacroSystem.AntiMacroCheck(mobile, skill, obj);
     }
 

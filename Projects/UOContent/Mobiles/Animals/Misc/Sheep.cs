@@ -78,7 +78,7 @@ namespace Server.Mobiles
             }
 
             from.SendLocalizedMessage(500452); // You place the gathered wool into your backpack.
-            from.AddToBackpack(new Wool(Map == Map.Felucca ? 2 : 1));
+            from.AddToBackpack(new Wool(Map == Map.Gaia ? 2 : 1));
 
             NextWoolTime = Core.Now + TimeSpan.FromHours(3.0); // TODO: Proper time delay
         }

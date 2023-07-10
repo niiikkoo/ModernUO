@@ -92,8 +92,8 @@ namespace Server
             protected override void OnTick()
             {
                 if (Core.AOS && m_Poison.Level < 4 &&
-                    TransformationSpellHelper.UnderTransformation(m_Mobile, typeof(VampiricEmbraceSpell)) ||
-                    m_Poison.Level < 3 && OrangePetals.UnderEffect(m_Mobile) ||
+                    TransformationSpellHelper.UnderTransformation(m_Mobile, typeof(VampiricEmbraceSpell)) /*||
+                    m_Poison.Level < 3 && OrangePetals.UnderEffect(m_Mobile)*/ ||
                     AnimalForm.UnderTransformation(m_Mobile, typeof(Unicorn)))
                 {
                     if (m_Mobile.CurePoison(m_Mobile))
@@ -141,11 +141,6 @@ namespace Server
                 }
 
                 From?.DoHarmful(m_Mobile, true);
-
-                if (m_Mobile is IHonorTarget honorTarget)
-                {
-                    honorTarget.ReceivedHonorContext?.OnTargetPoisoned();
-                }
 
                 AOS.Damage(m_Mobile, From, damage, 0, 0, 0, 100, 0);
 

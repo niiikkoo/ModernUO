@@ -1,5 +1,4 @@
 using ModernUO.Serialization;
-using Server.Engines.ConPVP;
 
 namespace Server.Items;
 
@@ -20,10 +19,7 @@ public abstract partial class BaseRefreshPotion : BasePotion
 
             PlayDrinkEffect(from);
 
-            if (!DuelContext.IsFreeConsume(from))
-            {
-                Consume();
-            }
+            Consume();
         }
         else
         {

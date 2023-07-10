@@ -1,6 +1,5 @@
 using System;
 using ModernUO.Serialization;
-using Server.Factions;
 using Server.Mobiles;
 using Server.Spells;
 using Server.Spells.Fifth;
@@ -30,11 +29,7 @@ public partial class TribalPaint : Item
             return;
         }
 
-        if (Sigil.ExistsOn(from))
-        {
-            from.SendLocalizedMessage(1010465); // You cannot disguise yourself while holding a sigil.
-        }
-        else if (!from.CanBeginAction<IncognitoSpell>())
+        if (!from.CanBeginAction<IncognitoSpell>())
         {
             from.SendLocalizedMessage(501698); // You cannot disguise yourself while incognitoed.
         }

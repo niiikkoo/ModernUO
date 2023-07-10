@@ -104,12 +104,6 @@ namespace Server
 
             var luck = killer.Luck;
 
-            if (killer is PlayerMobile pmKiller && pmKiller.SentHonorContext != null &&
-                pmKiller.SentHonorContext.Target == victim)
-            {
-                luck += pmKiller.SentHonorContext.PerfectionLuckBonus;
-            }
-
             if (luck < 0)
             {
                 return 0;
@@ -670,10 +664,10 @@ namespace Server
                 return true;
             }
 
-            return m.Map == Map.Tokuno;
+            return false;
         }
 
-        private static bool IsMondain(Mobile m) => MondainsLegacy.IsMLRegion(m.Region);
+        private static bool IsMondain(Mobile m) => false;
 
         public Item Construct(Mobile from, int luckChance, bool spawning)
         {

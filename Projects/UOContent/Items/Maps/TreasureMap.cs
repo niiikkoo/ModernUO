@@ -298,10 +298,6 @@ public partial class TreasureMap : MapItem
         {
             from.SendLocalizedMessage(503028); // The treasure for this map has already been found.
         }
-        else if (_level == 0 && !CheckYoung(from))
-        {
-            from.SendLocalizedMessage(1046447); // Only a young player may use this treasure map.
-        }
         /*
         else if (from != m_Decoder)
         {
@@ -346,28 +342,6 @@ public partial class TreasureMap : MapItem
         }
     }
 
-    private bool CheckYoung(Mobile from)
-    {
-        if (from.AccessLevel >= AccessLevel.GameMaster)
-        {
-            return true;
-        }
-
-        if (from is PlayerMobile mobile && mobile.Young)
-        {
-            return true;
-        }
-
-        if (from == Decoder)
-        {
-            Level = 1;
-            from.SendLocalizedMessage(1046446); // This is now a level one treasure map.
-            return true;
-        }
-
-        return false;
-    }
-
     private double GetMinSkillLevel()
     {
         return _level switch
@@ -391,30 +365,18 @@ public partial class TreasureMap : MapItem
             return;
         }
 
-        if (_level == 0)
+        var minSkill = GetMinSkillLevel();
+
+        if (from.Skills.Cartography.Value < minSkill)
         {
-            if (!CheckYoung(from))
-            {
-                from.SendLocalizedMessage(1046447); // Only a young player may use this treasure map.
-                return;
-            }
+            from.SendLocalizedMessage(503013); // The map is too difficult to attempt to decode.
         }
-        else
+
+        var maxSkill = minSkill + 60.0;
+
+        if (!from.CheckSkill(SkillName.Cartography, minSkill, maxSkill))
         {
-            var minSkill = GetMinSkillLevel();
-
-            if (from.Skills.Cartography.Value < minSkill)
-            {
-                from.SendLocalizedMessage(503013); // The map is too difficult to attempt to decode.
-            }
-
-            var maxSkill = minSkill + 60.0;
-
-            if (!from.CheckSkill(SkillName.Cartography, minSkill, maxSkill))
-            {
-                from.LocalOverheadMessage(MessageType.Regular, 0x3B2, 503018); // You fail to make anything of the map.
-                return;
-            }
+            from.LocalOverheadMessage(MessageType.Regular, 0x3B2, 503018); // You fail to make anything of the map.return;
         }
 
         from.LocalOverheadMessage(MessageType.Regular, 0x3B2, 503019); // You successfully decode a treasure map!
@@ -433,11 +395,6 @@ public partial class TreasureMap : MapItem
         if (_completed)
         {
             SendLocalizedMessageTo(from, 503014); // This treasure hunt has already been completed.
-        }
-        else if (_level == 0 && !CheckYoung(from))
-        {
-            from.SendLocalizedMessage(1046447); // Only a young player may use this treasure map.
-            return;
         }
         else if (_decoder != from && !HasRequiredSkill(from))
         {
@@ -479,7 +436,7 @@ public partial class TreasureMap : MapItem
     {
         base.GetProperties(list);
 
-        list.Add(_chestMap == Map.Felucca ? 1041502 : 1041503); // for somewhere in Felucca : for somewhere in Trammel
+        list.Add(_chestMap == Map.Gaia ? 1041502 : 1041503); // for somewhere in Gaia : for somewhere in Trammel
 
         if (_completed)
         {
@@ -518,11 +475,11 @@ public partial class TreasureMap : MapItem
         {
             if (_level == 6)
             {
-                LabelTo(from, 1041522, $"#{1063452}\t \t#{(_chestMap == Map.Felucca ? 1041502 : 1041503)}");
+                LabelTo(from, 1041522, $"#{1063452}\t \t#{(_chestMap == Map.Gaia ? 1041502 : 1041503)}");
             }
             else
             {
-                LabelTo(from, 1041522, $"#{1041510 + _level}\t \t#{(_chestMap == Map.Felucca ? 1041502 : 1041503)}");
+                LabelTo(from, 1041522, $"#{1041510 + _level}\t \t#{(_chestMap == Map.Gaia ? 1041502 : 1041503)}");
             }
         }
     }

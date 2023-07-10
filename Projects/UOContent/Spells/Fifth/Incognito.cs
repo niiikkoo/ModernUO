@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Server.Factions;
 using Server.Items;
 using Server.Mobiles;
 using Server.Spells.Seventh;
@@ -29,12 +28,6 @@ namespace Server.Spells.Fifth
 
         public override bool CheckCast()
         {
-            if (Sigil.ExistsOn(Caster))
-            {
-                Caster.SendLocalizedMessage(1010445); // You cannot incognito if you have a sigil
-                return false;
-            }
-
             if (!Caster.CanBeginAction<IncognitoSpell>())
             {
                 Caster.SendLocalizedMessage(1005559); // This spell is already in effect.
@@ -52,12 +45,6 @@ namespace Server.Spells.Fifth
 
         public override void OnCast()
         {
-            if (Sigil.ExistsOn(Caster))
-            {
-                Caster.SendLocalizedMessage(1010445); // You cannot incognito if you have a sigil
-                return;
-            }
-
             if (!Caster.CanBeginAction<IncognitoSpell>())
             {
                 Caster.SendLocalizedMessage(1005559); // This spell is already in effect.

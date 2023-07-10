@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Server.Engines.ConPVP;
 using Server.Items;
 using Server.Misc;
 using Server.Mobiles;
@@ -255,7 +254,7 @@ namespace Server.Spells
         public virtual bool ConsumeReagents() =>
             Scroll != null || !Caster.Player ||
             AosAttributes.GetValue(Caster, AosAttribute.LowerRegCost) > Utility.Random(100) ||
-            DuelContext.IsFreeConsume(Caster) || Caster.Backpack?.ConsumeTotal(Info.Reagents, Info.Amounts) == -1;
+            Caster.Backpack?.ConsumeTotal(Info.Reagents, Info.Amounts) == -1;
 
         public virtual double GetInscribeSkill(Mobile m) => m.Skills.Inscribe.Value;
 
@@ -502,9 +501,6 @@ namespace Server.Spells
             else if (Caster is PlayerMobile mobile && mobile.PeacedUntil > Core.Now)
             {
                 mobile.SendLocalizedMessage(1072060); // You cannot cast a spell while calmed.
-            }
-            else if ((Caster as PlayerMobile)?.DuelContext?.AllowSpellCast(Caster, this) == false)
-            {
             }
             else
             {

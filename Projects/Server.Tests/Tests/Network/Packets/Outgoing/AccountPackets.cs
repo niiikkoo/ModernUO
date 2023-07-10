@@ -120,8 +120,8 @@ namespace Server.Tests.Network
 
             Stream.Write((short)0);
             Stream.Write((short)0);
-            Stream.Write((short)(map?.Width ?? Map.Felucca.Width));
-            Stream.Write((short)(map?.Height ?? Map.Felucca.Height));
+            Stream.Write((short)(map?.Width ?? Map.Gaia.Width));
+            Stream.Write((short)(map?.Height ?? Map.Gaia.Height));
 
             Stream.Fill();
         }

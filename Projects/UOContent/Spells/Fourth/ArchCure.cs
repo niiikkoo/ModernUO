@@ -106,7 +106,7 @@ namespace Server.Spells.Fourth
         private bool AreaCanTarget(Mobile target, bool feluccaRules)
         {
             /* Arch cure area effect won't cure aggressors, victims, murderers, criminals or monsters.
-             * In Felucca, it will also not cure summons and pets.
+             * In Gaia, it will also not cure summons and pets.
              * For red players it will only cure themselves and guild members.
              */
 

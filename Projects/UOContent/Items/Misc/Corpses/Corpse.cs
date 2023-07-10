@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using ModernUO.Serialization;
 using Server.ContextMenus;
 using Server.Engines.PartySystem;
-using Server.Engines.Quests.Doom;
-using Server.Engines.Quests.Haven;
 using Server.Guilds;
 using Server.Misc;
 using Server.Mobiles;
@@ -501,9 +499,9 @@ public partial class Corpse : Container, ICarvable
         List<Item> initialContent, List<Item> equipItems
     )
     {
-        var c = owner is MilitiaFighter
+        var c = /*owner is MilitiaFighter
             ? new MilitiaFighterCorpse(owner, hair, facialhair, equipItems)
-            : new Corpse(owner, hair, facialhair, equipItems);
+            :*/ new Corpse(owner, hair, facialhair, equipItems);
 
         owner.Corpse = c;
 
@@ -877,59 +875,6 @@ public partial class Corpse : Container, ICarvable
         if (from is not PlayerMobile player)
         {
             return;
-        }
-
-        var qs = player.Quest;
-
-        if (qs is UzeraanTurmoilQuest)
-        {
-            var obj = qs.FindObjective<GetDaemonBoneObjective>();
-            if (obj?.CorpseWithBone == this && (!obj.Completed || UzeraanTurmoilQuest.HasLostDaemonBone(player)))
-            {
-                Item bone = new QuestDaemonBone();
-
-                if (player.PlaceInBackpack(bone))
-                {
-                    obj.CorpseWithBone = null;
-                    // You rummage through the bones and find a Daemon Bone!  You quickly place the item in your pack.
-                    player.SendLocalizedMessage(1049341, "", 0x22);
-
-                    if (!obj.Completed)
-                    {
-                        obj.Complete();
-                    }
-                }
-                else
-                {
-                    bone.Delete();
-                    // Rummaging through the bones you find a Daemon Bone, but can't pick it up because your pack is too full.  Come back when you have more room in your pack.
-                    player.SendLocalizedMessage(1049342, "", 0x22);
-                }
-
-                return;
-            }
-        }
-        else if (qs is TheSummoningQuest)
-        {
-            var obj = qs.FindObjective<VanquishDaemonObjective>();
-            if (obj?.Completed == true && obj.CorpseWithSkull == this)
-            {
-                var sk = new GoldenSkull();
-
-                if (player.PlaceInBackpack(sk))
-                {
-                    obj.CorpseWithSkull = null;
-                    // For your valor in combating the devourer, you have been awarded a golden skull.
-                    player.SendLocalizedMessage(1050022);
-                    qs.Complete();
-                }
-                else
-                {
-                    sk.Delete();
-                    // You find a golden skull, but your backpack is too full to carry it.
-                    player.SendLocalizedMessage(1050023);
-                }
-            }
         }
 
         base.OnDoubleClick(from);

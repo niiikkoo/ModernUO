@@ -1,6 +1,5 @@
 using System;
 using ModernUO.Serialization;
-using Server.Factions;
 using Server.Gumps;
 using Server.Mobiles;
 using Server.Network;
@@ -36,10 +35,6 @@ public partial class DisguiseKit : Item
         else if (!from.CanBeginAction<IncognitoSpell>())
         {
             from.SendLocalizedMessage(501704);
-        }
-        else if (Sigil.ExistsOn(from))
-        {
-            from.SendLocalizedMessage(1010465); // You cannot disguise yourself while holding a sigil
         }
         else if (TransformationSpellHelper.UnderTransformation(from))
         {

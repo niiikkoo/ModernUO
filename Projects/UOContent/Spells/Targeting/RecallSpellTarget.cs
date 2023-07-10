@@ -62,10 +62,6 @@ namespace Server.Spells
                     );
                 }
             }
-            else if (o is HouseRaffleDeed deed && deed.ValidLocation())
-            {
-                _spell.Effect(deed.PlotLocation, deed.PlotFacet, true);
-            }
             else
             {
                 from.NetState.SendMessageLocalized(

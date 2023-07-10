@@ -2,7 +2,7 @@ namespace Server.Misc
 {
     public static class Strandedness
     {
-        private static readonly Point2D[] m_Felucca =
+        private static readonly Point2D[] m_Gaia =
         {
             new(2528, 3568), new(2376, 3400), new(2528, 3896),
             new(2168, 3904), new(1136, 3416), new(1432, 3648),
@@ -35,52 +35,6 @@ namespace Server.Misc
             new(2048, 1264), new(1808, 1528), new(1496, 1880),
             new(1656, 2168), new(2096, 2320), new(1816, 2528),
             new(1840, 2640), new(1928, 2952), new(2120, 2712)
-        };
-
-        private static readonly Point2D[] m_Trammel = m_Felucca;
-
-        private static readonly Point2D[] m_Ilshenar =
-        {
-            new(1252, 1180), new(1562, 1090), new(1444, 1016),
-            new(1324, 968), new(1418, 806), new(1722, 874),
-            new(1456, 684), new(1036, 866), new(612, 476),
-            new(1476, 372), new(762, 472), new(812, 1162),
-            new(1422, 1144), new(1254, 1066), new(1598, 870),
-            new(1358, 866), new(510, 302), new(510, 392)
-        };
-
-        private static readonly Point2D[] m_Tokuno =
-        {
-            // Makoto-Jima
-            new(837, 1351), new(941, 1241), new(959, 1185),
-            new(923, 1091), new(904, 983), new(845, 944),
-            new(829, 896), new(794, 852), new(766, 821),
-            new(695, 814), new(576, 835), new(518, 840),
-            new(519, 902), new(502, 950), new(503, 1045),
-            new(547, 1131), new(518, 1204), new(506, 1243),
-            new(526, 1271), new(562, 1295), new(616, 1335),
-            new(789, 1347), new(712, 1359),
-
-            // Homare-Jima
-            new(202, 498), new(116, 600), new(107, 699),
-            new(162, 799), new(158, 889), new(169, 989),
-            new(194, 1101), new(250, 1163), new(295, 1176),
-            new(280, 1194), new(286, 1102), new(250, 1000),
-            new(260, 906), new(360, 838), new(389, 763),
-            new(415, 662), new(500, 597), new(570, 572),
-            new(631, 577), new(692, 500), new(723, 445),
-            new(672, 379), new(626, 332), new(494, 291),
-            new(371, 336), new(324, 334), new(270, 362),
-
-            // Isamu-Jima
-            new(1240, 1076), new(1189, 1115), new(1046, 1039),
-            new(1025, 885), new(907, 809), new(840, 506),
-            new(799, 396), new(720, 258), new(744, 158),
-            new(904, 37), new(974, 91), new(1020, 187),
-            new(1035, 288), new(1104, 395), new(1215, 462),
-            new(1275, 488), new(1348, 611), new(1363, 739),
-            new(1364, 765), new(1364, 876), new(1300, 936),
-            new(1240, 1003)
         };
 
         public static void Initialize()
@@ -128,21 +82,9 @@ namespace Server.Misc
 
             Point2D[] list;
 
-            if (map == Map.Felucca)
+            if (map == Map.Gaia)
             {
-                list = m_Felucca;
-            }
-            else if (map == Map.Trammel)
-            {
-                list = m_Trammel;
-            }
-            else if (map == Map.Ilshenar)
-            {
-                list = m_Ilshenar;
-            }
-            else if (map == Map.Tokuno)
-            {
-                list = m_Tokuno;
+                list = m_Gaia;
             }
             else
             {

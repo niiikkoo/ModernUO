@@ -155,10 +155,7 @@ namespace Server.Spells.Necromancy
                 var necro = m_From.Skills.Necromancy.Value;
                 var spirit = m_From.Skills.SpiritSpeak.Value;
 
-                if ((m_From as PlayerMobile)?.DuelContext?.AllowSpellCast(m_From, m_Spell) == false)
-                {
-                }
-                else if (SummonFamiliarSpell.Table.TryGetValue(m_From, out var check) && check?.Deleted == false)
+                if (SummonFamiliarSpell.Table.TryGetValue(m_From, out var check) && check?.Deleted == false)
                 {
                     m_From.SendLocalizedMessage(1061605); // You already have a familiar.
                 }

@@ -1,5 +1,4 @@
 using ModernUO.Serialization;
-using Server.Engines.Plants;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -58,11 +57,6 @@ namespace Server.Mobiles
                 case 5:
                     PackItem(new LeatherChest());
                     break;
-            }
-
-            if (Utility.RandomDouble() < .5)
-            {
-                PackItem(Seed.RandomBonsaiSeed());
             }
 
             Tamable = true;

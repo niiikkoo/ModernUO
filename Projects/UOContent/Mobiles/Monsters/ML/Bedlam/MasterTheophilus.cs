@@ -9,7 +9,6 @@ namespace Server.Mobiles
         [Constructible]
         public MasterTheophilus()
         {
-            IsParagon = true;
 
             Title = "the necromancer";
             Hue = 0;
@@ -65,7 +64,6 @@ namespace Server.Mobiles
         public override string CorpseName => "a Master Theophilus corpse";
         public override string DefaultName => "Master Theophilus";
 
-        public override bool GivesMLMinorArtifact => true;
         public override int TreasureMapLevel => 5;
 
         public override void GenerateLoot()

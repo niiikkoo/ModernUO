@@ -1,4 +1,3 @@
-using Server.Engines.Quests.Hag;
 using Server.Items;
 using Server.Mobiles;
 using Server.Targeting;
@@ -20,35 +19,6 @@ namespace Server.Engines.Harvest
 
         protected override void OnTarget(Mobile from, object targeted)
         {
-            if (m_System is Mining && targeted is StaticTarget target)
-            {
-                var itemID = target.ItemID;
-
-                // grave
-                if (itemID is 0xED3 or 0xEDF or 0xEE0 or 0xEE1 or 0xEE2 or 0xEE8)
-                {
-                    if (from is PlayerMobile player)
-                    {
-                        var qs = player.Quest;
-                        if (qs is not WitchApprenticeQuest)
-                        {
-                            return;
-                        }
-
-                        var obj = qs.FindObjective<FindIngredientObjective>();
-
-                        if (obj?.Completed == false && obj.Ingredient == Ingredient.Bones)
-                        {
-                            // You finish your grim work, finding some of the specific bones listed in the Hag's recipe.
-                            player.SendLocalizedMessage(1055037);
-                            obj.Complete();
-
-                            return;
-                        }
-                    }
-                }
-            }
-
             if (m_System is Lumberjacking && targeted is IChoppable chopable)
             {
                 chopable.OnChop(from);

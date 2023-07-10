@@ -61,14 +61,14 @@ namespace Server
                     typeof(Centaur),
                     typeof(EtherealWarrior),
                     typeof(Kirin),
-                    typeof(LordOaks),
+                    //typeof(LordOaks),
                     typeof(Pixie),
                     typeof(Silvani),
                     typeof(Unicorn),
                     typeof(Wisp),
                     typeof(Treefellow),
-                    typeof(MLDryad),
-                    typeof(Satyr)
+                    //typeof(MLDryad),
+                    //typeof(Satyr)
                 },
                 new[]
                 {
@@ -86,8 +86,8 @@ namespace Server
                     typeof(Zombie),
                     typeof(ShadowKnight),
                     typeof(DarknightCreeper),
-                    typeof(RevenantLion),
-                    typeof(LadyOfTheSnow),
+                    //typeof(RevenantLion),
+                    //typeof(LadyOfTheSnow),
                     typeof(RottingCorpse),
                     typeof(SkeletalDragon),
                     typeof(Lich)

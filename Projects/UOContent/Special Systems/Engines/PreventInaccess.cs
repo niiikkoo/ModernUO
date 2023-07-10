@@ -21,10 +21,8 @@ namespace Server.Misc
 
         private static readonly LocationInfo[] m_Destinations =
         {
-            new(new Point3D(5275, 1163, 0), Map.Felucca), // Jail
-            new(new Point3D(5275, 1163, 0), Map.Trammel),
-            new(new Point3D(5445, 1153, 0), Map.Felucca), // Green acres
-            new(new Point3D(5445, 1153, 0), Map.Trammel)
+            new(new Point3D(5275, 1163, 0), Map.Gaia), // Jail
+            new(new Point3D(5445, 1153, 0), Map.Gaia) // Green acres
         };
 
         private static Dictionary<Mobile, LocationInfo> m_MoveHistory;

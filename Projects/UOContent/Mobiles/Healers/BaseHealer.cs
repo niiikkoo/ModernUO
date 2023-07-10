@@ -96,19 +96,12 @@ namespace Server.Mobiles
         {
             Direction = GetDirectionTo(m);
 
-            if (m.CheckYoungHealTime())
-            {
-                Say(501229); // You look like you need some healing my child.
+            Say(501229); // You look like you need some healing my child.
 
-                m.PlaySound(0x1F2);
-                m.FixedEffect(0x376A, 9, 32);
+            m.PlaySound(0x1F2);
+            m.FixedEffect(0x376A, 9, 32);
 
-                m.Hits = m.HitsMax;
-            }
-            else
-            {
-                Say(501228); // I can do no more for you at this time.
-            }
+            m.Hits = m.HitsMax;
         }
 
         public override void OnMovement(Mobile m, Point3D oldLocation)
@@ -128,7 +121,7 @@ namespace Server.Mobiles
                         OfferResurrection(m);
                     }
                 }
-                else if (HealsYoungPlayers && m.Hits < m.HitsMax && m is PlayerMobile mobile && mobile.Young)
+                else if (m.Hits < m.HitsMax && m is PlayerMobile mobile)
                 {
                     OfferHeal(mobile);
                 }

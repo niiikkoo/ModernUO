@@ -15,7 +15,6 @@ namespace Server.Accounting
     [SerializationGenerator(4)]
     public partial class Account : IAccount, IComparable<Account>, ISerializable
     {
-        public static readonly TimeSpan YoungDuration = TimeSpan.FromHours(40.0);
         public static readonly TimeSpan InactiveDuration = TimeSpan.FromDays(180.0);
         public static readonly TimeSpan EmptyInactiveDuration = TimeSpan.FromDays(30.0);
 
@@ -120,8 +119,6 @@ namespace Server.Accounting
         [SerializedCommandProperty(AccessLevel.Administrator)]
         private string _email;
 
-        private Timer m_YoungTimer;
-
         public Account(string username, string password) : this(Accounts.NewAccount)
         {
             _username = username;
@@ -208,11 +205,6 @@ namespace Server.Accounting
 
             _totalGameTime = totalGameTime;
 
-            if (Young)
-            {
-                CheckYoung();
-            }
-
             Accounts.Add(this);
             this.MarkDirty();
         }
@@ -249,21 +241,6 @@ namespace Server.Accounting
                 return true;
             }
             set => SetFlag(0, value);
-        }
-
-        /// <summary>
-        ///     Gets or sets a flag indicating if the characters created on this account will have the young status.
-        /// </summary>
-        public bool Young
-        {
-            get => !GetFlag(1);
-            set
-            {
-                SetFlag(1, !value);
-
-                m_YoungTimer?.Stop();
-                m_YoungTimer = null;
-            }
         }
 
         /// <summary>
@@ -325,11 +302,6 @@ namespace Server.Accounting
                         _totalGameTime += m.GameTime;
                     }
                 }
-            }
-
-            if (Young)
-            {
-                CheckYoung();
             }
         }
 
@@ -749,12 +721,6 @@ namespace Server.Accounting
             {
                 return;
             }
-
-            if (acc.Young && acc.m_YoungTimer == null)
-            {
-                acc.m_YoungTimer = new YoungTimer(acc);
-                acc.m_YoungTimer.Start();
-            }
         }
 
         private static void EventSink_Disconnected(Mobile m)
@@ -762,12 +728,6 @@ namespace Server.Accounting
             if (m.Account is not Account acc)
             {
                 return;
-            }
-
-            if (acc.m_YoungTimer != null)
-            {
-                acc.m_YoungTimer.Stop();
-                acc.m_YoungTimer = null;
             }
 
             if (m is not PlayerMobile pm)
@@ -788,55 +748,6 @@ namespace Server.Accounting
             if (m.Account is not Account acc)
             {
                 return;
-            }
-
-            if (pm.Young && acc.Young)
-            {
-                var ts = YoungDuration - acc.TotalGameTime;
-                var hours = Math.Max((int)ts.TotalHours, 0);
-
-                if (hours == 1)
-                {
-                    m.SendAsciiMessage($"You will enjoy the benefits and relatively safe status of a young player for {hours} more hour.");
-                }
-                else
-                {
-                    m.SendAsciiMessage($"You will enjoy the benefits and relatively safe status of a young player for {hours} more hours.");
-                }
-            }
-        }
-
-        public void RemoveYoungStatus(int message)
-        {
-            Young = false;
-
-            for (var i = 0; i < _mobiles.Length; i++)
-            {
-                if (_mobiles[i] is PlayerMobile { Young: true } m)
-                {
-                    m.Young = false;
-
-                    if (m.NetState != null)
-                    {
-                        if (message > 0)
-                        {
-                            m.SendLocalizedMessage(message);
-                        }
-
-                        // You are no longer considered a young player of Ultima Online,
-                        // and are no longer subject to the limitations and benefits of being in that caste.
-                        m.SendLocalizedMessage(1019039);
-                    }
-                }
-            }
-        }
-
-        public void CheckYoung()
-        {
-            if (TotalGameTime >= YoungDuration)
-            {
-                // You are old enough to be considered an adult, and have outgrown your status as a young player!
-                RemoveYoungStatus(1019038);
             }
         }
 
@@ -1150,22 +1061,6 @@ namespace Server.Accounting
         }
 
         public override string ToString() => _username;
-
-        private class YoungTimer : Timer
-        {
-            private readonly Account m_Account;
-
-            public YoungTimer(Account account)
-                : base(TimeSpan.FromMinutes(1.0), TimeSpan.FromMinutes(1.0))
-            {
-                m_Account = account;
-            }
-
-            protected override void OnTick()
-            {
-                m_Account.CheckYoung();
-            }
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Enumerator GetEnumerator() => new(_mobiles);

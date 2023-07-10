@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Server.Factions;
 using Server.Network;
 using Server.Targeting;
 
@@ -218,14 +217,6 @@ namespace Server.Engines.PartySystem
 
         public void OnAccept(Mobile from, bool force = false)
         {
-            var ourFaction = Faction.Find(Leader);
-            var theirFaction = Faction.Find(from);
-
-            if (!force && ourFaction != null && theirFaction != null && ourFaction != theirFaction)
-            {
-                return;
-            }
-
             Span<byte> buffer = stackalloc byte[OutgoingMessagePackets.GetMaxMessageLocalizedAffixLength(from.Name, "")];
             var length = OutgoingMessagePackets.CreateMessageLocalizedAffix(
                 buffer,
@@ -336,16 +327,6 @@ namespace Server.Engines.PartySystem
 
         public static void Invite(Mobile from, Mobile target)
         {
-            var ourFaction = Faction.Find(from);
-            var theirFaction = Faction.Find(target);
-
-            if (ourFaction != null && theirFaction != null && ourFaction != theirFaction)
-            {
-                from.SendLocalizedMessage(1008088);   // You cannot have players from opposing factions in the same party!
-                target.SendLocalizedMessage(1008093); // The party cannot have members from opposing factions.
-                return;
-            }
-
             var p = Get(from);
 
             if (p == null)

@@ -1,6 +1,5 @@
 using ModernUO.Serialization;
 using System;
-using Server.Engines.Plants;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -20,7 +19,7 @@ namespace Server.Mobiles
         [SerializableProperty(2)]
         public int DevourGoal
         {
-            get => IsParagon ? _devourGoal + 25 : _devourGoal;
+            get => _devourGoal;
             set => _devourGoal = value;
         }
 
@@ -55,15 +54,6 @@ namespace Server.Mobiles
 
             VirtualArmor = 30;
             PackArmor(1, 5);
-            if (Utility.RandomDouble() < 0.80)
-            {
-                PackItem(new PlagueBeastGland());
-            }
-
-            if (Core.ML && Utility.RandomDouble() < 0.33)
-            {
-                PackItem(Seed.RandomPeculiarSeed(4));
-            }
 
             _totalDevoured = 0;
             _devourGoal = Utility.RandomMinMax(15, 25); // How many corpses must be devoured before a metal chest is awarded
@@ -115,7 +105,7 @@ namespace Server.Mobiles
         {
             base.OnGaveMeleeAttack(defender, damage);
 
-            defender.ApplyPoison(this, IsParagon ? Poison.Lethal : Poison.Deadly);
+            defender.ApplyPoison(this, Poison.Deadly);
             defender.FixedParticles(0x374A, 10, 15, 5021, EffectLayer.Waist);
             defender.PlaySound(0x1CB);
         }
@@ -186,11 +176,6 @@ namespace Server.Mobiles
         private void IncreaseHits(int hp)
         {
             var maxhits = 2000;
-
-            if (IsParagon)
-            {
-                maxhits = (int)(maxhits * Paragon.HitsBuff);
-            }
 
             if (hp < 1000 && !Core.AOS)
             {

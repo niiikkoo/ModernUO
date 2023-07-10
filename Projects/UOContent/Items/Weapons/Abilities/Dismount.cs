@@ -25,11 +25,6 @@ public class Dismount : WeaponAbility
 
         ClearCurrentAbility(attacker);
 
-        if (defender is ChaosDragoon or ChaosDragoonElite)
-        {
-            return;
-        }
-
         if (attacker.Mounted || attacker.Flying)
         {
             if (attacker.Weapon is not Lance || !defender.Mounted && !defender.Flying && defender.Weapon is not Lance)

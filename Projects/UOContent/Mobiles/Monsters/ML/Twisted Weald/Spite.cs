@@ -8,7 +8,6 @@ namespace Server.Mobiles
         [Constructible]
         public Spite()
         {
-            IsParagon = true;
 
             Hue = DefaultHue;
 
@@ -45,7 +44,6 @@ namespace Server.Mobiles
         public override string DefaultName => "Spite";
         public override int DefaultHue => 0x21;
 
-        public override bool GivesMLMinorArtifact => true;
 
         public override void GenerateLoot()
         {

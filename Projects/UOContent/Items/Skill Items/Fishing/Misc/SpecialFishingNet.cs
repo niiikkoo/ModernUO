@@ -293,7 +293,7 @@ public partial class SpecialFishingNet : Item
 
         if (spawn is Kraken && Utility.RandomDouble() < 0.2)
         {
-            spawn.PackItem(new MessageInABottle(map == Map.Felucca ? Map.Felucca : Map.Trammel));
+            spawn.PackItem(new MessageInABottle(Map.Gaia));
         }
     }
 

@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Server.Engines.Quests;
-using Server.Engines.Quests.Necro;
 using Server.Items;
 using Server.Mobiles;
 using Server.Utilities;
@@ -28,10 +26,6 @@ namespace Server.Spells.Necromancy
                 new[]
                 {
                     typeof(DreadSpider), typeof(FrostSpider), typeof(GiantSpider), typeof(GiantBlackWidow),
-                    typeof(BlackSolenInfiltratorQueen), typeof(BlackSolenInfiltratorWarrior),
-                    typeof(BlackSolenQueen), typeof(BlackSolenWarrior), typeof(BlackSolenWorker),
-                    typeof(RedSolenInfiltratorQueen), typeof(RedSolenInfiltratorWarrior),
-                    typeof(RedSolenQueen), typeof(RedSolenWarrior), typeof(RedSolenWorker),
                     typeof(TerathanAvenger), typeof(TerathanDrone), typeof(TerathanMatriarch),
                     typeof(TerathanWarrior)
                     // TODO: Giant beetle? Ant lion? Ophidians?
@@ -76,7 +70,7 @@ namespace Server.Spells.Necromancy
             new(
                 new[]
                 {
-                    typeof(AncientWyrm), typeof(Dragon), typeof(GreaterDragon), typeof(SerpentineDragon),
+                    typeof(AncientWyrm), typeof(Dragon), /*typeof(GreaterDragon),*/ typeof(SerpentineDragon),
                     typeof(ShadowWyrm), typeof(SkeletalDragon), typeof(WhiteWyrm),
                     typeof(Drake), typeof(Wyvern), typeof(LesserHiryu), typeof(Hiryu)
                 },
@@ -120,28 +114,6 @@ namespace Server.Spells.Necromancy
 
         public void Target(Item item)
         {
-            var comp = item as MaabusCoffinComponent;
-
-            if (comp?.Addon is MaabusCoffin addon)
-            {
-                var pm = Caster as PlayerMobile;
-
-                var qs = pm?.Quest;
-
-                if (qs is DarkTidesQuest)
-                {
-                    QuestObjective objective = qs.FindObjective<AnimateMaabusCorpseObjective>();
-
-                    if (objective?.Completed == false)
-                    {
-                        addon.Awake(Caster);
-                        objective.Complete();
-                    }
-                }
-
-                return;
-            }
-
             if (item is not Corpse c)
             {
                 Caster.SendLocalizedMessage(1061084); // You cannot animate that.

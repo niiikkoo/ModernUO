@@ -67,7 +67,7 @@ public partial class CocoaPulp : Item
     public override double DefaultWeight => 1.0;
 }
 
-[SerializationGenerator(0, false)]
+/*[SerializationGenerator(0, false)]
 public partial class DarkChocolate : CandyCane
 {
     [Constructible]
@@ -107,4 +107,4 @@ public partial class WhiteChocolate : CandyCane
 
     public override int LabelNumber => 1079996; // White chocolate
     public override double DefaultWeight => 1.0;
-}
+}*/

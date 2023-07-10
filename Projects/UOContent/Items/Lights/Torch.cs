@@ -23,24 +23,4 @@ public partial class Torch : BaseEquipableLight
 
     public override int LitSound => 0x54;
     public override int UnlitSound => 0x4BB;
-
-    public override void OnAdded(IEntity parent)
-    {
-        base.OnAdded(parent);
-
-        if (parent is Mobile mobile && Burning)
-        {
-            MeerMage.StopEffect(mobile, true);
-        }
-    }
-
-    public override void Ignite()
-    {
-        base.Ignite();
-
-        if (Parent is Mobile mobile && Burning)
-        {
-            MeerMage.StopEffect(mobile, true);
-        }
-    }
 }

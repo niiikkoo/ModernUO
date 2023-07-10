@@ -90,7 +90,7 @@ namespace Server.Engines.Craft
 
                 if (m_CraftSystem is DefTailoring)
                 {
-                    return clothing is BearMask or DeerMask or TheMostKnowledgePerson or TheRobeOfBritanniaAri or EmbroideredOakLeafCloak;
+                    return clothing is BearMask or DeerMask /*or TheMostKnowledgePerson or TheRobeOfBritanniaAri or EmbroideredOakLeafCloak*/;
                 }
 
                 return false;

@@ -9,7 +9,6 @@ namespace Server.Mobiles
         [Constructible]
         public Lurg()
         {
-            IsParagon = true;
 
             Hue = 0x455;
 
@@ -43,7 +42,6 @@ namespace Server.Mobiles
 
         public override string CorpseName => "a Lurg corpse";
         public override string DefaultName => "Lurg";
-        public override bool GivesMLMinorArtifact => true;
         public override int TreasureMapLevel => 4;
 
         public override void GenerateLoot()

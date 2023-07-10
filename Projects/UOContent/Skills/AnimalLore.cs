@@ -245,16 +245,16 @@ namespace Server.SkillHandlers
             AddHtmlLocalized(153, 222, 160, 18, 1044061, LabelColor); // Anatomy
             AddHtml(320, 222, 35, 18, FormatSkill(c, SkillName.Anatomy));
 
-            if (c is CuSidhe)
+            /*if (c is CuSidhe)
             {
                 AddHtmlLocalized(153, 240, 160, 18, 1044077, LabelColor); // Healing
                 AddHtml(320, 240, 35, 18, FormatSkill(c, SkillName.Healing));
             }
             else
-            {
+            {*/
                 AddHtmlLocalized(153, 240, 160, 18, 1044090, LabelColor); // Poisoning
                 AddHtml(320, 240, 35, 18, FormatSkill(c, SkillName.Poisoning));
-            }
+            //}
 
             AddImage(128, 260, 2086);
             AddHtmlLocalized(147, 258, 160, 18, 3001032, 200); // Lore & Knowledge

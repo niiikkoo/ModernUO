@@ -1,6 +1,4 @@
 using ModernUO.Serialization;
-using Server.Ethics;
-using Server.Factions;
 
 namespace Server.Mobiles
 {
@@ -43,8 +41,6 @@ namespace Server.Mobiles
         }
 
         public override string CorpseName => "a silver serpent corpse";
-        public override Faction FactionAllegiance => TrueBritannians.Instance;
-        public override Ethic EthicAllegiance => Ethic.Hero;
 
         public override string DefaultName => "a silver serpent";
 

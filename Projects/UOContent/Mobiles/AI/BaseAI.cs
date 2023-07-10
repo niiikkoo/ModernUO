@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Server.ContextMenus;
-using Server.Engines.Quests;
-using Server.Engines.Quests.Necro;
 using Server.Engines.Spawners;
-using Server.Factions;
 using Server.Gumps;
 using Server.Items;
 using Server.Network;
@@ -278,21 +275,6 @@ public abstract class BaseAI
             if (target is BaseCreature creature && creature.IsScaryToPets && m_Mobile.IsScaredOfScaryThings)
             {
                 m_Mobile.SayTo(from, "Your pet refuses to attack this creature!");
-                return;
-            }
-
-            if (SolenHelper.CheckRedFriendship(from) &&
-                target is RedSolenInfiltratorQueen or RedSolenInfiltratorWarrior or RedSolenQueen or RedSolenWarrior or RedSolenWorker
-                || SolenHelper.CheckBlackFriendship(from) &&
-                target is BlackSolenInfiltratorQueen or BlackSolenInfiltratorWarrior or BlackSolenQueen or BlackSolenWarrior or BlackSolenWorker)
-            {
-                from.SendAsciiMessage("You can not force your pet to attack a creature you are protected from.");
-                return;
-            }
-
-            if (target is BaseFactionGuard)
-            {
-                m_Mobile.SayTo(from, "Your pet refuses to attack the guard.");
                 return;
             }
         }
@@ -1358,25 +1340,6 @@ public abstract class BaseAI
             return true;
         }
 
-        if (distance < 1 && target.X == 1076 && target.Y == 450 && m_Mobile is HordeMinionFamiliar)
-        {
-            if (m_Mobile.ControlMaster is PlayerMobile pm)
-            {
-                var qs = pm.Quest;
-
-                if (qs is DarkTidesQuest)
-                {
-                    QuestObjective obj = qs.FindObjective<FetchAbraxusScrollObjective>();
-
-                    if (obj?.Completed == false)
-                    {
-                        m_Mobile.AddToBackpack(new ScrollOfAbraxus());
-                        obj.Complete();
-                    }
-                }
-            }
-        }
-
         m_Mobile.TargetLocation = null;
         return false; // At the target or too far away
     }
@@ -1466,18 +1429,7 @@ public abstract class BaseAI
         }
         else
         {
-            var youngFrom = from is PlayerMobile mobile && mobile.Young;
-            var youngTo = to is PlayerMobile playerMobile && playerMobile.Young;
-
-            if (youngFrom && !youngTo)
-            {
-                from.SendLocalizedMessage(502040); // As a young player, you may not friend pets to older players.
-            }
-            else if (!youngFrom && youngTo)
-            {
-                from.SendLocalizedMessage(502041); // As an older player, you may not friend pets to young players.
-            }
-            else if (from.CanBeBeneficial(to, true))
+            if (from.CanBeBeneficial(to, true))
             {
                 NetState fromState = from.NetState, toState = to.NetState;
 
@@ -1829,18 +1781,7 @@ public abstract class BaseAI
                 m_Mobile.DebugSay($"Begin transfer with {to.Name}");
             }
 
-            var youngFrom = from is PlayerMobile mobile && mobile.Young;
-            var youngTo = to is PlayerMobile playerMobile && playerMobile.Young;
-
-            if (youngFrom && !youngTo)
-            {
-                from.SendLocalizedMessage(502051); // As a young player, you may not transfer pets to older players.
-            }
-            else if (!youngFrom && youngTo)
-            {
-                from.SendLocalizedMessage(502052); // As an older player, you may not transfer pets to young players.
-            }
-            else if (!m_Mobile.CanBeControlledBy(to))
+           if (!m_Mobile.CanBeControlledBy(to))
             {
                 var args = $"{to.Name}\t{from.Name}\t ";
 
@@ -2570,8 +2511,7 @@ public abstract class BaseAI
             return false;
         }
 
-        if (acqType == FightMode.Aggressor && m_Mobile.Aggressors.Count == 0 && m_Mobile.Aggressed.Count == 0 &&
-            m_Mobile.FactionAllegiance == null && m_Mobile.EthicAllegiance == null)
+        if (acqType == FightMode.Aggressor && m_Mobile.Aggressors.Count == 0 && m_Mobile.Aggressed.Count == 0)
         {
             m_Mobile.FocusMob = null;
             return false;
@@ -2696,21 +2636,9 @@ public abstract class BaseAI
                 continue;
             }
 
-            // Ignore players with activated honor
-            if (pm?.HonorActive == true && m_Mobile.Combatant != m)
-            {
-                continue;
-            }
-
             if (acqType is FightMode.Aggressor or FightMode.Evil)
             {
                 var bValid = IsHostile(m);
-
-                if (!bValid)
-                {
-                    bValid = m_Mobile.GetFactionAllegiance(m) == BaseCreature.Allegiance.Enemy ||
-                             m_Mobile.GetEthicAllegiance(m) == BaseCreature.Allegiance.Enemy;
-                }
 
                 if (acqType == FightMode.Evil && !bValid)
                 {
@@ -3004,7 +2932,7 @@ public abstract class BaseAI
                 Name = creature.Name;
             }
             else if (ItemID == ShrinkTable.DefaultItemID ||
-                     creature.GetType().IsDefined(typeof(FriendlyNameAttribute), false) || creature is Reptalon)
+                     creature.GetType().IsDefined(typeof(FriendlyNameAttribute), false) /*|| creature is Reptalon*/)
             {
                 Name = FriendlyNameAttribute.GetFriendlyNameFor(creature.GetType()).ToString();
             }
@@ -3069,18 +2997,7 @@ public abstract class BaseAI
                 return false;
             }
 
-            var youngFrom = from is PlayerMobile mobile && mobile.Young;
-            var youngTo = to is PlayerMobile playerMobile && playerMobile.Young;
-
-            if (accepted && youngFrom && !youngTo)
-            {
-                from.SendLocalizedMessage(502051); // As a young player, you may not transfer pets to older players.
-            }
-            else if (accepted && !youngFrom && youngTo)
-            {
-                from.SendLocalizedMessage(502052); // As an older player, you may not transfer pets to young players.
-            }
-            else if (accepted && !m_Creature.CanBeControlledBy(to))
+            if (accepted && !m_Creature.CanBeControlledBy(to))
             {
                 var args = $"{to.Name}\t{from.Name}\t ";
 

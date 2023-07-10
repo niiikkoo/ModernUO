@@ -9,7 +9,6 @@ namespace Server.Mobiles
         [Constructible]
         public Rend()
         {
-            IsParagon = true;
 
             Hue = 0x455;
 
@@ -43,7 +42,6 @@ namespace Server.Mobiles
         public override string CorpseName => "a Rend corpse";
         public override string DefaultName => "Rend";
 
-        public override bool GivesMLMinorArtifact => true;
 
         public override void GenerateLoot()
         {

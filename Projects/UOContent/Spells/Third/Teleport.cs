@@ -1,4 +1,3 @@
-using Server.Factions;
 using Server.Items;
 using Server.Misc;
 using Server.Regions;
@@ -35,11 +34,7 @@ namespace Server.Spells.Third
             var from = Caster.Location;
             var to = new Point3D(p);
 
-            if (Sigil.ExistsOn(Caster))
-            {
-                Caster.SendLocalizedMessage(1061632); // You can't do that while carrying the sigil.
-            }
-            else if (WeightOverloading.IsOverloaded(Caster))
+            if (WeightOverloading.IsOverloaded(Caster))
             {
                 Caster.SendLocalizedMessage(502359, "", 0x22); // Thou art too encumbered to move.
             }
@@ -115,12 +110,6 @@ namespace Server.Spells.Third
 
         public override bool CheckCast()
         {
-            if (Sigil.ExistsOn(Caster))
-            {
-                Caster.SendLocalizedMessage(1061632); // You can't do that while carrying the sigil.
-                return false;
-            }
-
             if (WeightOverloading.IsOverloaded(Caster))
             {
                 Caster.SendLocalizedMessage(502359, "", 0x22); // Thou art too encumbered to move.

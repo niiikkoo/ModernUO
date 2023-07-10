@@ -4,7 +4,6 @@ using System.Linq;
 using Server.Accounting;
 using Server.Collections;
 using Server.ContextMenus;
-using Server.Ethics;
 using Server.Guilds;
 using Server.Gumps;
 using Server.Items;
@@ -1436,11 +1435,6 @@ namespace Server.Multis
                 return true;
             }
 
-            if (item is RewardBrazier)
-            {
-                return true;
-            }
-
             return false;
         }
 
@@ -2061,7 +2055,7 @@ namespace Server.Multis
                 i.SetLastMoved();
             }
 
-            if (i is Container && (!locked || !(i is BaseBoard or Aquarium or FishBowl)))
+            if (i is Container && (!locked || !(i is BaseBoard /*or Aquarium or FishBowl*/)))
             {
                 foreach (var c in i.Items)
                 {
@@ -2093,10 +2087,6 @@ namespace Server.Multis
                 else if (checkIsInside && !IsInside(item.GetWorldLocation(), item.ItemData.Height))
                 {
                     m.SendLocalizedMessage(1005525); // That is not in your house
-                }
-                else if (Ethic.IsImbued(item))
-                {
-                    m.SendLocalizedMessage(1005377); // You cannot lock that down
                 }
                 else if (HasSecureItem(rootItem))
                 {
@@ -2340,7 +2330,7 @@ namespace Server.Multis
                 SetLockdown(item, false);
                 // TidyItemList( m_LockDowns );
 
-                (item as RewardBrazier)?.TurnOff();
+                //(item as RewardBrazier)?.TurnOff();
             }
             else if (HasSecureItem(item))
             {
@@ -2950,7 +2940,7 @@ namespace Server.Multis
             {
                 var item = LockDowns[i];
 
-                if (item is Container cont && !(cont is BaseBoard or Aquarium or FishBowl))
+                if (item is Container cont && !(cont is BaseBoard /*or Aquarium or FishBowl*/))
                 {
                     var children = cont.Items;
 

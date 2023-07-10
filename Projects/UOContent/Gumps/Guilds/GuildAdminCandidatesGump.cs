@@ -1,4 +1,3 @@
-using Server.Factions;
 using Server.Guilds;
 using Server.Network;
 
@@ -51,45 +50,6 @@ namespace Server.Gumps
 
                                 if (m?.Deleted == false)
                                 {
-                                    var guildState = PlayerState.Find(m_Guild.Leader);
-                                    var targetState = PlayerState.Find(m);
-
-                                    var guildFaction = guildState?.Faction;
-                                    var targetFaction = targetState?.Faction;
-
-                                    if (guildFaction != targetFaction)
-                                    {
-                                        if (guildFaction == null)
-                                        {
-                                            m_Mobile.SendLocalizedMessage(
-                                                1013027
-                                            ); // That player cannot join a non-faction guild.
-                                        }
-                                        else if (targetFaction == null)
-                                        {
-                                            m_Mobile.SendLocalizedMessage(
-                                                1013026
-                                            ); // That player must be in a faction before joining this guild.
-                                        }
-                                        else
-                                        {
-                                            m_Mobile.SendLocalizedMessage(
-                                                1013028
-                                            ); // That person has a different faction affiliation.
-                                        }
-
-                                        break;
-                                    }
-
-                                    if (targetState?.IsLeaving == true)
-                                    {
-                                        // OSI does this quite strangely, so we'll just do it this way
-                                        m_Mobile.SendMessage(
-                                            "That person is quitting their faction and so you may not recruit them."
-                                        );
-                                        break;
-                                    }
-
                                     m_Guild.Candidates.Remove(m);
                                     m_Guild.Accepted.Add(m);
 

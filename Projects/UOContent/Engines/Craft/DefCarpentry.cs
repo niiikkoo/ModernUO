@@ -297,8 +297,8 @@ public class DefCarpentry : CraftSystem
             index = AddCraft(typeof(DecorativeBox), 1044292, 1073403, 80.0, 105.0, typeof(Log), 1044041, 25, 1044351);
             SetNeededExpansion(index, Expansion.ML);
             index = AddCraft(typeof(FullBookcase), 1044292, 1071213, 60.0, 85.0, typeof(Log), 1044041, 25, 1044351);
-            AddRes(index, typeof(AcademicBooksArtifact), 1071202, 1, 1044253);
-            SetNeededExpansion(index, Expansion.ML);
+            /*AddRes(index, typeof(AcademicBooksArtifact), 1071202, 1, 1044253);
+            SetNeededExpansion(index, Expansion.ML);*/
         }
 
         // Staves and Shields

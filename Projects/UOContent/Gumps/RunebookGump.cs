@@ -39,31 +39,6 @@ namespace Server.Gumps
 
         public int GetMapHue(Map map)
         {
-            if (map == Map.Trammel)
-            {
-                return 10;
-            }
-
-            if (map == Map.Felucca)
-            {
-                return 81;
-            }
-
-            if (map == Map.Ilshenar)
-            {
-                return 1102;
-            }
-
-            if (map == Map.Malas)
-            {
-                return 1102;
-            }
-
-            if (map == Map.Tokuno)
-            {
-                return 1154;
-            }
-
             return 0;
         }
 

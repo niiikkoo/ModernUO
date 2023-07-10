@@ -1,6 +1,4 @@
 using ModernUO.Serialization;
-using Server.Engines.Quests.Hag;
-using Server.Mobiles;
 using Server.Network;
 
 namespace Server.Items;
@@ -23,7 +21,7 @@ public partial class Spyglass : Item
             MessageType.Regular,
             0x3B2,
             3,
-            1008146 + (int)Clock.GetMoonPhase(Map.Trammel, from.X, from.Y),
+            1008146 + (int)Clock.GetMoonPhase(Map.Gaia, from.X, from.Y),
             "",
             AffixType.Prepend,
             "Trammel : "
@@ -35,40 +33,10 @@ public partial class Spyglass : Item
             MessageType.Regular,
             0x3B2,
             3,
-            1008146 + (int)Clock.GetMoonPhase(Map.Felucca, from.X, from.Y),
+            1008146 + (int)Clock.GetMoonPhase(Map.Gaia, from.X, from.Y),
             "",
             AffixType.Prepend,
-            "Felucca : "
+            "Gaia : "
         );
-
-        if (from is PlayerMobile player)
-        {
-            var qs = player.Quest;
-
-            if (qs is not WitchApprenticeQuest)
-            {
-                return;
-            }
-
-            var obj = qs.FindObjective<FindIngredientObjective>();
-
-            if (obj?.Completed == false && obj.Ingredient == Ingredient.StarChart)
-            {
-                Clock.GetTime(from.Map, from.X, from.Y, out var hours, out int _);
-
-                if (hours is < 5 or > 17)
-                {
-                    // You gaze up into the glittering night sky.  With great care, you compose a chart of the most prominent star patterns.
-                    player.SendLocalizedMessage(1055040);
-
-                    obj.Complete();
-                }
-                else
-                {
-                    // You gaze up into the sky, but it is not dark enough to see any stars.
-                    player.SendLocalizedMessage(1055039);
-                }
-            }
-        }
     }
 }

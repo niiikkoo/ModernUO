@@ -9,8 +9,6 @@ namespace Server.Mobiles
         [Constructible]
         public LadyMarai()
         {
-            IsParagon = true;
-
             Hue = 0x21;
 
             SetStr(221, 304);
@@ -47,16 +45,15 @@ namespace Server.Mobiles
         public override void OnDeath( Container c )
         {
             base.OnDeath( c );
-    
+
             if (Utility.RandomDouble() < 0.15)
             c.DropItem( new DisintegratingThesisNotes() );
-    
+
             if (Utility.RandomDouble() < 0.1)
             c.DropItem( new ParrotItem() );
         }
         */
 
-        public override bool GivesMLMinorArtifact => true;
 
         public override void GenerateLoot()
         {

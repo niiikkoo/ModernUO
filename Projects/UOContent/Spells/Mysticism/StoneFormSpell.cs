@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Server.Factions;
 using Server.Spells.Fifth;
 using Server.Spells.Ninjitsu;
 using Server.Spells.Seventh;
@@ -35,12 +34,6 @@ namespace Server.Spells.Mysticism
 
         public override bool CheckCast()
         {
-            if (Sigil.ExistsOn(Caster))
-            {
-                Caster.SendLocalizedMessage(1061632); // You can't do that while carrying the sigil.
-                return false;
-            }
-
             if (!Caster.CanBeginAction<PolymorphSpell>())
             {
                 Caster.SendLocalizedMessage(1061628); // You can't do that while polymorphed.
@@ -64,11 +57,7 @@ namespace Server.Spells.Mysticism
 
         public override void OnCast()
         {
-            if (Sigil.ExistsOn(Caster))
-            {
-                Caster.SendLocalizedMessage(1061632); // You can't do that while carrying the sigil.
-            }
-            else if (!Caster.CanBeginAction<PolymorphSpell>())
+            if (!Caster.CanBeginAction<PolymorphSpell>())
             {
                 Caster.SendLocalizedMessage(1061628); // You can't do that while polymorphed.
             }

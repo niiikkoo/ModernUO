@@ -9,7 +9,6 @@ namespace Server.Mobiles
         [Constructible]
         public Grobu()
         {
-            IsParagon = true;
 
             Hue = 0x455;
 
@@ -45,7 +44,6 @@ namespace Server.Mobiles
         public override string CorpseName => "a Grobu corpse";
         public override string DefaultName => "Grobu";
 
-        public override bool GivesMLMinorArtifact => true;
 
         public override void GenerateLoot()
         {

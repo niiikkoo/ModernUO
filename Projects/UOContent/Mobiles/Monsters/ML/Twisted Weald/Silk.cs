@@ -9,7 +9,6 @@ namespace Server.Mobiles
         [Constructible]
         public Silk()
         {
-            IsParagon = true;
             Hue = 0x47E;
 
             SetStr(80, 131);
@@ -43,7 +42,6 @@ namespace Server.Mobiles
         public override string CorpseName => "a Silk corpse";
         public override string DefaultName => "Silk";
 
-        public override bool GivesMLMinorArtifact => true;
 
         public override void GenerateLoot()
         {

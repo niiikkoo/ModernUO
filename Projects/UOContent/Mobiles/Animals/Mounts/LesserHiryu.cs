@@ -1,5 +1,4 @@
 using ModernUO.Serialization;
-using Server.Engines.Plants;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -42,11 +41,6 @@ namespace Server.Mobiles
             Tamable = true;
             ControlSlots = 3;
             MinTameSkill = 98.7;
-
-            if (Utility.RandomDouble() < .33)
-            {
-                PackItem(Seed.RandomBonsaiSeed());
-            }
         }
 
         public override string CorpseName => "a hiryu corpse";

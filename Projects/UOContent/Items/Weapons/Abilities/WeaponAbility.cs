@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Server.Engines.ConPVP;
 using Server.Mobiles;
 using Server.Spells;
 using Server.Spells.Bushido;
@@ -384,7 +383,7 @@ namespace Server.Items
                 _                   => null
             };
 
-            if (option != null && !DuelContext.AllowSpecialAbility(from, option, true))
+            if (option != null)
             {
                 return false;
             }

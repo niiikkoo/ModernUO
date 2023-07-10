@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using ModernUO.Serialization;
-using Server.Engines.ConPVP;
-using Server.Factions;
 using Server.Gumps;
 using Server.Mobiles;
 using Server.Targeting;
@@ -99,7 +97,7 @@ public partial class Bandage : Item, IDyable
             {
                 if (from.InRange(_bandage.GetWorldLocation(), Bandage.Range))
                 {
-                    if (!(BandageContext.BeginHeal(from, mobile) == null || DuelContext.IsFreeConsume(from)))
+                    if (BandageContext.BeginHeal(from, mobile) != null)
                     {
                         _bandage.Consume();
                     }
@@ -112,32 +110,7 @@ public partial class Bandage : Item, IDyable
                 return;
             }
 
-            if (targeted is PlagueBeastInnard innard)
-            {
-                if (innard.OnBandage(from))
-                {
-                    _bandage.Consume();
-                }
-
-                return;
-            }
-
             from.SendLocalizedMessage(500970); // Bandages can not be used on that.
-        }
-
-        protected override void OnNonlocalTarget(Mobile from, object targeted)
-        {
-            if (targeted is PlagueBeastInnard innard)
-            {
-                if (innard.OnBandage(from))
-                {
-                    _bandage.Consume();
-                }
-            }
-            else
-            {
-                base.OnNonlocalTarget(from, targeted);
-            }
         }
     }
 }
@@ -245,7 +218,7 @@ public class BandageContext : Timer
 
             // TODO: Dbl check doesn't check for faction of the horse here?
             if (!(checkSkills && chance > Utility.RandomDouble())
-                && (!Core.SE || petPatient is not FactionWarHorse || petPatient.ControlMaster != Healer))
+                && (!Core.SE || petPatient != null && petPatient.ControlMaster != Healer))
             {
                 if (petPatient?.IsDeadPet == true)
                 {

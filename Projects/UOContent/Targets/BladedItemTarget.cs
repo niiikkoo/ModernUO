@@ -1,5 +1,4 @@
 using Server.Engines.Harvest;
-using Server.Engines.Quests.Hag;
 using Server.Items;
 using Server.Mobiles;
 using Server.Targeting;
@@ -48,29 +47,6 @@ namespace Server.Targets
             }
             else
             {
-                if (targeted is StaticTarget target)
-                {
-                    var itemID = target.ItemID;
-
-                    if (itemID is 0xD15 or 0xD16) // red mushroom
-                    {
-                        var player = from as PlayerMobile;
-
-                        var qs = player?.Quest;
-
-                        if (qs is WitchApprenticeQuest)
-                        {
-                            var obj = qs.FindObjective<FindIngredientObjective>();
-                            if (obj?.Completed == false && obj.Ingredient == Ingredient.RedMushrooms)
-                            {
-                                player.SendLocalizedMessage(1055036); // You slice a red cap mushroom from its stem.
-                                obj.Complete();
-                                return;
-                            }
-                        }
-                    }
-                }
-
                 HarvestSystem system = Lumberjacking.System;
                 var def = system.GetDefinition();
 

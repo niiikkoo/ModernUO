@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using ModernUO.Serialization;
-using Server.Factions;
 using Server.Gumps;
 using Server.Mobiles;
 using Server.Network;
@@ -105,11 +104,7 @@ public partial class PublicMoongate : Item
 
         var count = 0;
 
-        count += MoonGen(PMList.Trammel);
-        count += MoonGen(PMList.Felucca);
-        count += MoonGen(PMList.Ilshenar);
-        count += MoonGen(PMList.Malas);
-        count += MoonGen(PMList.Tokuno);
+        count += MoonGen(PMList.Gaia);
 
         World.Broadcast(0x35, true, $"{count} moongates generated.");
     }
@@ -170,31 +165,11 @@ public class PMEntry
 
 public class PMList
 {
-    public static PMList Trammel =
-        new(
-            1012000,
-            1012012,
-            Map.Trammel,
-            new[]
-            {
-                new PMEntry(new Point3D(4467, 1283, 5), 1012003),   // Moonglow
-                new PMEntry(new Point3D(1336, 1997, 5), 1012004),   // Britain
-                new PMEntry(new Point3D(1499, 3771, 5), 1012005),   // Jhelom
-                new PMEntry(new Point3D(771, 752, 5), 1012006),     // Yew
-                new PMEntry(new Point3D(2701, 692, 5), 1012007),    // Minoc
-                new PMEntry(new Point3D(1828, 2948, -20), 1012008), // Trinsic
-                new PMEntry(new Point3D(643, 2067, 5), 1012009),    // Skara Brae
-                /* Dynamic Z for Magincia to support both old and new maps. */
-                new PMEntry(new Point3D(3563, 2139, Map.Trammel.GetAverageZ(3563, 2139)), 1012010), // (New) Magincia
-                new PMEntry(new Point3D(3450, 2677, 25), 1078098)                                   // New Haven
-            }
-        );
-
-    public static PMList Felucca =
+    public static PMList Gaia =
         new(
             1012001,
             1012013,
-            Map.Felucca,
+            Map.Gaia,
             new[]
             {
                 new PMEntry(new Point3D(4467, 1283, 5), 1012003),   // Moonglow
@@ -205,93 +180,10 @@ public class PMList
                 new PMEntry(new Point3D(1828, 2948, -20), 1012008), // Trinsic
                 new PMEntry(new Point3D(643, 2067, 5), 1012009),    // Skara Brae
                 /* Dynamic Z for Magincia to support both old and new maps. */
-                new PMEntry(new Point3D(3563, 2139, Map.Felucca.GetAverageZ(3563, 2139)), 1012010), // (New) Magincia
+                new PMEntry(new Point3D(3563, 2139, Map.Gaia.GetAverageZ(3563, 2139)), 1012010), // (New) Magincia
                 new PMEntry(new Point3D(2711, 2234, 0), 1019001)                                    // Buccaneer's Den
             }
         );
-
-    public static PMList Ilshenar =
-        new(
-            1012002,
-            1012014,
-            Map.Ilshenar,
-            new[]
-            {
-                new PMEntry(new Point3D(1215, 467, -13), 1012015),  // Compassion
-                new PMEntry(new Point3D(722, 1366, -60), 1012016),  // Honesty
-                new PMEntry(new Point3D(744, 724, -28), 1012017),   // Honor
-                new PMEntry(new Point3D(281, 1016, 0), 1012018),    // Humility
-                new PMEntry(new Point3D(987, 1011, -32), 1012019),  // Justice
-                new PMEntry(new Point3D(1174, 1286, -30), 1012020), // Sacrifice
-                new PMEntry(new Point3D(1532, 1340, -3), 1012021),  // Spirituality
-                new PMEntry(new Point3D(528, 216, -45), 1012022),   // Valor
-                new PMEntry(new Point3D(1721, 218, 96), 1019000)    // Chaos
-            }
-        );
-
-    public static PMList Malas =
-        new(
-            1060643,
-            1062039,
-            Map.Malas,
-            new[]
-            {
-                new PMEntry(new Point3D(1015, 527, -65), 1060641), // Luna
-                new PMEntry(new Point3D(1997, 1386, -85), 1060642) // Umbra
-            }
-        );
-
-    public static PMList Tokuno =
-        new(
-            1063258,
-            1063415,
-            Map.Tokuno,
-            new[]
-            {
-                new PMEntry(new Point3D(1169, 998, 41), 1063412), // Isamu-Jima
-                new PMEntry(new Point3D(802, 1204, 25), 1063413), // Makoto-Jima
-                new PMEntry(new Point3D(270, 628, 15), 1063414)   // Homare-Jima
-            }
-        );
-
-    public static PMList TerMur =
-        new(
-            1113602,
-            1113604,
-            Map.TerMur,
-            new[]
-            {
-                new PMEntry(new Point3D(850, 3525, -38), 1113603), // Royal City
-            }
-        );
-
-    public static PMList TerMurEodon =
-        new(
-            1113602,
-            1113604,
-            Map.TerMur,
-            new[]
-            {
-                new PMEntry(new Point3D(850, 3525, -38), 1113603), // Royal City
-                new PMEntry(new Point3D(719, 1863, 40), 1156262)   // Valley of Eodon
-            }
-        );
-
-    public static PMList[] NoTrammelLists = { Felucca };
-    public static PMList[] T2ALists = { Trammel, Felucca };
-    public static PMList[] T2AListsYoung = { Trammel };
-    public static PMList[] LBRLists = { Trammel, Felucca, Ilshenar };
-    public static PMList[] LBRListsYoung = { Trammel, Ilshenar };
-    public static PMList[] AOSLists = { Trammel, Felucca, Ilshenar, Malas };
-    public static PMList[] AOSListsYoung = { Trammel, Ilshenar, Malas };
-    public static PMList[] SELists = { Trammel, Felucca, Ilshenar, Malas, Tokuno };
-    public static PMList[] SEListsYoung = { Trammel, Ilshenar, Malas, Tokuno };
-    public static PMList[] SALists = { Trammel, Felucca, Ilshenar, Malas, Tokuno, TerMur };
-    public static PMList[] SAListsYoung = { Trammel, Ilshenar, Malas, Tokuno, TerMur };
-    public static PMList[] TOLLists = { Trammel, Felucca, Ilshenar, Malas, Tokuno, TerMurEodon };
-    public static PMList[] TOLListsYoung = { Trammel, Ilshenar, Malas, Tokuno, TerMurEodon };
-    public static PMList[] RedLists = { Felucca };
-    public static PMList[] SigilLists = { Felucca };
 
     public PMList(int number, int selNumber, Map map, PMEntry[] entries)
     {
@@ -321,39 +213,7 @@ public class MoongateGump : Gump
         _mobile = mobile;
         _moongate = moongate;
 
-        PMList[] checkLists;
-
-        if (!mobile.Player)
-        {
-            checkLists = PMList.SELists;
-        }
-        else if (Sigil.ExistsOn(mobile))
-        {
-            checkLists = PMList.SigilLists;
-        }
-        else if (mobile.Kills >= 5)
-        {
-            checkLists = PMList.RedLists;
-        }
-        else
-        {
-            var flags = mobile.NetState?.Flags ?? ClientFlags.None;
-            var young = mobile is PlayerMobile { Young: true };
-
-            checkLists = Core.Expansion switch
-            {
-                >= Expansion.TOL when (flags & ClientFlags.TerMur) != 0 =>
-                    young ? PMList.TOLListsYoung : PMList.TOLLists,
-                >= Expansion.SA when (flags & ClientFlags.TerMur) != 0 => young ? PMList.SAListsYoung : PMList.SALists,
-                >= Expansion.SE when (flags & ClientFlags.Tokuno) != 0 => young ? PMList.SEListsYoung : PMList.SELists,
-                >= Expansion.AOS when (flags & ClientFlags.Malas) != 0 => young ? PMList.AOSListsYoung : PMList.AOSLists,
-                >= Expansion.LBR when (flags & ClientFlags.Ilshenar) != 0 =>
-                    young ? PMList.LBRListsYoung : PMList.LBRLists,
-                >= Expansion.T2A when (flags & ClientFlags.Trammel) != 0 =>
-                    young ? PMList.T2AListsYoung : PMList.T2ALists,
-                _ => PMList.NoTrammelLists
-            };
-        }
+        PMList[] checkLists = { PMList.Gaia };
 
         _lists = new PMList[checkLists.Length];
 
@@ -454,11 +314,7 @@ public class MoongateGump : Gump
         {
             _mobile.SendLocalizedMessage(1019002); // You are too far away to use the gate.
         }
-        else if (_mobile.Player && _mobile.Kills >= 5 && list.Map != Map.Felucca)
-        {
-            _mobile.SendLocalizedMessage(1019004); // You are not allowed to travel there.
-        }
-        else if (Sigil.ExistsOn(_mobile) && list.Map != Faction.Facet)
+        else if (_mobile.Player && _mobile.Kills >= 5 && list.Map != Map.Gaia)
         {
             _mobile.SendLocalizedMessage(1019004); // You are not allowed to travel there.
         }

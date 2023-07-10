@@ -3,13 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Server.Collections;
 using Server.ContextMenus;
-using Server.Engines.ConPVP;
-using Server.Engines.MLQuests;
-using Server.Engines.Quests.Doom;
-using Server.Engines.Quests.Haven;
 using Server.Engines.Spawners;
-using Server.Ethics;
-using Server.Factions;
 using Server.Items;
 using Server.Misc;
 using Server.Multis;
@@ -152,7 +146,7 @@ namespace Server.Mobiles
         }
     }
 
-    public abstract class BaseCreature : Mobile, IHonorTarget, IQuestGiver
+    public abstract class BaseCreature : Mobile
     {
         public enum Allegiance
         {
@@ -285,10 +279,6 @@ namespace Server.Mobiles
         protected int m_KillersLuck;
 
         private int m_Loyalty;
-
-        private DateTime m_MLNextShout;
-
-        private List<MLQuest> m_MLQuests;
 
         private long m_NextAura;
 
@@ -424,36 +414,7 @@ namespace Server.Mobiles
 
         protected DateTime SummonEnd { get; set; }
 
-        public virtual Faction FactionAllegiance => null;
-        public virtual int FactionSilverWorth => 30;
-
         public virtual double WeaponAbilityChance => 0.4;
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public bool IsParagon
-        {
-            get => m_Paragon;
-            set
-            {
-                if (m_Paragon == value)
-                {
-                    return;
-                }
-
-                if (value)
-                {
-                    Paragon.Convert(this);
-                }
-                else
-                {
-                    Paragon.UnConvert(this);
-                }
-
-                m_Paragon = value;
-
-                InvalidateProperties();
-            }
-        }
 
         public virtual bool HasManaOveride => false;
 
@@ -842,11 +803,7 @@ namespace Server.Mobiles
 
         public virtual int TreasureMapLevel => -1;
 
-        public virtual bool IgnoreYoungProtection => false;
-
         public bool NoKillAwards { get; set; }
-
-        public virtual bool GivesMLMinorArtifact => false;
 
         /* To save on cpu usage, RunUO creatures only reacquire creatures under the following circumstances:
          *  - 10 seconds have elapsed since the last time it tried
@@ -882,9 +839,6 @@ namespace Server.Mobiles
         [CommandProperty(AccessLevel.GameMaster)]
         public int RemoveStep { get; set; }
 
-        public virtual bool CanGiveMLQuest => MLQuests.Count != 0;
-        public virtual bool StaticMLQuester => true;
-
         public virtual bool CanShout => false;
 
         public static bool BondingEnabled { get; private set; }
@@ -894,7 +848,7 @@ namespace Server.Mobiles
         public virtual TimeSpan BondingAbandonDelay => TimeSpan.FromDays(1.0);
 
         public override bool CanRegenHits => !IsDeadPet && !Summoned && base.CanRegenHits;
-        public override bool CanRegenStam => !IsParagon && !IsDeadPet && base.CanRegenStam;
+        public override bool CanRegenStam => !IsDeadPet && base.CanRegenStam;
         public override bool CanRegenMana => !IsDeadPet && base.CanRegenMana;
 
         public override bool IsDeadBondedPet => IsDeadPet;
@@ -1042,8 +996,6 @@ namespace Server.Mobiles
 
         public virtual bool AllowNewPetFriend => Friends == null || Friends.Count < 5;
 
-        public virtual Ethic EthicAllegiance => null;
-
         public virtual int Feathers => 0;
         public virtual int Wool => 0;
 
@@ -1087,34 +1039,6 @@ namespace Server.Mobiles
         public virtual int AuraPoisonDamage => 0;
         public virtual int AuraEnergyDamage => 0;
         public virtual int AuraChaosDamage => 0;
-
-        public HonorContext ReceivedHonorContext { get; set; }
-
-        public List<MLQuest> MLQuests
-        {
-            get
-            {
-                if (m_MLQuests == null)
-                {
-                    if (StaticMLQuester)
-                    {
-                        m_MLQuests = MLQuestSystem.FindQuestList(GetType());
-                    }
-                    else
-                    {
-                        m_MLQuests = ConstructQuestList();
-                    }
-
-                    if (m_MLQuests == null)
-                    {
-                        // return EmptyList, but don't cache it (run construction again next time)
-                        return MLQuestSystem.EmptyList;
-                    }
-                }
-
-                return m_MLQuests;
-            }
-        }
 
         public virtual MonsterAbility[] GetMonsterAbilities() => null;
 
@@ -1296,25 +1220,7 @@ namespace Server.Mobiles
                 return false;
             }
 
-            if (GetFactionAllegiance(m) == Allegiance.Ally)
-            {
-                return false;
-            }
-
-            var ourEthic = EthicAllegiance;
-            var pl = Ethics.Player.Find(m, true);
-
-            if (pl?.IsShielded == true && (ourEthic == null || ourEthic == pl.Ethic))
-            {
-                return false;
-            }
-
-            if (m is PlayerMobile mobile && mobile.HonorActive)
-            {
-                return false;
-            }
-
-            if (m is not BaseCreature c || m is MilitiaFighter)
+            if (m is not BaseCreature c)
             {
                 return true;
             }
@@ -1330,16 +1236,6 @@ namespace Server.Mobiles
             }
 
             return m_Team != c.m_Team || (_summoned || m_Controlled) != (c._summoned || c.m_Controlled);
-        }
-
-        public override string ApplyNameSuffix(string suffix)
-        {
-            if (IsParagon && !GivesMLMinorArtifact)
-            {
-                suffix = suffix.Length == 0 ? "(Paragon)" : $"{suffix} (Paragon)";
-            }
-
-            return base.ApplyNameSuffix(suffix);
         }
 
         public virtual bool CheckControlChance(Mobile m)
@@ -1484,16 +1380,6 @@ namespace Server.Mobiles
             }
         }
 
-        public override void OnBeforeSpawn(Point3D location, Map m)
-        {
-            if (Paragon.CheckConvert(this, location, m))
-            {
-                IsParagon = true;
-            }
-
-            base.OnBeforeSpawn(location, m);
-        }
-
         public override ApplyPoisonResult ApplyPoison(Mobile from, Poison poison)
         {
             if (!Alive || IsDeadPet)
@@ -1577,8 +1463,6 @@ namespace Server.Mobiles
                 speechType.OnDamage(this, amount);
             }
 
-            ReceivedHonorContext?.OnTargetDamaged(from, amount);
-
             if (!willKill)
             {
                 if (CanBeDistracted && ControlOrder == OrderType.Follow)
@@ -1644,7 +1528,7 @@ namespace Server.Mobiles
                     hides = (int)Math.Ceiling(hides * 1.1); // 10% bonus only applies to hides, ore & logs
                 }
 
-                if (corpse.Map == Map.Felucca)
+                if (corpse.Map == Map.Gaia)
                 {
                     feathers *= 2;
                     wool *= 2;
@@ -2148,11 +2032,6 @@ namespace Server.Mobiles
                 HomeMap = reader.ReadMap();
             }
 
-            if (version <= 14 && m_Paragon && Hue == 0x31)
-            {
-                Hue = Paragon.Hue; // Paragon hue fixed, should now be 0x501.
-            }
-
             if (Core.AOS && NameHue == 0x35)
             {
                 NameHue = -1;
@@ -2219,15 +2098,6 @@ namespace Server.Mobiles
             if (CheckGold(from, dropped))
             {
                 return true;
-            }
-
-            // Note: Yes, this happens for all questers (regardless of type, e.g. escorts),
-            // even if they can't offer you anything at the moment
-            if (MLQuestSystem.Enabled && CanGiveMLQuest && from is PlayerMobile mobile)
-            {
-                // You need to mark your quest items so I don't take the wrong object.  Then speak to me.
-                MLQuestSystem.Tell(this, mobile, 1074893);
-                return false;
             }
 
             return base.OnDragDrop(from, dropped);
@@ -2402,11 +2272,6 @@ namespace Server.Mobiles
                 AnimateDeadSpell.Unregister(m_SummonMaster, this);
             }
 
-            if (MLQuestSystem.Enabled)
-            {
-                MLQuestSystem.HandleDeletion(this);
-            }
-
             base.OnAfterDelete();
         }
 
@@ -2504,16 +2369,6 @@ namespace Server.Mobiles
 
             ForceReacquire();
 
-            if (!IsEnemy(aggressor))
-            {
-                var pl = Ethics.Player.Find(aggressor, true);
-
-                if (pl?.IsShielded == true)
-                {
-                    pl.FinishShield();
-                }
-            }
-
             if (aggressor.ChangingCombatant && (m_Controlled || _summoned) &&
                 (ct == OrderType.Come || !Core.ML && ct == OrderType.Stay || ct is OrderType.Stop or OrderType.None or OrderType.Follow))
             {
@@ -2533,13 +2388,6 @@ namespace Server.Mobiles
             {
                 return !Alive || !creature.Alive || IsDeadBondedPet || creature.IsDeadBondedPet ||
                        Hidden && AccessLevel > AccessLevel.Player;
-            }
-
-            if (Region.IsPartOf<SafeZone>() && m is PlayerMobile pm &&
-                (pm.DuelContext?.Started != true || pm.DuelContext.Finished ||
-                 pm.DuelPlayer?.Eliminated != false))
-            {
-                return true;
             }
 
             return base.OnMoveOver(m);
@@ -2858,11 +2706,6 @@ namespace Server.Mobiles
             }
             /* End notice sound */
 
-            if (MLQuestSystem.Enabled && CanShout && m is PlayerMobile mobile)
-            {
-                CheckShout(mobile, oldLocation);
-            }
-
             if (m_NoDupeGuards == m)
             {
                 return;
@@ -2906,22 +2749,12 @@ namespace Server.Mobiles
                 }
             }
 
-            if (MLQuestSystem.Enabled && CanGiveMLQuest && from is PlayerMobile mobile)
-            {
-                MLQuestSystem.OnDoubleClick(this, mobile);
-            }
-
             base.OnDoubleClick(from);
         }
 
         public override void AddNameProperties(IPropertyList list)
         {
             base.AddNameProperties(list);
-
-            if (MLQuestSystem.Enabled && CanGiveMLQuest)
-            {
-                list.Add(1072269); // Quest Giver
-            }
 
             if (Core.ML)
             {
@@ -2985,59 +2818,13 @@ namespace Server.Mobiles
 
             var treasureLevel = TreasureMapLevel;
 
-            if (treasureLevel == 1 && Map == Map.Trammel && TreasureMap.IsInHavenIsland(this))
-            {
-                var killer = LastKiller;
-
-                if (killer is BaseCreature bc)
-                {
-                    killer = bc.GetMaster();
-                }
-
-                if (killer is PlayerMobile mobile && mobile.Young)
-                {
-                    treasureLevel = 0;
-                }
-            }
-
             if (!Summoned && !NoKillAwards && !IsBonded)
             {
                 if (treasureLevel >= 0)
                 {
-                    if (m_Paragon && Paragon.ChestChance > Utility.RandomDouble())
-                    {
-                        PackItem(new ParagonChest(Name, treasureLevel));
-                    }
-                    else if ((Map == Map.Felucca || Map == Map.Trammel) && Utility.RandomDouble() < TreasureMap.LootChance)
+                    if ((Map == Map.Gaia) && Utility.RandomDouble() < TreasureMap.LootChance)
                     {
                         PackItem(new TreasureMap(treasureLevel, Map));
-                    }
-                }
-
-                if (m_Paragon && Paragon.ChocolateIngredientChance > Utility.RandomDouble())
-                {
-                    switch (Utility.Random(4))
-                    {
-                        case 0:
-                            {
-                                PackItem(new CocoaButter());
-                                break;
-                            }
-                        case 1:
-                            {
-                                PackItem(new CocoaLiquor());
-                                break;
-                            }
-                        case 2:
-                            {
-                                PackItem(new SackOfSugar());
-                                break;
-                            }
-                        case 3:
-                            {
-                                PackItem(new Vanilla());
-                                break;
-                            }
                     }
                 }
             }
@@ -3048,16 +2835,6 @@ namespace Server.Mobiles
                 GenerateLoot(false);
             }
 
-            if (!NoKillAwards && Region.IsPartOf("Doom"))
-            {
-                var bones = TheSummoningQuest.GetDaemonBonesFor(this);
-
-                if (bones > 0)
-                {
-                    PackItem(new DaemonBone(bones));
-                }
-            }
-
             if (IsAnimatedDead)
             {
                 Effects.SendLocationEffect(Location, Map, 0x3728, 13, 1, 0x461, 4);
@@ -3065,7 +2842,6 @@ namespace Server.Mobiles
 
             var speechType = SpeechType;
             speechType?.OnDeath(this);
-            ReceivedHonorContext?.OnTargetKilled();
 
             return base.OnBeforeDeath();
         }
@@ -3240,28 +3016,8 @@ namespace Server.Mobiles
             return rights;
         }
 
-        public virtual void OnKilledBy(Mobile mob)
-        {
-            if (GivesMLMinorArtifact)
-            {
-                if (MondainsLegacy.CheckArtifactChance(mob, this))
-                {
-                    MondainsLegacy.GiveArtifactTo(mob);
-                }
-            }
-            else if (m_Paragon)
-            {
-                if (Paragon.CheckArtifactChance(mob, this))
-                {
-                    Paragon.GiveArtifactTo(mob);
-                }
-            }
-        }
-
         public override void OnDeath(Container c)
         {
-            MeerMage.StopEffect(this, false);
-
             if (IsBonded)
             {
                 Effects.PlaySound(this, GetDeathSound());
@@ -3334,7 +3090,7 @@ namespace Server.Mobiles
                 var totalFame = Fame / 100;
                 var totalKarma = -Karma / 100;
 
-                if (Map == Map.Felucca)
+                if (Map == Map.Gaia)
                 {
                     totalFame += totalFame / 10 * 3;
                     totalKarma += totalKarma / 10 * 3;
@@ -3344,10 +3100,6 @@ namespace Server.Mobiles
                 var titles = new List<Mobile>();
                 var fame = new List<int>();
                 var karma = new List<int>();
-
-                var givenQuestKill = false;
-                var givenFactionKill = false;
-                var givenToTKill = false;
 
                 for (var i = 0; i < list.Count; ++i)
                 {
@@ -3393,44 +3145,6 @@ namespace Server.Mobiles
                         fame.Add(totalFame);
                         karma.Add(totalKarma);
                     }
-
-                    OnKilledBy(ds.m_Mobile);
-
-                    if (!givenFactionKill)
-                    {
-                        givenFactionKill = true;
-                        Faction.HandleDeath(this, ds.m_Mobile);
-                    }
-
-                    var region = ds.m_Mobile.Region;
-
-                    if (!givenToTKill && (Map == Map.Tokuno || region.IsPartOf("Yomotsu Mines") ||
-                                          region.IsPartOf("Fan Dancer's Dojo")))
-                    {
-                        givenToTKill = true;
-                        TreasuresOfTokuno.HandleKill(this, ds.m_Mobile);
-                    }
-
-                    if (ds.m_Mobile is PlayerMobile pm)
-                    {
-                        if (MLQuestSystem.Enabled)
-                        {
-                            MLQuestSystem.HandleKill(pm, this);
-                        }
-
-                        if (givenQuestKill)
-                        {
-                            continue;
-                        }
-
-                        var qs = pm.Quest;
-
-                        if (qs != null)
-                        {
-                            qs.OnKill(this, c);
-                            givenQuestKill = true;
-                        }
-                    }
                 }
 
                 for (var i = 0; i < titles.Count; ++i)
@@ -3454,18 +3168,13 @@ namespace Server.Mobiles
             SetControlMaster(null);
 
             SummonMaster = null;
-            ReceivedHonorContext?.Cancel();
+
             base.OnDelete();
             m?.InvalidateProperties();
         }
 
         public override bool CanBeHarmful(Mobile target, bool message, bool ignoreOurBlessedness)
         {
-            if (target is BaseFactionGuard)
-            {
-                return false;
-            }
-
             if (target is BaseCreature creature && creature.IsInvulnerable || target is PlayerVendor or TownCrier)
             {
                 if (message)
@@ -3769,13 +3478,7 @@ namespace Server.Mobiles
 
                 if (target is BaseCreature t)
                 {
-                    if (t.Unprovokable || t.IsParagon && BaseInstrument.GetBaseDifficulty(t) >= 160.0)
-                    {
-                        return;
-                    }
-
                     t.BardProvoked = true;
-
                     t.BardMaster = master;
                     t.BardTarget = this;
                     t.Combatant = this;
@@ -3969,40 +3672,6 @@ namespace Server.Mobiles
             base.OnSectorActivate();
         }
 
-        protected virtual List<MLQuest> ConstructQuestList() => null;
-
-        private void CheckShout(PlayerMobile pm, Point3D oldLocation)
-        {
-            if (m_MLNextShout > Core.Now || pm.Hidden || !pm.Alive)
-            {
-                return;
-            }
-
-            var shoutRange = ShoutRange;
-
-            if (!InRange(pm.Location, shoutRange) || InRange(oldLocation, shoutRange) || !CanSee(pm) || !InLOS(pm))
-            {
-                return;
-            }
-
-            var context = MLQuestSystem.GetContext(pm);
-
-            if (context?.IsFull == true)
-            {
-                return;
-            }
-
-            var quest = MLQuestSystem.RandomStarterQuest(this, pm, context);
-
-            if (quest?.Activated != true || context?.IsDoingQuest(quest) == true)
-            {
-                return;
-            }
-
-            Shout(pm);
-            m_MLNextShout = Core.Now + ShoutDelay;
-        }
-
         public virtual void Shout(PlayerMobile pm)
         {
         }
@@ -4014,7 +3683,7 @@ namespace Server.Mobiles
 
         public void BeginDeleteTimer()
         {
-            if (this is not BaseEscortable && !Summoned && !Deleted && !IsStabled)
+            if (Summoned && !Deleted && !IsStabled)
             {
                 StopDeleteTimer();
                 m_DeleteTimer = new DeleteTimer(this, TimeSpan.FromDays(3.0));
@@ -4110,40 +3779,6 @@ namespace Server.Mobiles
         public virtual bool IsFriend(Mobile m) =>
             OppositionGroup?.IsEnemy(this, m) != true && m is BaseCreature c && m_Team == c.m_Team
             && (_summoned || m_Controlled) == (c._summoned || c.m_Controlled);
-
-        public virtual Allegiance GetFactionAllegiance(Mobile mob)
-        {
-            if (mob == null || mob.Map != Faction.Facet || FactionAllegiance == null)
-            {
-                return Allegiance.None;
-            }
-
-            var fac = Faction.Find(mob, true);
-
-            if (fac == null)
-            {
-                return Allegiance.None;
-            }
-
-            return fac == FactionAllegiance ? Allegiance.Ally : Allegiance.Enemy;
-        }
-
-        public virtual Allegiance GetEthicAllegiance(Mobile mob)
-        {
-            if (mob == null || mob.Map != Faction.Facet || EthicAllegiance == null)
-            {
-                return Allegiance.None;
-            }
-
-            var ethic = Ethic.Find(mob, true);
-
-            if (ethic == null)
-            {
-                return Allegiance.None;
-            }
-
-            return ethic == EthicAllegiance ? Allegiance.Ally : Allegiance.Enemy;
-        }
 
         public virtual void AlterDamageScalarFrom(Mobile caster, ref double scalar)
         {

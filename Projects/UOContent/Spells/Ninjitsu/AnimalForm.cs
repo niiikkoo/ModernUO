@@ -46,7 +46,7 @@ namespace Server.Spells.Ninjitsu
         {
             new(typeof(Kirin), 1029632, 9632, 0, 1070811, 100.0, 0x84, 0, 0),
             new(typeof(Unicorn), 1018214, 9678, 0, 1070812, 100.0, 0x7A, 0, 0),
-            new(typeof(BakeKitsune), 1030083, 10083, 0, 1070810, 82.5, 0xF6, 0, 0),
+            //new(typeof(BakeKitsune), 1030083, 10083, 0, 1070810, 82.5, 0xF6, 0, 0),
             new(typeof(GreyWolf), 1028482, 9681, 2309, 1070810, 82.5, 0x19, 0x8FD, 0x90E),
             new(typeof(Llama), 1028438, 8438, 0, 1070809, 70.0, 0xDC, 0, 0),
             new(typeof(ForestOstard), 1018273, 8503, 2212, 1070809, 70.0, 0xDB, 0x899, 0x8B0),
@@ -55,11 +55,11 @@ namespace Server.Spells.Ninjitsu
             new(typeof(Dog), 1018280, 8476, 2309, 1070806, 40.0, 0xD9, 0x8FD, 0x90E, false, false),
             new(typeof(Cat), 1018264, 8475, 2309, 1070806, 40.0, 0xC9, 0x8FD, 0x90E, false, false),
             new(typeof(Rat), 1018294, 8483, 2309, 1070805, 20.0, 0xEE, 0x8FD, 0x90E, true, false),
-            new(typeof(Rabbit), 1028485, 8485, 2309, 1070805, 20.0, 0xCD, 0x8FD, 0x90E, true, false),
-            new(typeof(Squirrel), 1031671, 11671, 0, 0, 20.0, 0x116, 0, 0, false, false),
+            new(typeof(Rabbit), 1028485, 8485, 2309, 1070805, 20.0, 0xCD, 0x8FD, 0x90E, true, false)
+            /*new(typeof(Squirrel), 1031671, 11671, 0, 0, 20.0, 0x116, 0, 0, false, false),
             new(typeof(Ferret), 1031672, 11672, 0, 1075220, 40.0, 0x117, 0, 0, false, false, true),
             new(typeof(CuSidhe), 1031670, 11670, 0, 1075221, 60.0, 0x115, 0, 0, false, false),
-            new(typeof(Reptalon), 1075202, 11669, 0, 1075222, 90.0, 0x114, 0, 0, false, false)
+            new(typeof(Reptalon), 1075202, 11669, 0, 1075222, 90.0, 0x114, 0, 0, false, false)*/
         };
 
         public static void Initialize()
@@ -219,10 +219,10 @@ namespace Server.Spells.Ninjitsu
 
             m.CheckSkill(SkillName.Ninjitsu, 0.0, 37.5);
 
-            if (!BaseFormTalisman.EntryEnabled(m, entry.Type))
+            /*if (!BaseFormTalisman.EntryEnabled(m, entry.Type))
             {
                 return MorphResult.Success; // Still consumes mana, just no effect
-            }
+            }*/
 
             BaseMount.Dismount(m);
 
@@ -266,7 +266,7 @@ namespace Server.Spells.Ninjitsu
         {
             _table[m] = context;
 
-            if (context.Type == typeof(BakeKitsune) || context.Type == typeof(GreyWolf))
+            if (/*context.Type == typeof(BakeKitsune) ||*/ context.Type == typeof(GreyWolf))
             {
                 m.CheckStatTimers();
             }
@@ -411,7 +411,7 @@ namespace Server.Spells.Ninjitsu
 
                 for (var i = 0; i < entries.Length; ++i)
                 {
-                    var enabled = ninjitsu >= entries[i].ReqSkill && BaseFormTalisman.EntryEnabled(caster, entries[i].Type);
+                    var enabled = ninjitsu >= entries[i].ReqSkill; //&& BaseFormTalisman.EntryEnabled(caster, entries[i].Type);
 
                     var page = current / 10 + 1;
                     var pos = current % 10;
@@ -484,12 +484,9 @@ namespace Server.Spells.Ninjitsu
                 {
                     mobile.SendLocalizedMessage(1063108); // You cannot use this ability right now.
                 }
-                else if (BaseFormTalisman.EntryEnabled(sender.Mobile, entry.Type))
+                /*else if (BaseFormTalisman.EntryEnabled(sender.Mobile, entry.Type))
                 {
-                    if ((m_Caster as PlayerMobile)?.DuelContext?.AllowSpellCast(m_Caster, m_Spell) == false)
-                    {
-                    }
-                    else if (Morph(m_Caster, entryID) == MorphResult.Fail)
+                    if (Morph(m_Caster, entryID) == MorphResult.Fail)
                     {
                         m_Caster.LocalOverheadMessage(MessageType.Regular, 0x3B2, 502632); // The spell fizzles.
                         m_Caster.FixedParticles(0x3735, 1, 30, 9503, EffectLayer.Waist);
@@ -500,7 +497,7 @@ namespace Server.Spells.Ninjitsu
                         m_Caster.FixedParticles(0x3728, 10, 13, 2023, EffectLayer.Waist);
                         m_Caster.Mana -= mana;
                     }
-                }
+                }*/
             }
         }
     }

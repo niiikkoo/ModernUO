@@ -215,8 +215,8 @@ public static class OutgoingAccountPackets
             map = m.LogoutMap;
         }
 
-        writer.Write((short)(map?.Width ?? Map.Felucca.Width));
-        writer.Write((short)(map?.Height ?? Map.Felucca.Height));
+        writer.Write((short)(map?.Width ?? Map.Gaia.Width));
+        writer.Write((short)(map?.Height ?? Map.Gaia.Height));
         writer.Clear(writer.Capacity - writer.Position); // Remaining is zero
 
         ns.Send(writer.Span);

@@ -32,7 +32,7 @@ namespace Server.Items
                 },
                 [TalismanSlayerName.Vermin] = new[]
                 {
-                    typeof(RatmanMage), typeof(RatmanMage), typeof(RatmanArcher), typeof(Barracoon), typeof(Ratman),
+                    typeof(RatmanMage), typeof(RatmanMage), typeof(RatmanArcher), /*typeof(Barracoon),*/ typeof(Ratman),
                     typeof(SewerRat),
                     typeof(Rat), typeof(GiantRat) // , typeof( Chiikkaha )
                 },
@@ -41,13 +41,13 @@ namespace Server.Items
                     new[]
                     {
                         typeof(EvilMage), typeof(EvilMageLord), typeof(AncientLich), typeof(Lich), typeof(LichLord),
-                        typeof(SkeletalMage), typeof(BoneMagi), typeof(OrcishMage), typeof(KhaldunZealot), typeof(JukaMage)
+                        typeof(SkeletalMage), typeof(BoneMagi), typeof(OrcishMage), typeof(KhaldunZealot)//, typeof(JukaMage)
                     },
                 [TalismanSlayerName.Beetle] =
                     new[]
                     {
-                        typeof(Beetle), typeof(RuneBeetle), typeof(FireBeetle), typeof(DeathwatchBeetle),
-                        typeof(DeathwatchBeetleHatchling)
+                        typeof(Beetle)/*, typeof(RuneBeetle), typeof(FireBeetle), typeof(DeathwatchBeetle),
+                        typeof(DeathwatchBeetleHatchling)*/
                     },
                 [TalismanSlayerName.Bird] = new[]
                 {
@@ -59,15 +59,15 @@ namespace Server.Items
                 [TalismanSlayerName.Ice] = new[]
                 {
                     typeof(ArcticOgreLord), typeof(IceElemental), typeof(SnowElemental), typeof(FrostOoze),
-                    typeof(IceFiend), /*typeof( UnfrozenMummy ),*/ typeof(FrostSpider), typeof(LadyOfTheSnow),
+                    typeof(IceFiend), /*typeof( UnfrozenMummy ),*/ typeof(FrostSpider), //typeof(LadyOfTheSnow),
                     typeof(FrostTroll),
 
                     // TODO WinterReaper, check
-                    typeof(IceSnake), typeof(SnowLeopard), typeof(PolarBear), typeof(IceSerpent), typeof(GiantIceWorm)
+                    typeof(IceSnake), typeof(SnowLeopard), typeof(PolarBear), typeof(IceSerpent) /*typeof(GiantIceWorm)*/
                 },
                 [TalismanSlayerName.Flame] = new[]
                 {
-                    typeof(FireBeetle), typeof(HellHound), typeof(LavaSerpent), typeof(FireElemental),
+                    /*typeof(FireBeetle),*/ typeof(HellHound), typeof(LavaSerpent), typeof(FireElemental),
                     typeof(PredatorHellCat),
                     typeof(Phoenix), typeof(FireGargoyle), typeof(HellCat),
                     /*typeof( Pyre ),*/ typeof(FireSteed), typeof(LavaLizard),

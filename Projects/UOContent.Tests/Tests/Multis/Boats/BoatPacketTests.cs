@@ -22,21 +22,21 @@ namespace UOContent.Tests
             {
                 ItemID = 0x13B9,
                 Location = new Point3D(11, 21, 16),
-                Map = Map.Felucca,
+                Map = Map.Gaia,
                 Visible = true
             };
             var item2 = new Item((Serial)0x2000)
             {
                 ItemID = 0x13B9,
                 Location = new Point3D(100, 200, 16),
-                Map = Map.Felucca,
+                Map = Map.Gaia,
                 Visible = true
             };
 
             var beholder = new Mock<Mobile>((Serial)0x100);
             beholder.Object.DefaultMobileInit();
             beholder.Object.Location = new Point3D(10, 20, 15);
-            beholder.Object.Map = Map.Felucca;
+            beholder.Object.Map = Map.Gaia;
             beholder.Setup(m => m.CanSee(It.Is<IEntity>(e => e == beholder.Object))).Returns(true);
             beholder.Setup(m => m.CanSee(It.Is<IEntity>(e => e == item1))).Returns(true);
             beholder.Setup(m => m.CanSee(It.Is<IEntity>(e => e == item2))).Returns(false);
@@ -47,7 +47,7 @@ namespace UOContent.Tests
             {
                 Location = new Point3D(10, 20, 15),
                 Facing = Direction.Right,
-                Map = Map.Felucca
+                Map = Map.Gaia
             };
 
             beholder.Setup(m => m.CanSee(It.Is<IEntity>(e => e == boat))).Returns(true);
@@ -69,13 +69,13 @@ namespace UOContent.Tests
             {
                 ItemID = 0x13B9,
                 Location = new Point3D(11, 21, 16),
-                Map = Map.Felucca
+                Map = Map.Gaia
             };
             var item2 = new Item((Serial)0x2000)
             {
                 ItemID = 0x13B9,
                 Location = new Point3D(100, 200, 16),
-                Map = Map.Felucca
+                Map = Map.Gaia
             };
 
             var beholder = new Mock<Mobile>((Serial)0x100);

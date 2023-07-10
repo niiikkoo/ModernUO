@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Server.Engines.Quests;
-using Server.Engines.Quests.Collector;
 using Server.Items;
 using Server.Mobiles;
 using Server.Spells;
@@ -108,38 +106,6 @@ namespace Server.Engines.Harvest
             from.SendLocalizedMessage(500972); // You are already fishing.
         }
 
-        public override bool SpecialHarvest(Mobile from, Item tool, HarvestDefinition def, Map map, Point3D loc)
-        {
-            if (from is PlayerMobile player)
-            {
-                var qs = player.Quest;
-
-                if (qs is CollectorQuest)
-                {
-                    QuestObjective obj = qs.FindObjective<FishPearlsObjective>();
-
-                    if (obj?.Completed == false)
-                    {
-                        if (Utility.RandomBool())
-                        {
-                            // You pull a shellfish out of the water, and find a rainbow pearl inside of it.
-                            player.SendLocalizedMessage(1055086, "", 0x59);
-                            obj.CurProgress++;
-                        }
-                        else
-                        {
-                            // You pull a shellfish out of the water, but it doesn't have a rainbow pearl.
-                            player.SendLocalizedMessage(1055087, "", 0x2C);
-                        }
-
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
         public override Type MutateType(
             Type type, Mobile from, Item tool, HarvestDefinition def, Map map, Point3D loc,
             HarvestResource resource
@@ -185,7 +151,7 @@ namespace Server.Engines.Harvest
                 {
                     SOS sos = messages[i];
 
-                    if ((from.Map == Map.Felucca || from.Map == Map.Trammel) && from.InRange(sos.TargetLocation, 60))
+                    if ((from.Map == Map.Gaia) && from.InRange(sos.TargetLocation, 60))
                     {
                         return true;
                     }
@@ -199,23 +165,12 @@ namespace Server.Engines.Harvest
         {
             if (type == typeof(TreasureMap))
             {
-                int level;
-                if (from is PlayerMobile mobile && mobile.Young && mobile.Map == Map.Trammel &&
-                    TreasureMap.IsInHavenIsland(from))
-                {
-                    level = 0;
-                }
-                else
-                {
-                    level = 1;
-                }
-
-                return new TreasureMap(level, from.Map == Map.Felucca ? Map.Felucca : Map.Trammel);
+                return new TreasureMap(1, Map.Gaia);
             }
 
             if (type == typeof(MessageInABottle))
             {
-                return new MessageInABottle(from.Map == Map.Felucca ? Map.Felucca : Map.Trammel);
+                return new MessageInABottle(from.Map);
             }
 
             var pack = from.Backpack;
@@ -228,7 +183,7 @@ namespace Server.Engines.Harvest
                 {
                     var sos = messages[i];
 
-                    if ((from.Map == Map.Felucca || from.Map == Map.Trammel) && from.InRange(sos.TargetLocation, 60))
+                    if (from.Map == Map.Gaia && from.InRange(sos.TargetLocation, 60))
                     {
                         Item preLoot = null;
 

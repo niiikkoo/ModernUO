@@ -1,6 +1,5 @@
 using ModernUO.Serialization;
 using System;
-using Server.Ethics;
 using Server.Items;
 using Server.Misc;
 
@@ -48,8 +47,6 @@ namespace Server.Mobiles
 
         public override string CorpseName => "a wisp corpse";
         public override InhumanSpeech SpeechType => InhumanSpeech.Wisp;
-
-        public override Ethic EthicAllegiance => Ethic.Evil;
 
         public override TimeSpan ReacquireDelay => TimeSpan.FromSeconds(1.0);
 

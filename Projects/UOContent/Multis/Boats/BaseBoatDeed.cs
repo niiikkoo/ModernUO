@@ -1,4 +1,3 @@
-using Server.Engines.CannedEvil;
 using Server.Regions;
 using Server.Targeting;
 
@@ -70,10 +69,6 @@ namespace Server.Multis
             {
                 from.SendLocalizedMessage(1042001); // That must be in your pack for you to use it.
             }
-            else if (from.AccessLevel < AccessLevel.GameMaster && (from.Map == Map.Ilshenar || from.Map == Map.Malas))
-            {
-                from.SendLocalizedMessage(1010567, null, 0x25); // You may not place a boat from this location.
-            }
             else
             {
                 if (Core.SE)
@@ -106,12 +101,6 @@ namespace Server.Multis
 
                 if (map == null)
                 {
-                    return;
-                }
-
-                if (from.AccessLevel < AccessLevel.GameMaster && (map == Map.Ilshenar || map == Map.Malas))
-                {
-                    from.SendLocalizedMessage(1043284); // A ship can not be created here.
                     return;
                 }
 
@@ -185,10 +174,6 @@ namespace Server.Multis
                     if (region.IsPartOf<DungeonRegion>())
                     {
                         from.SendLocalizedMessage(502488); // You can not place a ship inside a dungeon.
-                    }
-                    else if (region.IsPartOf<HouseRegion>() || region.IsPartOf<ChampionSpawnRegion>())
-                    {
-                        from.SendLocalizedMessage(1042549); // A boat may not be placed in this area.
                     }
                     else
                     {

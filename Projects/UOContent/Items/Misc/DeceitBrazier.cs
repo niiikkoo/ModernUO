@@ -47,7 +47,7 @@ public partial class DeceitBrazier : Item
         typeof(OrcishLord), typeof(OrcishMage), typeof(OrcBrute), typeof(Ratman),
         typeof(RatmanMage), typeof(OrcCaptain), typeof(Troll), typeof(Titan),
         typeof(EvilMageLord), typeof(OrcBomber), typeof(RatmanArcher), typeof(Dragon), typeof(Drake), typeof(Snake),
-        typeof(GreaterDragon),
+        //typeof(GreaterDragon),
         typeof(IceSerpent), typeof(GiantSerpent), typeof(IceSnake), typeof(LavaSerpent),
         typeof(Lizardman), typeof(Wyvern), typeof(WhiteWyrm),
         typeof(ShadowWyrm), typeof(SilverSerpent), typeof(LavaSnake), typeof(EarthElemental), typeof(PoisonElemental),

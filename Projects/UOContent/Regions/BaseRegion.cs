@@ -73,14 +73,6 @@ public class BaseRegion : Region
             ? TimeSpan.Zero
             : base.GetLogoutDelay(m);
 
-    public override void OnEnter(Mobile m)
-    {
-        if (m is PlayerMobile mobile && mobile.Young && !YoungProtected)
-        {
-            mobile.SendGump(new YoungDungeonWarning());
-        }
-    }
-
     public override bool AcceptsSpawnsFrom(Region region) =>
         (region == this || !ExcludeFromParentSpawns) && base.AcceptsSpawnsFrom(region);
 

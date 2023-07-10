@@ -42,8 +42,6 @@ namespace Server.Mobiles
 
         public override string CorpseName => "a fleshrenderer corpse";
 
-        public override bool IgnoreYoungProtection => Core.ML;
-
         public override string DefaultName => "a fleshrenderer";
 
         public override bool AutoDispel => true;

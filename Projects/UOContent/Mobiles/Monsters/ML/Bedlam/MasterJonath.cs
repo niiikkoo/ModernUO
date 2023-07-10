@@ -8,7 +8,6 @@ namespace Server.Mobiles
         [Constructible]
         public MasterJonath()
         {
-            IsParagon = true;
 
             Hue = 0x455;
 
@@ -63,16 +62,15 @@ namespace Server.Mobiles
         public override void OnDeath( Container c )
         {
           base.OnDeath( c );
-    
+
           if (Utility.RandomDouble() < 0.05)
             c.DropItem( new ParrotItem() );
-    
+
           if (Utility.RandomDouble() < 0.15)
             c.DropItem( new DisintegratingThesisNotes() );
         }
         */
 
-        public override bool GivesMLMinorArtifact => true;
         public override int TreasureMapLevel => 5;
 
         public override void GenerateLoot()

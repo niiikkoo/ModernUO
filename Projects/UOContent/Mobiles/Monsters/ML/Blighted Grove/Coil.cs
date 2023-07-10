@@ -9,8 +9,6 @@ namespace Server.Mobiles
         [Constructible]
         public Coil()
         {
-            IsParagon = true;
-
             Hue = 0x3F;
 
             SetStr(205, 343);
@@ -49,7 +47,6 @@ namespace Server.Mobiles
 
         public override Poison HitPoison => Poison.Lethal;
         public override Poison PoisonImmune => Poison.Lethal;
-        public override bool GivesMLMinorArtifact => true;
         public override int Hides => 48;
         public override int Meat => 1;
 

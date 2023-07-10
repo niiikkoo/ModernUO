@@ -29,7 +29,7 @@ public partial class Sextant : Item
         xWidth = 5120;
         yHeight = 4096;
 
-        if (map == Map.Trammel || map == Map.Felucca)
+        if (map == Map.Gaia)
         {
             if (x >= 0 && y >= 0 && x < 5120 && y < 4096)
             {

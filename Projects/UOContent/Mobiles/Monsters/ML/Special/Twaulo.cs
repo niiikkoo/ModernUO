@@ -1,12 +1,11 @@
 using ModernUO.Serialization;
 using System;
-using Server.Engines.CannedEvil;
 using Server.Items;
 
 namespace Server.Mobiles
 {
     [SerializationGenerator(0, false)]
-    public partial class Twaulo : BaseChampion
+    public partial class Twaulo : BaseCreature
     {
         [Constructible]
         public Twaulo()
@@ -52,13 +51,6 @@ namespace Server.Mobiles
         }
 
         public override string CorpseName => "a corpse of Twaulo";
-        public override ChampionSkullType SkullType => ChampionSkullType.Pain;
-
-        public override Type[] UniqueList => new[] { typeof(Quell) };
-        public override Type[] SharedList => new[] { typeof(TheMostKnowledgePerson), typeof(OblivionsNeedle) };
-        public override Type[] DecorativeList => new[] { typeof(Pier), typeof(MonsterStatuette) };
-
-        public override MonsterStatuetteType[] StatueTypes => new[] { MonsterStatuetteType.DreadHorn };
 
         public override string DefaultName => "Twaulo";
 

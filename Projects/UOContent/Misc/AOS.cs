@@ -54,11 +54,6 @@ namespace Server
                 return 0;
             }
 
-            if (phys == 0 && fire == 100 && cold == 0 && pois == 0 && nrgy == 0)
-            {
-                MeerMage.StopEffect(m, true);
-            }
-
             if (!Core.AOS)
             {
                 m.Damage(damage, from);
@@ -105,12 +100,12 @@ namespace Server
                 }
             }
 
-            BaseQuiver quiver = null;
+            /*BaseQuiver quiver = null;
 
             if (archer && from != null)
             {
                 quiver = from.FindItemOnLayer<BaseQuiver>(Layer.Cloak);
-            }
+            }*/
 
             int totalDamage;
 
@@ -135,10 +130,10 @@ namespace Server
                 {
                     totalDamage += damage * direct / 100;
 
-                    if (quiver != null)
+                    /*if (quiver != null)
                     {
                         totalDamage += totalDamage * quiver.DamageIncrease / 100;
-                    }
+                    }*/
                 }
 
                 if (totalDamage < 1)
@@ -148,10 +143,10 @@ namespace Server
             }
             else if (Core.ML && m is PlayerMobile && from is PlayerMobile)
             {
-                if (quiver != null)
+                /*if (quiver != null)
                 {
                     damage += damage * quiver.DamageIncrease / 100;
-                }
+                }*/
 
                 if (!deathStrike)
                 {
@@ -166,10 +161,10 @@ namespace Server
             {
                 totalDamage = damage;
 
-                if (Core.ML && quiver != null)
+                /*if (Core.ML && quiver != null)
                 {
                     totalDamage += totalDamage * quiver.DamageIncrease / 100;
-                }
+                }*/
             }
 
             if (from?.Player != true && m.Player && m.Mount is SwampDragon { HasBarding: true } pet)
@@ -562,7 +557,7 @@ namespace Server
                         value += attrs[attribute];
                     }
                 }
-                else if (obj is BaseQuiver quiver)
+                /*else if (obj is BaseQuiver quiver)
                 {
                     var attrs = quiver.Attributes;
 
@@ -570,7 +565,7 @@ namespace Server
                     {
                         value += attrs[attribute];
                     }
-                }
+                }*/
                 else if (obj is BaseTalisman talisman)
                 {
                     var attrs = talisman.Attributes;

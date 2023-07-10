@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Server.ContextMenus;
-using Server.Engines.BulkOrders;
-using Server.Ethics;
 using Server.Gumps;
 using Server.Items;
 using Server.Misc;
@@ -87,16 +85,6 @@ namespace Server.Mobiles
                 return false;
             }
 
-            if (Ethic.IsImbued(item, true))
-            {
-                if (message)
-                {
-                    m.SendMessage("Imbued items may not be sold here.");
-                }
-
-                return false;
-            }
-
             if (!BaseHouse.NewVendorSystem && Parent is PlayerVendor vendor)
             {
                 var house = vendor.House;
@@ -122,11 +110,6 @@ namespace Server.Mobiles
             if (!base.CheckItemUse(from, item))
             {
                 return false;
-            }
-
-            if (item is Container or BulkOrderBook)
-            {
-                return true;
             }
 
             from.SendLocalizedMessage(500447); // That is not accessible.
@@ -1493,7 +1476,7 @@ namespace Server.Mobiles
                             setPrice = true;
                         }
                     }
-                    else if (item is BaseBook or BulkOrderBook)
+                    else if (item is BaseBook)
                     {
                         setPrice = true;
                     }

@@ -63,90 +63,12 @@ namespace Server.Mobiles
 
         public override int TreasureMapLevel => 5;
 
-        public static Type[] Artifacts { get; } =
-        {
-            // Decorations
-            typeof(CandelabraOfSouls),
-            typeof(GhostShipAnchor),
-            typeof(GoldBricks),
-            typeof(PhillipsWoodenSteed),
-            typeof(SeahorseStatuette),
-            typeof(ShipModelOfTheHMSCape),
-            typeof(AdmiralsHeartyRum),
-
-            // Equipment
-            typeof(AlchemistsBauble),
-            typeof(ArcticDeathDealer),
-            typeof(BlazeOfDeath),
-            typeof(BurglarsBandana),
-            typeof(CaptainQuacklebushsCutlass),
-            typeof(CavortingClub),
-            typeof(DreadPirateHat),
-            typeof(EnchantedTitanLegBone),
-            typeof(GwennosHarp),
-            typeof(IolosLute),
-            typeof(LunaLance),
-            typeof(NightsKiss),
-            typeof(NoxRangersHeavyCrossbow),
-            typeof(PolarBearMask),
-            typeof(VioletCourage)
-        };
-
         private static MonsterAbility[] _abilities = { new LeviathanBreath() };
         public override MonsterAbility[] GetMonsterAbilities() => _abilities;
 
         public override void GenerateLoot()
         {
             AddLoot(LootPack.FilthyRich, 5);
-        }
-
-        public static void GiveArtifactTo(Mobile m)
-        {
-            var item = Loot.Construct(Artifacts);
-
-            if (item == null)
-            {
-                return;
-            }
-
-            // TODO: Confirm messages
-            if (m.AddToBackpack(item))
-            {
-                m.SendMessage("As a reward for slaying the mighty leviathan, an artifact has been placed in your backpack.");
-            }
-            else
-            {
-                m.SendMessage(
-                    "As your backpack is full, your reward for destroying the legendary leviathan has been placed at your feet."
-                );
-            }
-        }
-
-        public override void OnKilledBy(Mobile mob)
-        {
-            base.OnKilledBy(mob);
-
-            if (Paragon.CheckArtifactChance(mob, this))
-            {
-                GiveArtifactTo(mob);
-
-                if (mob == Fisher)
-                {
-                    Fisher = null;
-                }
-            }
-        }
-
-        public override void OnDeath(Container c)
-        {
-            base.OnDeath(c);
-
-            if (Fisher != null && Utility.Random(100) < 25)
-            {
-                GiveArtifactTo(Fisher);
-            }
-
-            Fisher = null;
         }
 
         private class LeviathanBreath : FireBreath

@@ -8,19 +8,10 @@ namespace Server.Network
 
             Stream.Write((short)0x18);
 
-            Stream.Write(4);
+            Stream.Write(1);
 
-            Stream.Write(Map.Felucca.Tiles.Patch.StaticBlocks);
-            Stream.Write(Map.Felucca.Tiles.Patch.LandBlocks);
-
-            Stream.Write(Map.Trammel.Tiles.Patch.StaticBlocks);
-            Stream.Write(Map.Trammel.Tiles.Patch.LandBlocks);
-
-            Stream.Write(Map.Ilshenar.Tiles.Patch.StaticBlocks);
-            Stream.Write(Map.Ilshenar.Tiles.Patch.LandBlocks);
-
-            Stream.Write(Map.Malas.Tiles.Patch.StaticBlocks);
-            Stream.Write(Map.Malas.Tiles.Patch.LandBlocks);
+            Stream.Write(Map.Gaia.Tiles.Patch.StaticBlocks);
+            Stream.Write(Map.Gaia.Tiles.Patch.LandBlocks);
         }
     }
 

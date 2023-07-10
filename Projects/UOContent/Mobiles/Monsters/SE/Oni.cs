@@ -1,5 +1,4 @@
 using ModernUO.Serialization;
-using Server.Engines.Plants;
 
 namespace Server.Mobiles
 {
@@ -38,11 +37,6 @@ namespace Server.Mobiles
 
             Fame = 12000;
             Karma = -12000;
-
-            if (Utility.RandomDouble() < .33)
-            {
-                PackItem(Seed.RandomBonsaiSeed());
-            }
 
             // TODO: Brain (0x1CF0) or Skull (0x1AE3) or Body Part (0x1CE3)
         }

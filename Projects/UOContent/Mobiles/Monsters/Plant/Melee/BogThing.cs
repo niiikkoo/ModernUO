@@ -1,5 +1,4 @@
 using ModernUO.Serialization;
-using Server.Engines.Plants;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -49,8 +48,6 @@ namespace Server.Mobiles
             }
 
             PackReg(3);
-            PackItem(new Seed());
-            PackItem(new Seed());
         }
 
         public override string CorpseName => "a plant corpse";

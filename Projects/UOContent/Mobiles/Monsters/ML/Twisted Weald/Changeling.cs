@@ -203,7 +203,7 @@ namespace Server.Mobiles
         protected virtual void Revert()
         {
             Body = 264;
-            Hue = IsParagon && DefaultHue == 0 ? Paragon.Hue : DefaultHue;
+            Hue = DefaultHue;
             Female = false;
             Name = null;
             NameHue = -1;

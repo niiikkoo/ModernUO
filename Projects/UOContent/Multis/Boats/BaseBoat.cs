@@ -28,11 +28,8 @@ namespace Server.Multis
             Decaying
         }
 
-        private static Rectangle2D[] m_BritWrap =
+        private static Rectangle2D[] m_GaiaWrap =
             { new(16, 16, 5120 - 32, 4096 - 32), new(5136, 2320, 992, 1760) };
-
-        private static Rectangle2D[] m_IlshWrap = { new(16, 16, 2304 - 32, 1600 - 32) };
-        private static Rectangle2D[] m_TokunoWrap = { new(16, 16, 1448 - 32, 1448 - 32) };
 
         private static TimeSpan BoatDecayDelay = TimeSpan.FromDays(9.0);
 
@@ -1078,7 +1075,7 @@ namespace Server.Multis
                 return false;
             }
 
-            if (Map != Map.Trammel && Map != Map.Felucca || NextNavPoint < 0 || NextNavPoint >= MapItem.Pins.Count)
+            if (Map != Map.Gaia || NextNavPoint < 0 || NextNavPoint >= MapItem.Pins.Count)
             {
                 if (message)
                 {
@@ -1564,8 +1561,7 @@ namespace Server.Multis
             return false;
         }
 
-        public static Rectangle2D[] GetWrapFor(Map m) => m == Map.Ilshenar ? m_IlshWrap :
-            m == Map.Tokuno ? m_TokunoWrap : m_BritWrap;
+        public static Rectangle2D[] GetWrapFor(Map m) => m_GaiaWrap;
 
         public Direction GetMovementFor(int x, int y, out int maxSpeed)
         {
@@ -1620,7 +1616,7 @@ namespace Server.Multis
 
                 return false;
             }
-            else if (Map != Map.Trammel && Map != Map.Felucca || NextNavPoint < 0 || NextNavPoint >= MapItem.Pins.Count)
+            else if (Map != Map.Gaia || NextNavPoint < 0 || NextNavPoint >= MapItem.Pins.Count)
             {
                 if (message)
                 {

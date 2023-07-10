@@ -102,15 +102,6 @@ namespace Server.Engines.Craft
                 return EnhanceResult.NoResources;
             }
 
-            if (craftSystem is DefBlacksmithy)
-            {
-                var hammer = from.FindItemOnLayer<AncientSmithyHammer>(Layer.OneHanded);
-                if (hammer != null && --hammer.UsesRemaining < 1)
-                {
-                    hammer.Delete();
-                }
-            }
-
             int phys = 0, fire = 0, cold = 0, pois = 0, nrgy = 0;
             int dura, luck, lreq, dinc = 0;
             int baseChance;

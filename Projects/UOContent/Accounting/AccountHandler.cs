@@ -16,7 +16,7 @@ public static class AccountHandler
 
     private static int MaxAccountsPerIP;
     private static bool AutoAccountCreation;
-    private static bool RestrictDeletion = !TestCenter.Enabled;
+    private static bool RestrictDeletion = true;
     private static TimeSpan DeleteDelay = TimeSpan.FromDays(7.0);
     private static bool PasswordCommandEnabled;
 

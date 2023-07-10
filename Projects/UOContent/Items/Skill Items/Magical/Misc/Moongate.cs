@@ -1,6 +1,5 @@
 using System;
 using ModernUO.Serialization;
-using Server.Factions;
 using Server.Gumps;
 using Server.Misc;
 using Server.Mobiles;
@@ -88,18 +87,7 @@ public partial class Moongate : Item
     {
         var flags = m.NetState?.Flags ?? ClientFlags.None;
 
-        if (Sigil.ExistsOn(m))
-        {
-            m.SendLocalizedMessage(1061632); // You can't do that while carrying the sigil.
-        }
-        else if (TargetMap == Map.Felucca && m is PlayerMobile mobile && mobile.Young)
-        {
-            mobile.SendLocalizedMessage(1049543); // You decide against traveling to Felucca while you are still young.
-        }
-        else if (m.Kills >= 5 && TargetMap != Map.Felucca ||
-                 TargetMap == Map.Tokuno && (flags & ClientFlags.Tokuno) == 0 ||
-                 TargetMap == Map.Malas && (flags & ClientFlags.Malas) == 0 ||
-                 TargetMap == Map.Ilshenar && (flags & ClientFlags.Ilshenar) == 0)
+        if (m.Kills >= 5 && TargetMap != Map.Gaia)
         {
             m.SendLocalizedMessage(1019004); // You are not allowed to travel there.
         }
@@ -149,7 +137,7 @@ public partial class Moongate : Item
     public virtual void BeginConfirmation(Mobile from)
     {
         if (IsInTown(from.Location, from.Map) && !IsInTown(Target, TargetMap) ||
-            from.Map != Map.Felucca && TargetMap == Map.Felucca && ShowFeluccaWarning)
+            from.Map != Map.Gaia && TargetMap == Map.Gaia && ShowFeluccaWarning)
         {
             if (from.AccessLevel == AccessLevel.Player || !from.Hidden)
             {
@@ -327,14 +315,14 @@ public class MoongateConfirmGump : Gump
             AddImageTiled(10, 40, 400, 200, 2624);
             AddAlphaRegion(10, 40, 400, 200);
 
-            if (from.Map != Map.Felucca && gate.TargetMap == Map.Felucca && gate.ShowFeluccaWarning)
+            if (from.Map != Map.Gaia && gate.TargetMap == Map.Gaia && gate.ShowFeluccaWarning)
             {
                 AddHtmlLocalized(
                     10,
                     40,
                     400,
                     200,
-                    1062050, // This Gate goes to Felucca... Continue to enter the gate, Cancel to stay here
+                    1062050, // This Gate goes to Gaia... Continue to enter the gate, Cancel to stay here
                     32512,
                     false,
                     true

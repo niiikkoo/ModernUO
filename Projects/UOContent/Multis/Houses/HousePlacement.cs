@@ -53,16 +53,6 @@ namespace Server.Multis
                 return HousePlacementResult.Valid; // Staff can place anywhere
             }
 
-            if (map == Map.Ilshenar || SpellHelper.IsFeluccaT2A(map, center))
-            {
-                return HousePlacementResult.BadRegion; // No houses in Ilshenar/T2A
-            }
-
-            if (map == Map.Malas && multiID is 0x007C or 0x007E)
-            {
-                return HousePlacementResult.InvalidCastleKeep;
-            }
-
             if (Region.Find(center, map).IsPartOf<NoHousingRegion, NoHousingGuardedRegion>())
             {
                 return HousePlacementResult.BadRegion;
@@ -123,11 +113,6 @@ namespace Server.Multis
                         if (reg.IsPartOf<TreasureRegion>() || reg.IsPartOf<HouseRegion>())
                         {
                             return HousePlacementResult.BadRegionHidden;
-                        }
-
-                        if (reg.IsPartOf<HouseRaffleRegion>())
-                        {
-                            return HousePlacementResult.BadRegionRaffle;
                         }
 
                         return HousePlacementResult.BadRegion;

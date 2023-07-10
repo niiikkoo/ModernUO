@@ -81,17 +81,6 @@ namespace Server.Items
                     return;
                 }
 
-                if (from.Map != Map.Trammel && from.Map != Map.Felucca)
-                {
-                    from.LocalOverheadMessage(
-                        MessageType.Regular,
-                        0x2B2,
-                        true,
-                        "No solen lairs exist on this facet.  Try again in Trammel or Felucca."
-                    );
-                    return;
-                }
-
                 if (targeted is not LandTarget land)
                 {
                     // * You cannot plant a green thorn there! *
@@ -635,11 +624,11 @@ namespace Server.Items
                         // * Slithering ice serpents rise to the surface to investigate the disturbance! *
                         dummy.PublicOverheadMessage(MessageType.Regular, 0x3B2, 1114430);
 
-                        BaseCreature spawn = new GiantIceWorm();
+                        /*BaseCreature spawn = new GiantIceWorm();
                         if (!SpawnCreature(spawn))
                         {
                             spawn.Delete();
-                        }
+                        }*/
 
                         for (var i = 0; i < 3; i++)
                         {

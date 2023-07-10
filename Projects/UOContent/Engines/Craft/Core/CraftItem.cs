@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Server.Commands;
-using Server.Factions;
 using Server.Items;
 using Server.Logging;
 using Server.Mobiles;
@@ -104,7 +103,7 @@ namespace Server.Engines.Craft
             typeof(BaseHarvestTool),
             typeof(FukiyaDarts), typeof(Shuriken),
             typeof(Spellbook), typeof(Runebook),
-            typeof(BaseQuiver)
+            //typeof(BaseQuiver)
         };
 
         private static readonly Type[] m_NeverColorTable =
@@ -209,23 +208,6 @@ namespace Server.Engines.Craft
             if (_itemIds.TryGetValue(type, out var itemId))
             {
                 return itemId;
-            }
-
-            if (type == typeof(FactionExplosionTrap))
-            {
-                itemId = 14034;
-            }
-            else if (type == typeof(FactionGasTrap))
-            {
-                itemId = 4523;
-            }
-            else if (type == typeof(FactionSawTrap))
-            {
-                itemId = 4359;
-            }
-            else if (type == typeof(FactionSpikeTrap))
-            {
-                itemId = 4517;
             }
 
             if (itemId == 0)
@@ -1090,19 +1072,6 @@ namespace Server.Engines.Craft
 
                 tool.UsesRemaining--;
 
-                if (craftSystem is DefBlacksmithy)
-                {
-                    var hammer = from.FindItemOnLayer<AncientSmithyHammer>(Layer.OneHanded);
-                    if (hammer != null && hammer != tool)
-                    {
-                        hammer.UsesRemaining--;
-                        if (hammer.UsesRemaining < 1)
-                        {
-                            hammer.Delete();
-                        }
-                    }
-                }
-
                 if (tool.UsesRemaining < 1 && tool.BreakOnDepletion)
                 {
                     toolBroken = true;
@@ -1118,7 +1087,7 @@ namespace Server.Engines.Craft
                 {
                     item = customCraft.CompleteCraft(out num);
                 }
-                else if (typeof(MapItem).IsAssignableFrom(ItemType) && from.Map != Map.Trammel && from.Map != Map.Felucca)
+                else if (typeof(MapItem).IsAssignableFrom(ItemType) && from.Map != Map.Gaia)
                 {
                     item = new IndecipherableMap();
                     from.SendLocalizedMessage(1070800); // The map you create becomes mysteriously indecipherable.
@@ -1169,60 +1138,9 @@ namespace Server.Engines.Craft
                     num = craftSystem.PlayEndingEffect(from, false, true, toolBroken, endquality, makersMark, this);
                 }
 
-                var queryFactionImbue = false;
-                var availableSilver = 0;
-                FactionItemDefinition def = null;
-                Faction faction = null;
-
-                if (item is IFactionItem)
-                {
-                    def = FactionItemDefinition.Identify(item);
-
-                    if (def != null)
-                    {
-                        faction = Faction.Find(from);
-
-                        if (faction != null)
-                        {
-                            var town = Town.FromRegion(from.Region);
-
-                            if (town?.Owner == faction)
-                            {
-                                var pack = from.Backpack;
-
-                                if (pack != null)
-                                {
-                                    availableSilver = pack.GetAmount(typeof(Silver));
-
-                                    if (availableSilver >= def.SilverCost)
-                                    {
-                                        queryFactionImbue = Faction.IsNearType(from, def.VendorType, 12);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
                 // TODO: Scroll imbuing
 
-                if (queryFactionImbue)
-                {
-                    from.SendGump(
-                        new FactionImbueGump(
-                            quality,
-                            item,
-                            from,
-                            craftSystem,
-                            tool,
-                            num,
-                            availableSilver,
-                            faction,
-                            def
-                        )
-                    );
-                }
-                else if (tool?.Deleted == false && tool.UsesRemaining > 0)
+                if (tool?.Deleted == false && tool.UsesRemaining > 0)
                 {
                     from.SendGump(new CraftGump(from, craftSystem, tool, num));
                 }

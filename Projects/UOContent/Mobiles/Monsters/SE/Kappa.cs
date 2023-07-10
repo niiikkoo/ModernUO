@@ -1,6 +1,5 @@
 using ModernUO.Serialization;
 using System;
-using Server.Engines.Plants;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -59,11 +58,6 @@ namespace Server.Mobiles
                             break;
                         }
                 }
-            }
-
-            if (Core.ML && Utility.Random(3) == 0)
-            {
-                PackItem(Seed.RandomPeculiarSeed(4));
             }
         }
 

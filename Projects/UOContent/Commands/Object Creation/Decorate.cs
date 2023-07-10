@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Toolkit.HighPerformance;
-using Server.Engines.Quests.Haven;
-using Server.Engines.Quests.Necro;
 using Server.Engines.Spawners;
 using Server.Items;
 using Server.Network;
@@ -32,12 +30,7 @@ namespace Server.Commands
 
             NetState.FlushAll();
 
-            Generate("Data/Decoration/Britannia", Map.Trammel, Map.Felucca);
-            Generate("Data/Decoration/Trammel", Map.Trammel);
-            Generate("Data/Decoration/Felucca", Map.Felucca);
-            Generate("Data/Decoration/Ilshenar", Map.Ilshenar);
-            Generate("Data/Decoration/Malas", Map.Malas);
-            Generate("Data/Decoration/Tokuno", Map.Tokuno);
+            Generate("Data/Decoration/Gaia", Map.Gaia);
 
             m_Mobile.SendMessage($"World generating complete. {m_Count} items were generated.");
         }
@@ -72,10 +65,9 @@ namespace Server.Commands
         private static readonly Type typeofAnkhNorth = typeof(AnkhNorth);
         private static readonly Type typeofBeverage = typeof(BaseBeverage);
         private static readonly Type typeofLocalizedSign = typeof(LocalizedSign);
-        private static readonly Type typeofMarkContainer = typeof(MarkContainer);
         private static readonly Type typeofWarningItem = typeof(WarningItem);
         private static readonly Type typeofHintItem = typeof(HintItem);
-        private static readonly Type typeofCannon = typeof(Cannon);
+        //private static readonly Type typeofCannon = typeof(Cannon);
         private static readonly Type typeofSerpentPillar = typeof(SerpentPillar);
 
         private static readonly Queue<Item> m_DeleteQueue = new();
@@ -158,40 +150,6 @@ namespace Server.Commands
                     {
                         item = new AnkhNorth(bloodied);
                     }
-                }
-                else if (m_Type == typeofMarkContainer)
-                {
-                    var bone = false;
-                    var locked = false;
-                    var map = Map.Malas;
-
-                    for (var i = 0; i < m_Params.Length; ++i)
-                    {
-                        if (m_Params[i] == "Bone")
-                        {
-                            bone = true;
-                        }
-                        else if (m_Params[i] == "Locked")
-                        {
-                            locked = true;
-                        }
-                        else if (m_Params[i].StartsWithOrdinal("TargetMap"))
-                        {
-                            var indexOf = m_Params[i].IndexOfOrdinal('=');
-
-                            if (indexOf >= 0)
-                            {
-                                map = Map.Parse(m_Params[i][++indexOf..]);
-                            }
-                        }
-                    }
-
-                    var mc = new MarkContainer(bone, locked);
-
-                    mc.TargetMap = map;
-                    mc.Description = "strange location";
-
-                    item = mc;
                 }
                 else if (m_Type == typeofHintItem)
                 {
@@ -322,7 +280,7 @@ namespace Server.Commands
 
                     item = wi;
                 }
-                else if (m_Type == typeofCannon)
+                /*else if (m_Type == typeofCannon)
                 {
                     var direction = CannonDirection.North;
 
@@ -344,7 +302,7 @@ namespace Server.Commands
                     }
 
                     item = new Cannon(direction);
-                }
+                }*/
                 else if (m_Type == typeofSerpentPillar)
                 {
                     string word = null;
@@ -447,22 +405,7 @@ namespace Server.Commands
 
             if (item is BaseAddon addon)
             {
-                if (addon is MaabusCoffin coffin)
-                {
-                    for (var i = 0; i < m_Params.Length; ++i)
-                    {
-                        if (m_Params[i].StartsWithOrdinal("SpawnLocation"))
-                        {
-                            var indexOf = m_Params[i].IndexOfOrdinal('=');
-
-                            if (indexOf >= 0)
-                            {
-                                coffin.SpawnLocation = Point3D.Parse(m_Params[i][++indexOf..]);
-                            }
-                        }
-                    }
-                }
-                else if (m_ItemID > 0)
+                if (m_ItemID > 0)
                 {
                     var comps = addon.Components;
 
@@ -1213,17 +1156,6 @@ namespace Server.Commands
                             }
 
                             eable.Free();
-                        }
-                        else if (item is MarkContainer markCont)
-                        {
-                            try
-                            {
-                                markCont.Target = Point3D.Parse(extra);
-                            }
-                            catch
-                            {
-                                // ignored
-                            }
                         }
 
                         item = null;

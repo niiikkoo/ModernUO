@@ -1,5 +1,4 @@
 using System;
-using Server.Factions;
 using Server.Multis;
 using Server.Spells;
 
@@ -144,11 +143,6 @@ namespace Server.Items
         {
             if (IsOpen)
             {
-                if (from is BaseFactionGuard)
-                {
-                    return false;
-                }
-
                 if ((from.Direction & Direction.Running) != 0 || Boat?.Contains(from) == false)
                 {
                     return true;
@@ -190,8 +184,7 @@ namespace Server.Items
                     {
                         z = from.Z + j;
 
-                        if (map.CanFit(x, y, z, 16, false, false) && !SpellHelper.CheckMulti(new Point3D(x, y, z), map) &&
-                            !Region.Find(new Point3D(x, y, z), map).IsPartOf<StrongholdRegion>())
+                        if (map.CanFit(x, y, z, 16, false, false) && !SpellHelper.CheckMulti(new Point3D(x, y, z), map))
                         {
                             if (i == 1 && j >= -2 && j <= 2)
                             {
@@ -205,8 +198,7 @@ namespace Server.Items
 
                     z = map.GetAverageZ(x, y);
 
-                    if (map.CanFit(x, y, z, 16, false, false) && !SpellHelper.CheckMulti(new Point3D(x, y, z), map) &&
-                        !Region.Find(new Point3D(x, y, z), map).IsPartOf<StrongholdRegion>())
+                    if (map.CanFit(x, y, z, 16, false, false) && !SpellHelper.CheckMulti(new Point3D(x, y, z), map))
                     {
                         if (i == 1)
                         {

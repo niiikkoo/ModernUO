@@ -219,8 +219,8 @@ public static class NinjaWeapon
 
         attackValue += DivineFurySpell.GetAttackBonus(attacker);
 
-        if (AnimalForm.UnderTransformation(attacker, typeof(GreyWolf)) ||
-            AnimalForm.UnderTransformation(attacker, typeof(BakeKitsune)))
+        if (AnimalForm.UnderTransformation(attacker, typeof(GreyWolf)) /*||
+            AnimalForm.UnderTransformation(attacker, typeof(BakeKitsune))*/)
         {
             attackValue += 20;
         }

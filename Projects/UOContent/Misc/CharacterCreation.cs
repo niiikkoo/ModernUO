@@ -75,9 +75,6 @@ public static class CharacterCreation
 
     private static readonly TimeSpan BadStartMessageDelay = TimeSpan.FromSeconds(3.5);
 
-    private static readonly CityInfo _newHavenInfo =
-        new("New Haven", "The Bountiful Harvest Inn", 3503, 2574, 14, Map.Trammel);
-
     public static void Initialize()
     {
         // Register our event handler
@@ -96,10 +93,10 @@ public static class CharacterCreation
             m.AddItem(pack);
         }
 
-        m.PackItem(new RedBook("a book", m.Name, 20, true));
-        m.PackItem(new Gold(1000)); // Starting gold can be customized here
-        m.PackItem(new Dagger());
-        m.PackItem(new Candle());
+        pack.AddItem(new RedBook("a book", m.Name, 20, true));
+        pack.AddItem(new Gold(1000)); // Starting gold can be customized here
+        pack.AddItem(new Dagger());
+        pack.AddItem(new Candle());
     }
 
     private static Mobile CreateMobile(Account a)
@@ -151,16 +148,9 @@ public static class CharacterCreation
         newChar.Hue = newChar.Race.ClipSkinHue(args.Hue & 0x3FFF) | 0x8000;
         newChar.Hunger = 20;
 
-        var young = false;
-
         if (newChar is PlayerMobile pm)
         {
             pm.Profession = args.Profession;
-
-            if (pm.AccessLevel == AccessLevel.Player && ((Account)pm.Account).Young)
-            {
-                young = pm.Young = true;
-            }
         }
 
         SetName(newChar, args.Name);
@@ -184,19 +174,7 @@ public static class CharacterCreation
             newChar.FacialHairHue = race.ClipHairHue(args.BeardHue & 0x3FFF);
         }
 
-        if (TestCenter.Enabled)
-        {
-            TestCenter.FillBankbox(newChar);
-        }
-
-        if (young)
-        {
-            var ticket = new NewPlayerTicket();
-            ticket.Owner = newChar;
-            newChar.BankBox.DropItem(ticket);
-        }
-
-        var city = GetStartLocation(args, young);
+        var city = GetStartLocation(args);
 
         newChar.MoveToWorld(city.Location, city.Map);
 
@@ -216,16 +194,14 @@ public static class CharacterCreation
     public static bool VerifyProfession(int profession) =>
         profession >= 0 && profession < ProfessionInfo.Professions.Length;
 
-    private static CityInfo GetStartLocation(CharacterCreatedEventArgs args, bool isYoung)
+    private static CityInfo GetStartLocation(CharacterCreatedEventArgs args)
     {
         var post6000Supported = !TileMatrix.Pre6000ClientSupport;
 
         if (Core.ML && post6000Supported)
         {
-            return _newHavenInfo; // We don't get the client Version until AFTER Character creation
+            return args.City; // We don't get the client Version until AFTER Character creation
         }
-
-        var useHaven = isYoung;
 
         var flags = args.State?.Flags ?? ClientFlags.None;
         var m = args.Mobile;
@@ -238,10 +214,8 @@ public static class CharacterCreation
                 {
                     if ((flags & ClientFlags.Malas) != 0)
                     {
-                        return new CityInfo("Umbra", "Mardoth's Tower", 2114, 1301, -50, Map.Malas);
+                        return args.City;
                     }
-
-                    useHaven = true;
 
                     /*
                      * Unfortunately you are playing on a *NON-Age-Of-Shadows* game
@@ -256,16 +230,14 @@ public static class CharacterCreation
                 }
             case "paladin":
                 {
-                    return _newHavenInfo;
+                    return args.City;
                 }
             case "samurai":
                 {
                     if ((flags & ClientFlags.Tokuno) != 0)
                     {
-                        return new CityInfo("Samurai DE", "Haoti's Grounds", 368, 780, -1, Map.Malas);
+                        return args.City;
                     }
-
-                    useHaven = true;
 
                     /*
                      * Unfortunately you are playing on a *NON-Samurai-Empire* game
@@ -282,10 +254,8 @@ public static class CharacterCreation
                 {
                     if ((flags & ClientFlags.Tokuno) != 0)
                     {
-                        return new CityInfo("Ninja DE", "Enimo's Residence", 414, 823, -1, Map.Malas);
+                        return args.City;
                     }
-
-                    useHaven = true;
 
                     /*
                      * Unfortunately you are playing on a *NON-Samurai-Empire* game
@@ -300,7 +270,7 @@ public static class CharacterCreation
                 }
         }
 
-        return post6000Supported && useHaven ? _newHavenInfo : args.City;
+        return args.City;
     }
 
     private static void SetStats(Mobile m, NetState state, StatNameValue[] stats, int prof)

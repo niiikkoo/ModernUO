@@ -1,6 +1,5 @@
 using System;
 using ModernUO.Serialization;
-using Server.Engines.ConPVP;
 using Server.Engines.Craft;
 using Server.Utilities;
 
@@ -185,10 +184,7 @@ public abstract partial class BasePotion : Item, ICraftable, ICommodity
 
         m.PlaySound(0x2D6);
 
-        if (!DuelContext.IsFreeConsume(m))
-        {
-            m.AddToBackpack(new Bottle());
-        }
+        m.AddToBackpack(new Bottle());
 
         if (m.Body.IsHuman && !m.Mounted)
         {

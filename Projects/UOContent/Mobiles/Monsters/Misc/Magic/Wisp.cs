@@ -1,8 +1,5 @@
 using ModernUO.Serialization;
 using System;
-using Server.Engines.Plants;
-using Server.Ethics;
-using Server.Factions;
 using Server.Items;
 using Server.Misc;
 
@@ -45,19 +42,11 @@ namespace Server.Mobiles
 
             VirtualArmor = 40;
 
-            if (Core.ML && Utility.RandomDouble() < .33)
-            {
-                PackItem(Seed.RandomPeculiarSeed(3));
-            }
-
             AddItem(new LightSource());
         }
 
         public override string CorpseName => "a wisp corpse";
         public override InhumanSpeech SpeechType => InhumanSpeech.Wisp;
-
-        public override Faction FactionAllegiance => CouncilOfMages.Instance;
-        public override Ethic EthicAllegiance => Ethic.Hero;
 
         public override TimeSpan ReacquireDelay => TimeSpan.FromSeconds(1.0);
 

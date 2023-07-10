@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Server.Engines.ConPVP;
 using Server.Items;
 using Server.Spells.Bushido;
 using Server.Spells.Necromancy;
@@ -165,11 +164,6 @@ namespace Server.Spells
                 MomentumStrike     => "Momentum Strike",
                 _                  => null
             };
-
-            if (option != null && !DuelContext.AllowSpecialMove(from, option, this))
-            {
-                return false;
-            }
 
             return CheckSkills(from) && CheckMana(from, false);
         }

@@ -208,11 +208,6 @@ public class FireBreath : MonsterAbility
     {
         var damage = (int)(source.Hits * BreathDamageScalar);
 
-        if (source.IsParagon)
-        {
-            damage = (int)(damage / Paragon.HitsBuff);
-        }
-
         return Math.Min(damage, 200);
     }
 }

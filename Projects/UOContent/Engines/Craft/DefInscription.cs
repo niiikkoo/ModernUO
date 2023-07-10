@@ -1,5 +1,4 @@
 using System;
-using Server.Engines.BulkOrders;
 using Server.Items;
 using Server.Spells;
 using Server.Utilities;
@@ -430,7 +429,7 @@ public class DefInscription : CraftSystem
         AddRes(index, typeof(RecallScroll), 1044445, 1, 1044253);
         AddRes(index, typeof(GateTravelScroll), 1044446, 1, 1044253);
 
-        if (Core.AOS)
+        /*if (Core.AOS)
         {
             AddCraft(typeof(BulkOrderBook), 1044294, 1028793, 65.0, 115.0, typeof(BlankScroll), 1044377, 10, 1044378);
         }
@@ -438,7 +437,7 @@ public class DefInscription : CraftSystem
         if (Core.SE)
         {
             AddCraft(typeof(Spellbook), 1044294, 1023834, 50.0, 126, typeof(BlankScroll), 1044377, 10, 1044378);
-        }
+        }*/
 
         /* TODO
         if (Core.ML)

@@ -8,8 +8,6 @@ namespace Server.Mobiles
         [Constructible]
         public SirPatrick()
         {
-            IsParagon = true;
-
             Hue = 0x47E;
 
             SetStr(208, 319);
@@ -55,7 +53,6 @@ namespace Server.Mobiles
         }
         */
 
-        public override bool GivesMLMinorArtifact => true;
 
         private static MonsterAbility[] _abilities = { new SirPatrickDrainLife() };
         public override MonsterAbility[] GetMonsterAbilities() => _abilities;

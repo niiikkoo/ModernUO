@@ -8,7 +8,6 @@ namespace Server.Mobiles
         [Constructible]
         public Putrefier()
         {
-            IsParagon = true;
 
             Hue = 63;
 
@@ -55,15 +54,14 @@ namespace Server.Mobiles
         public override void OnDeath( Container c )
         {
           base.OnDeath( c );
-    
+
           c.DropItem( new SpleenOfThePutrefier() );
-    
+
           if (Utility.RandomDouble() < 0.6)
             c.DropItem( new ParrotItem() );
         }
         */
 
-        public override bool GivesMLMinorArtifact => true;
         public override Poison HitPoison => Poison.Deadly; // Becomes Lethal with Paragon bonus
         public override int TreasureMapLevel => 5;
 

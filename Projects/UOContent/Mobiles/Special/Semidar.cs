@@ -1,10 +1,9 @@
 using System;
-using Server.Engines.CannedEvil;
 using Server.Items;
 
 namespace Server.Mobiles;
 
-public class Semidar : BaseChampion
+public class Semidar : BaseCreature
 {
     [Constructible]
     public Semidar() : base(AIType.AI_Mage)
@@ -45,20 +44,7 @@ public class Semidar : BaseChampion
 
     public Semidar(Serial serial) : base(serial)
     {
-    }
-
-    public override ChampionSkullType SkullType => ChampionSkullType.Pain;
-
-    public override Type[] UniqueList => new[] { typeof(GladiatorsCollar) };
-
-    public override Type[] SharedList => new[]
-        { typeof(RoyalGuardSurvivalKnife), typeof(ANecromancerShroud), typeof(LieutenantOfTheBritannianRoyalGuard) };
-
-    public override Type[] DecorativeList => new[] { typeof(LavaTile), typeof(DemonSkull) };
-
-    public override MonsterStatuetteType[] StatueTypes => Array.Empty<MonsterStatuetteType>();
-
-    public override string DefaultName => "Semidar";
+    }public override string DefaultName => "Semidar";
 
     public override bool Unprovokable => true;
     public override Poison PoisonImmune => Poison.Lethal;

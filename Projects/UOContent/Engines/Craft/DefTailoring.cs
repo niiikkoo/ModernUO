@@ -212,7 +212,7 @@ public class DefTailoring : CraftSystem
             SetNeededExpansion(index, Expansion.SE);
         }
 
-        if (Core.ML)
+        /*if (Core.ML)
         {
             index = AddCraft(typeof(ElvenQuiver), 1015283, 1032657, 65.0, 115.0, typeof(Leather), 1044462, 28, 1044463);
             AddRecipe(index, 501);
@@ -257,7 +257,7 @@ public class DefTailoring : CraftSystem
             AddRes(index, typeof(Corruption), 1032676, 10, 1042081);
             AddRecipe(index, 505);
             SetNeededExpansion(index, Expansion.ML);
-        }
+        }*/
 
         AddCraft(typeof(OilCloth), 1015283, 1041498, 74.6, 99.6, typeof(Cloth), 1044286, 1, 1044287);
 

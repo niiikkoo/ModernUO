@@ -32,7 +32,7 @@ namespace Server.Spells.Third
                 // You cannot cast this on a locked down item.
                 Caster.LocalOverheadMessage(MessageType.Regular, 0x22, 501761);
             }
-            else if (cont.Locked || cont.LockLevel == ILockpickable.CannotPick || cont is ParagonChest)
+            else if (cont.Locked || cont.LockLevel == ILockpickable.CannotPick)
             {
                 Caster.SendLocalizedMessage(501762); // Target must be an unlocked chest.
             }

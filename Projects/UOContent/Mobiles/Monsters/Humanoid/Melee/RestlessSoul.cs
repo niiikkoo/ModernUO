@@ -1,7 +1,6 @@
 using ModernUO.Serialization;
 using System.Collections.Generic;
 using Server.ContextMenus;
-using Server.Engines.Quests.Haven;
 
 namespace Server.Mobiles
 {
@@ -74,21 +73,5 @@ namespace Server.Mobiles
         public override int GetAngerSound() => 0x1BF;
 
         public override int GetDeathSound() => 0xFD;
-
-        public override bool IsEnemy(Mobile m)
-        {
-            // Schmendrick's cave
-            if (m is PlayerMobile player && Map == Map.Trammel && X is >= 5199 and <= 5271 && Y is >= 1812 and <= 1865)
-            {
-                var qs = player.Quest;
-
-                if (qs is UzeraanTurmoilQuest && qs.IsObjectiveInProgress(typeof(FindSchmendrickObjective)))
-                {
-                    return false;
-                }
-            }
-
-            return base.IsEnemy(m);
-        }
     }
 }

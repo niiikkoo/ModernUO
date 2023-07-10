@@ -18,12 +18,7 @@ public partial class SOS : Item
         0x0136, 0x0137
     };
 
-    private static Rectangle2D[] BritRegions = { new(0, 0, 5120, 4096) };
-
-    private static Rectangle2D[] IlshRegions =
-        { new(1472, 272, 304, 240), new(1240, 1000, 312, 160) };
-
-    private static Rectangle2D[] MalasRegions = { new(1376, 1520, 464, 280) };
+    private static Rectangle2D[] GaiaRegions = { new(0, 0, 5120, 4096) };
 
     private static TextDefinition[] MessageEntries =
     {
@@ -81,7 +76,7 @@ public partial class SOS : Item
 
         _level = level;
         MessageIndex = Utility.Random(MessageEntries.Length);
-        TargetMap = map ?? Map.Trammel;
+        TargetMap = map ?? Map.Gaia;
         TargetLocation = FindLocation(TargetMap);
 
         UpdateHue();
@@ -149,17 +144,9 @@ public partial class SOS : Item
 
         Rectangle2D[] regions;
 
-        if (map == Map.Felucca || map == Map.Trammel)
+        if (map == Map.Gaia)
         {
-            regions = BritRegions;
-        }
-        else if (map == Map.Ilshenar)
-        {
-            regions = IlshRegions;
-        }
-        else if (map == Map.Malas)
-        {
-            regions = MalasRegions;
+            regions = GaiaRegions;
         }
         else
         {

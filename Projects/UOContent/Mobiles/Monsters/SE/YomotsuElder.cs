@@ -1,6 +1,5 @@
 using ModernUO.Serialization;
 using System;
-using Server.Engines.Plants;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -60,11 +59,6 @@ namespace Server.Mobiles
                     _ => null // 4-5 (30%)
                 }
             );
-
-            if (Utility.RandomDouble() < .25)
-            {
-                PackItem(Seed.RandomBonsaiSeed());
-            }
         }
 
         public override string CorpseName => "a wrinkly yomotsu corpse";

@@ -1,15 +1,10 @@
 using ModernUO.Serialization;
-using Server.Engines.VeteranRewards;
 
 namespace Server.Items
 {
-    [SerializationGenerator(1, false)]
-    public partial class LeatherDyeTub : DyeTub, IRewardItem
+    [SerializationGenerator(0, false)]
+    public partial class LeatherDyeTub : DyeTub
     {
-        [SerializableField(0)]
-        [SerializedCommandProperty(AccessLevel.GameMaster)]
-        private bool _isRewardItem;
-
         [Constructible]
         public LeatherDyeTub() => LootType = LootType.Blessed;
 
@@ -19,33 +14,5 @@ namespace Server.Items
         public override int FailMessage => 1042418;   // You can only dye leather with this tub.
         public override int LabelNumber => 1041284;   // Leather Dye Tub
         public override CustomHuePicker CustomHuePicker => CustomHuePicker.LeatherDyeTub;
-
-        public override void OnDoubleClick(Mobile from)
-        {
-            if (_isRewardItem && !RewardSystem.CheckIsUsableBy(from, this))
-            {
-                return;
-            }
-
-            base.OnDoubleClick(from);
-        }
-
-        public override void GetProperties(IPropertyList list)
-        {
-            base.GetProperties(list);
-
-            if (Core.ML && _isRewardItem)
-            {
-                list.Add(1076218); // 2nd Year Veteran Reward
-            }
-        }
-
-        private void Deserialize(IGenericReader reader, int version)
-        {
-            if (LootType == LootType.Regular)
-            {
-                LootType = LootType.Blessed;
-            }
-        }
     }
 }

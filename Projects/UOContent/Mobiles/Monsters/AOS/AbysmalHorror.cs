@@ -44,8 +44,6 @@ namespace Server.Mobiles
 
         public override string CorpseName => "an abysmal horror corpse";
 
-        public override bool IgnoreYoungProtection => Core.ML;
-
         public override string DefaultName => "an abysmal horror";
 
         public override bool BardImmune => !Core.SE;

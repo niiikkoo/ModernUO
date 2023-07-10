@@ -1,5 +1,4 @@
 using System;
-using Server.Factions;
 using Server.Items;
 using Server.Targeting;
 
@@ -56,13 +55,6 @@ public class DefTinkering : CraftSystem
         if (!BaseTool.CheckAccessible(tool, from))
         {
             return 1044263; // The tool must be on your person to use.
-        }
-
-        if (itemType != null &&
-            (itemType.IsSubclassOf(typeof(BaseFactionTrapDeed)) || itemType == typeof(FactionTrapRemovalKit)) &&
-            Faction.Find(from) == null)
-        {
-            return 1044573; // You have to be in a faction to do that.
         }
 
         return 0;
@@ -133,11 +125,6 @@ public class DefTinkering : CraftSystem
 
     public override bool ConsumeOnFailure(Mobile from, Type resourceType, CraftItem craftItem)
     {
-        if (resourceType == typeof(Silver))
-        {
-            return false;
-        }
-
         return base.ConsumeOnFailure(from, resourceType, craftItem);
     }
 
@@ -434,7 +421,7 @@ public class DefTinkering : CraftSystem
         AddRes(index, typeof(BaseExplosionPotion), 1044569, 1, 1044253);
 
         // Faction Gas Trap
-        index = AddCraft(
+        /*index = AddCraft(
             typeof(FactionGasTrapDeed),
             1044052,
             1044598,
@@ -504,7 +491,7 @@ public class DefTinkering : CraftSystem
             1044572,
             500,
             1044253
-        );
+        );*/
         AddRes(index, typeof(IronIngot), 1044036, 10, 1044037);
 
         // Magic Jewelry

@@ -3,16 +3,9 @@ using System.Collections.Generic;
 using Server.Accounting;
 using Server.Collections;
 using Server.ContextMenus;
-using Server.Engines.BulkOrders;
-using Server.Engines.ConPVP;
 using Server.Engines.Craft;
 using Server.Engines.Help;
-using Server.Engines.MLQuests;
-using Server.Engines.MLQuests.Gumps;
 using Server.Engines.PartySystem;
-using Server.Engines.Quests;
-using Server.Ethics;
-using Server.Factions;
 using Server.Guilds;
 using Server.Gumps;
 using Server.Items;
@@ -33,9 +26,7 @@ using Server.Spells.Sixth;
 using Server.Spells.Spellweaving;
 using Server.Targeting;
 using Server.Utilities;
-using BaseQuestGump = Server.Engines.MLQuests.Gumps.BaseQuestGump;
 using CalcMoves = Server.Movement.Movement;
-using QuestOfferGump = Server.Engines.MLQuests.Gumps.QuestOfferGump;
 using RankDefinition = Server.Guilds.RankDefinition;
 
 namespace Server.Mobiles
@@ -50,14 +41,11 @@ namespace Server.Mobiles
         StoneMining = 0x00000008,
         ToggleMiningStone = 0x00000010,
         KarmaLocked = 0x00000020,
-        AutoRenewInsurance = 0x00000040,
-        UseOwnFilter = 0x00000080,
-        PagingSquelched = 0x00000200,
-        Young = 0x00000400,
-        AcceptGuildInvites = 0x00000800,
-        DisplayChampionTitle = 0x00001000,
-        HasStatReward = 0x00002000,
-        RefuseTrades = 0x00004000
+        UseOwnFilter = 0x00000040,
+        PagingSquelched = 0x00000080,
+        AcceptGuildInvites = 0x00000100,
+        HasStatReward = 0x00000200,
+        RefuseTrades = 0x00000400
     }
 
     public enum NpcGuild
@@ -77,13 +65,6 @@ namespace Server.Mobiles
         BlacksmithsGuild
     }
 
-    public enum SolenFriendship
-    {
-        None,
-        Red,
-        Black
-    }
-
     public enum BlockMountType
     {
         None = -1,
@@ -92,11 +73,11 @@ namespace Server.Mobiles
         DismountRecovery = 1070859
     }
 
-    public class PlayerMobile : Mobile, IHonorTarget
+    public class PlayerMobile : Mobile
     {
         private static bool m_NoRecursion;
 
-        private static readonly Point3D[] m_TrammelDeathDestinations =
+        private static readonly Point3D[] m_GaiaDeathDestinations =
         {
             new(1481, 1612, 20),
             new(2708, 2153, 0),
@@ -115,32 +96,6 @@ namespace Server.Mobiles
             new(3665, 2587, 0)
         };
 
-        private static readonly Point3D[] m_IlshenarDeathDestinations =
-        {
-            new(1216, 468, -13),
-            new(723, 1367, -60),
-            new(745, 725, -28),
-            new(281, 1017, 0),
-            new(986, 1011, -32),
-            new(1175, 1287, -30),
-            new(1533, 1341, -3),
-            new(529, 217, -44),
-            new(1722, 219, 96)
-        };
-
-        private static readonly Point3D[] m_MalasDeathDestinations =
-        {
-            new(2079, 1376, -70),
-            new(944, 519, -71)
-        };
-
-        private static readonly Point3D[] m_TokunoDeathDestinations =
-        {
-            new(1166, 801, 27),
-            new(782, 1228, 25),
-            new(268, 624, 15)
-        };
-
         private Dictionary<int, bool> m_AcquiredRecipes;
 
         private List<Mobile> m_AllFollowers;
@@ -148,8 +103,6 @@ namespace Server.Mobiles
 
         // TODO: Pool BuffInfo objects
         private Dictionary<BuffIcon, BuffInfo> m_BuffTable;
-
-        private DuelPlayer m_DuelPlayer;
 
         private Type m_EnemyOfOneType;
         private TimeSpan m_GameTime;
@@ -163,33 +116,18 @@ namespace Server.Mobiles
 
         private int m_HairModID = -1, m_HairModHue;
 
-        public DateTime _honorTime;
-
-        private Mobile m_InsuranceAward;
-        private int m_InsuranceBonus;
-
         private int m_LastGlobalLight = -1, m_LastPersonalLight = -1;
+
+        private TimeSpan m_LongTermElapse;
 
         private bool m_LastProtectedMessage;
 
-        private DateTime m_LastYoungHeal = DateTime.MinValue;
-
-        private DateTime m_LastYoungMessage = DateTime.MinValue;
-        private TimeSpan m_LongTermElapse;
-
         private MountBlock _mountBlock;
-
-        private DateTime m_NextJustAward;
 
         private int m_NextMovementTime;
         private int m_NextProtectionCheck = 10;
-        private DateTime m_NextSmithBulkOrder;
-        private DateTime m_NextTailorBulkOrder;
 
         private bool m_NoDeltaRecursion;
-
-        // number of items that could not be automatically reinsured because gold in bank was not enough
-        private int m_NonAutoreinsuredItems;
 
         private DateTime m_SavagePaintExpiration;
         private TimeSpan m_ShortTermElapse;
@@ -206,16 +144,11 @@ namespace Server.Mobiles
             PermaFlags = new List<Mobile>();
             RecentlyReported = new List<Mobile>();
 
-            BOBFilter = new BOBFilter();
-
             m_GameTime = TimeSpan.Zero;
             m_ShortTermElapse = TimeSpan.FromHours(8.0);
             m_LongTermElapse = TimeSpan.FromHours(40.0);
 
-            JusticeProtectors = new List<Mobile>();
             m_GuildRank = RankDefinition.Lowest;
-
-            ChampionTitles = new ChampionTitleInfo();
         }
 
         public PlayerMobile(Serial s) : base(s)
@@ -290,40 +223,6 @@ namespace Server.Mobiles
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public TimeSpan NextSmithBulkOrder
-        {
-            get => Utility.Max(m_NextSmithBulkOrder - Core.Now, TimeSpan.Zero);
-            set
-            {
-                try
-                {
-                    m_NextSmithBulkOrder = Core.Now + value;
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
-        }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public TimeSpan NextTailorBulkOrder
-        {
-            get => Utility.Max(m_NextTailorBulkOrder - Core.Now, TimeSpan.Zero);
-            set
-            {
-                try
-                {
-                    m_NextTailorBulkOrder = Core.Now + value;
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
-        }
-
-        [CommandProperty(AccessLevel.GameMaster)]
         public DateTime LastEscortTime { get; set; }
 
         [CommandProperty(AccessLevel.GameMaster)]
@@ -334,8 +233,6 @@ namespace Server.Mobiles
         public List<Mobile> PermaFlags { get; private set; }
 
         public override int Luck => AosAttributes.GetValue(this, AosAttribute.Luck);
-
-        public BOBFilter BOBFilter { get; private set; }
 
         [CommandProperty(AccessLevel.GameMaster)]
         public DateTime SessionStart { get; private set; }
@@ -377,11 +274,6 @@ namespace Server.Mobiles
             }
         }
 
-        [CommandProperty(AccessLevel.GameMaster)]
-        public Player EthicPlayer { get; set; }
-
-        public PlayerState FactionPlayerState { get; set; }
-
         public List<Mobile> RecentlyReported { get; set; }
 
         public List<Mobile> AutoStabled { get; private set; }
@@ -421,9 +313,6 @@ namespace Server.Mobiles
         public DateTime NpcGuildJoinTime { get; set; }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public DateTime NextBODTurnInTime { get; set; }
-
-        [CommandProperty(AccessLevel.GameMaster)]
         public DateTime LastOnline { get; set; }
 
         [CommandProperty(AccessLevel.GameMaster)]
@@ -432,20 +321,7 @@ namespace Server.Mobiles
         [CommandProperty(AccessLevel.GameMaster)]
         public TimeSpan NpcGuildGameTime { get; set; }
 
-        [CommandProperty(AccessLevel.GameMaster)]
-        public int ToTItemsTurnedIn { get; set; }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public int ToTTotalMonsterFame { get; set; }
-
         public int ExecutesLightningStrike { get; set; }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public int ToothAche
-        {
-            get => CandyCane.GetToothAche(this);
-            set => CandyCane.SetToothAche(this, value);
-        }
 
         public PlayerFlag Flags { get; set; }
 
@@ -496,13 +372,6 @@ namespace Server.Mobiles
         {
             get => GetFlag(PlayerFlag.KarmaLocked);
             set => SetFlag(PlayerFlag.KarmaLocked, value);
-        }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public bool AutoRenewInsurance
-        {
-            get => GetFlag(PlayerFlag.AutoRenewInsurance);
-            set => SetFlag(PlayerFlag.AutoRenewInsurance, value);
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
@@ -559,7 +428,7 @@ namespace Server.Mobiles
                         strOffs = 25;
                     }
 
-                    if (AnimalForm.UnderTransformation(this, typeof(BakeKitsune)) ||
+                    if (/*AnimalForm.UnderTransformation(this, typeof(BakeKitsune)) ||*/
                         AnimalForm.UnderTransformation(this, typeof(GreyWolf)))
                     {
                         strOffs += 20;
@@ -626,35 +495,6 @@ namespace Server.Mobiles
             set => base.Dex = value;
         }
 
-        public DuelContext DuelContext { get; private set; }
-
-        public DuelPlayer DuelPlayer
-        {
-            get => m_DuelPlayer;
-            set
-            {
-                var wasInTourney = DuelContext?.Finished == false && DuelContext.m_Tournament != null;
-
-                m_DuelPlayer = value;
-
-                DuelContext = m_DuelPlayer?.Participant.Context;
-
-                var isInTourney = DuelContext?.Finished == false && DuelContext.m_Tournament != null;
-
-                if (wasInTourney != isInTourney)
-                {
-                    SendEverything();
-                }
-            }
-        }
-
-        public QuestSystem Quest { get; set; }
-
-        public List<QuestRestartInfo> DoneQuests { get; set; }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public SolenFriendship SolenFriendship { get; set; }
-
         public Type EnemyOfOneType
         {
             get => m_EnemyOfOneType;
@@ -676,62 +516,13 @@ namespace Server.Mobiles
 
         public bool WaitingForEnemy { get; set; }
 
-        public DateTime LastSacrificeGain { get; set; }
-
-        public DateTime LastSacrificeLoss { get; set; }
-
         [CommandProperty(AccessLevel.GameMaster)]
         public int AvailableResurrects { get; set; }
-
-        public DateTime LastJusticeLoss { get; set; }
-
-        public List<Mobile> JusticeProtectors { get; set; }
-
-        public DateTime LastCompassionLoss { get; set; }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public DateTime NextCompassionDay { get; set; }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public int CompassionGains { get; set; }
-
-        public DateTime LastValorLoss { get; set; }
-
-        public DateTime LastHonorLoss { get; set; }
-
-        public DateTime LastHonorUse { get; set; }
-
-        public bool HonorActive { get; set; }
-
-        public HonorContext SentHonorContext { get; set; }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public bool Young
-        {
-            get => GetFlag(PlayerFlag.Young);
-            set
-            {
-                SetFlag(PlayerFlag.Young, value);
-                InvalidateProperties();
-            }
-        }
 
         public SpeechLog SpeechLog { get; private set; }
 
         [CommandProperty(AccessLevel.GameMaster)]
-        public bool DisplayChampionTitle
-        {
-            get => GetFlag(PlayerFlag.DisplayChampionTitle);
-            set => SetFlag(PlayerFlag.DisplayChampionTitle, value);
-        }
-
-        [CommandProperty(AccessLevel.GameMaster)]
-        public ChampionTitleInfo ChampionTitles { get; private set; }
-
-        [CommandProperty(AccessLevel.GameMaster)]
         public int KnownRecipes => m_AcquiredRecipes?.Count ?? 0;
-
-        public HonorContext ReceivedHonorContext { get; set; }
 
         public QuestArrow QuestArrow
         {
@@ -1062,7 +853,7 @@ namespace Server.Mobiles
             foreach (var m in World.Mobiles.Values)
             {
                 if (m is PlayerMobile pm &&
-                    ((!pm.Mounted || pm.Mount is EtherealMount) && pm.AllFollowers.Count > pm.AutoStabled.Count ||
+                    ((!pm.Mounted /*|| pm.Mount is EtherealMount*/) && pm.AllFollowers.Count > pm.AutoStabled.Count ||
                      pm.Mounted && pm.AllFollowers.Count > pm.AutoStabled.Count + 1))
                 {
                     pm.AutoStablePets(); /* autostable checks summons, et al: no need here */
@@ -1252,7 +1043,6 @@ namespace Server.Mobiles
 
             if (from is PlayerMobile mobile)
             {
-                mobile.CheckAtrophies();
                 mobile.ClaimAutoStabledPets();
             }
         }
@@ -1295,11 +1085,7 @@ namespace Server.Mobiles
                 var dex = Dex;
                 var intel = Int;
 
-                var factionItemCount = 0;
-
                 Mobile from = this;
-
-                var ethic = Ethic.Find(from);
 
                 for (var i = items.Count - 1; i >= 0; --i)
                 {
@@ -1309,33 +1095,6 @@ namespace Server.Mobiles
                     }
 
                     var item = items[i];
-
-                    if ((item.SavedFlags & 0x100) != 0)
-                    {
-                        if (item.Hue != Ethic.Hero.Definition.PrimaryHue)
-                        {
-                            item.SavedFlags &= ~0x100;
-                        }
-                        else if (ethic != Ethic.Hero)
-                        {
-                            from.AddToBackpack(item);
-                            moved = true;
-                            continue;
-                        }
-                    }
-                    else if ((item.SavedFlags & 0x200) != 0)
-                    {
-                        if (item.Hue != Ethic.Evil.Definition.PrimaryHue)
-                        {
-                            item.SavedFlags &= ~0x200;
-                        }
-                        else if (ethic != Ethic.Evil)
-                        {
-                            from.AddToBackpack(item);
-                            moved = true;
-                            continue;
-                        }
-                    }
 
                     if (item is BaseWeapon weapon)
                     {
@@ -1455,30 +1214,6 @@ namespace Server.Mobiles
                             moved = true;
                         }
                     }
-
-                    var factionItem = FactionItem.Find(item);
-
-                    if (factionItem != null)
-                    {
-                        var drop = false;
-
-                        var ourFaction = Faction.Find(this);
-
-                        if (ourFaction == null || ourFaction != factionItem.Faction)
-                        {
-                            drop = true;
-                        }
-                        else if (++factionItemCount > FactionItem.GetMaxWearables(this))
-                        {
-                            drop = true;
-                        }
-
-                        if (drop)
-                        {
-                            from.AddToBackpack(item);
-                            moved = true;
-                        }
-                    }
                 }
 
                 if (moved)
@@ -1516,8 +1251,6 @@ namespace Server.Mobiles
             if (m is PlayerMobile pm)
             {
                 pm.SessionStart = Core.Now;
-
-                pm.Quest?.StartTimer();
 
                 pm.BedrollLogout = false;
                 pm.LastOnline = Core.Now;
@@ -1563,8 +1296,6 @@ namespace Server.Mobiles
             if (from is PlayerMobile pm)
             {
                 pm.m_GameTime += Core.Now - pm.SessionStart;
-
-                pm.Quest?.StopTimer();
 
                 pm.SpeechLog = null;
                 pm.ClearQuestArrow();
@@ -1770,11 +1501,6 @@ namespace Server.Mobiles
 
         public override bool AllowItemUse(Item item)
         {
-            if (DuelContext?.AllowItemUse(this, item) == false)
-            {
-                return false;
-            }
-
             return DesignContext.Check(this);
         }
 
@@ -1792,7 +1518,7 @@ namespace Server.Mobiles
                 }
             }
 
-            return DuelContext?.AllowSkillUse(this, skill) != false && DesignContext.Check(this);
+            return DesignContext.Check(this);
         }
 
         public virtual void RecheckTownProtection()
@@ -1851,48 +1577,6 @@ namespace Server.Mobiles
 
             if (from == this)
             {
-                Quest?.GetContextMenuEntries(list);
-
-                if (Alive)
-                {
-                    if (InsuranceEnabled)
-                    {
-                        if (Core.SA)
-                        {
-                            list.Add(new CallbackEntry(1114299, OpenItemInsuranceMenu)); // Open Item Insurance Menu
-                        }
-
-                        list.Add(new CallbackEntry(6201, ToggleItemInsurance)); // Toggle Item Insurance
-
-                        if (!Core.SA)
-                        {
-                            if (AutoRenewInsurance)
-                            {
-                                list.Add(
-                                    new CallbackEntry(
-                                        6202,
-                                        CancelRenewInventoryInsurance
-                                    )
-                                ); // Cancel Renewing Inventory Insurance
-                            }
-                            else
-                            {
-                                list.Add(
-                                    new CallbackEntry(
-                                        6200,
-                                        AutoRenewInventoryInsurance
-                                    )
-                                ); // Auto Renew Inventory Insurance
-                            }
-                        }
-                    }
-
-                    if (MLQuestSystem.Enabled)
-                    {
-                        list.Add(new CallbackEntry(6169, ToggleQuestItem)); // Toggle Quest Item
-                    }
-                }
-
                 var house = BaseHouse.FindHouseAt(this);
 
                 if (house != null)
@@ -1901,21 +1585,6 @@ namespace Server.Mobiles
                     {
                         list.Add(new CallbackEntry(6204, GetVendor));
                     }
-
-                    if (house.IsAosRules && !Region.IsPartOf<SafeZone>()) // Dueling
-                    {
-                        list.Add(new CallbackEntry(6207, LeaveHouse));
-                    }
-                }
-
-                if (JusticeProtectors.Count > 0)
-                {
-                    list.Add(new CallbackEntry(6157, CancelProtection));
-                }
-
-                if (Alive)
-                {
-                    list.Add(new CallbackEntry(6210, ToggleChampionTitleDisplay));
                 }
 
                 if (Core.HS)
@@ -1970,27 +1639,6 @@ namespace Server.Mobiles
                     list.Add(new EjectPlayerEntry(from, this));
                 }
             }
-        }
-
-        private void CancelProtection()
-        {
-            for (var i = 0; i < JusticeProtectors.Count; ++i)
-            {
-                var prot = JusticeProtectors[i];
-
-                var args = $"{Name}\t{prot.Name}";
-
-                prot.SendLocalizedMessage(
-                    1049371,
-                    args
-                ); // The protective relationship between ~1_PLAYER1~ and ~2_PLAYER2~ has been ended.
-                SendLocalizedMessage(
-                    1049371,
-                    args
-                ); // The protective relationship between ~1_PLAYER1~ and ~2_PLAYER2~ has been ended.
-            }
-
-            JusticeProtectors.Clear();
         }
 
         private void ToggleTrades()
@@ -2057,46 +1705,6 @@ namespace Server.Mobiles
             if (!base.CheckEquip(item))
             {
                 return false;
-            }
-
-            if (DuelContext?.AllowItemEquip(this, item) == false)
-            {
-                return false;
-            }
-
-            var factionItem = FactionItem.Find(item);
-
-            if (factionItem != null)
-            {
-                var faction = Faction.Find(this);
-
-                if (faction == null)
-                {
-                    SendLocalizedMessage(1010371); // You cannot equip a faction item!
-                    return false;
-                }
-
-                if (faction != factionItem.Faction)
-                {
-                    SendLocalizedMessage(1010372); // You cannot equip an opposing faction's item!
-                    return false;
-                }
-
-                var maxWearables = FactionItem.GetMaxWearables(this);
-
-                for (var i = 0; i < Items.Count; ++i)
-                {
-                    var equipped = Items[i];
-
-                    if (item != equipped && FactionItem.Find(equipped) != null)
-                    {
-                        if (--maxWearables == 0)
-                        {
-                            SendLocalizedMessage(1010373); // You do not have enough rank to equip more faction items!
-                            return false;
-                        }
-                    }
-                }
             }
 
             if (AccessLevel < AccessLevel.GameMaster && item.Layer != Layer.Mount && HasTrade)
@@ -2257,8 +1865,6 @@ namespace Server.Mobiles
         {
             CheckLightLevels(false);
 
-            DuelContext?.OnLocationChanged(this);
-
             var context = DesignContext;
 
             if (context == null || m_NoRecursion)
@@ -2299,9 +1905,7 @@ namespace Server.Mobiles
             m is BaseCreature creature && !creature.Controlled
                 ? !Alive || !creature.Alive || IsDeadBondedPet || creature.IsDeadBondedPet ||
                   Hidden && AccessLevel > AccessLevel.Player
-                : Region.IsPartOf<SafeZone>() && m is PlayerMobile pm &&
-                (pm.DuelContext == null || pm.DuelPlayer == null || !pm.DuelContext.Started || pm.DuelContext.Finished ||
-                 pm.DuelPlayer.Eliminated) || base.OnMoveOver(m);
+                : base.OnMoveOver(m);
 
         public override bool CheckShove(Mobile shoved) =>
             IgnoreMobiles || shoved.IgnoreMobiles || TransformationSpellHelper.UnderTransformation(shoved, typeof(WraithFormSpell)) ||
@@ -2309,13 +1913,6 @@ namespace Server.Mobiles
 
         protected override void OnMapChange(Map oldMap)
         {
-            if (Map != Faction.Facet && oldMap == Faction.Facet || Map == Faction.Facet && oldMap != Faction.Facet)
-            {
-                InvalidateProperties();
-            }
-
-            DuelContext?.OnMapChanged(this);
-
             var context = DesignContext;
 
             if (context == null || m_NoRecursion)
@@ -2333,13 +1930,6 @@ namespace Server.Mobiles
             }
 
             m_NoRecursion = false;
-        }
-
-        public override void OnBeneficialAction(Mobile target, bool isCriminal)
-        {
-            SentHonorContext?.OnSourceBeneficialAction(target);
-
-            base.OnBeneficialAction(target, isCriminal);
         }
 
         public override void OnDamage(int amount, Mobile from, bool willKill)
@@ -2369,9 +1959,6 @@ namespace Server.Mobiles
             Confidence.StopRegenerating(this);
 
             WeightOverloading.FatigueOnDamage(this, amount);
-
-            ReceivedHonorContext?.OnTargetDamaged(from, amount);
-            SentHonorContext?.OnSourceDamaged(from, amount);
 
             if (willKill && from is PlayerMobile mobile)
             {
@@ -2407,7 +1994,7 @@ namespace Server.Mobiles
         }
 
         private bool FindItems_Callback(Item item) =>
-            !item.Deleted && (item.LootType == LootType.Blessed || item.Insured) &&
+            !item.Deleted && (item.LootType == LootType.Blessed) &&
             Backpack != item.Parent;
 
         public override bool OnBeforeDeath()
@@ -2418,149 +2005,35 @@ namespace Server.Mobiles
 
             DropHolding();
 
-            if (Core.AOS && Backpack?.Deleted == false)
-            {
-                Backpack.FindItemsByType<Item>(FindItems_Callback).ForEach(item => Backpack.AddItem(item));
-            }
-
-            EquipSnapshot = new List<Item>(Items);
-
-            m_NonAutoreinsuredItems = 0;
-            m_InsuranceAward = FindMostRecentDamager(false);
-
-            if (m_InsuranceAward is BaseCreature creature)
-            {
-                var master = creature.GetMaster();
-
-                if (master != null)
-                {
-                    m_InsuranceAward = master;
-                }
-            }
-
-            if (m_InsuranceAward != null && (!m_InsuranceAward.Player || m_InsuranceAward == this))
-            {
-                m_InsuranceAward = null;
-            }
-
-            if (m_InsuranceAward is PlayerMobile mobile)
-            {
-                mobile.m_InsuranceBonus = 0;
-            }
-
-            ReceivedHonorContext?.OnTargetKilled();
-            SentHonorContext?.OnSourceKilled();
-
             RecoverAmmo();
 
             return base.OnBeforeDeath();
         }
 
-        private bool CheckInsuranceOnDeath(Item item)
-        {
-            if (!InsuranceEnabled || !item.Insured)
-            {
-                return false;
-            }
-
-            if (DuelContext?.Registered == true && DuelContext.Started &&
-                m_DuelPlayer?.Eliminated != true)
-            {
-                return true;
-            }
-
-            if (AutoRenewInsurance)
-            {
-                var cost = GetInsuranceCost(item);
-
-                if (m_InsuranceAward != null)
-                {
-                    cost /= 2;
-                }
-
-                if (Banker.Withdraw(this, cost))
-                {
-                    item.PaidInsurance = true;
-                    SendLocalizedMessage(
-                        1060398,
-                        cost.ToString()
-                    ); // ~1_AMOUNT~ gold has been withdrawn from your bank box.
-                }
-                else
-                {
-                    SendLocalizedMessage(1061079, "", 0x23); // You lack the funds to purchase the insurance
-                    item.PaidInsurance = false;
-                    item.Insured = false;
-                    m_NonAutoreinsuredItems++;
-                }
-            }
-            else
-            {
-                item.PaidInsurance = false;
-                item.Insured = false;
-            }
-
-            if (m_InsuranceAward != null && Banker.Deposit(m_InsuranceAward, 300) && m_InsuranceAward is PlayerMobile pm)
-            {
-                pm.m_InsuranceBonus += 300;
-            }
-
-            return true;
-        }
-
         public override DeathMoveResult GetParentMoveResultFor(Item item)
         {
-            // It seems all items are unmarked on death, even blessed/insured ones
+            // It seems all items are unmarked on death, even blessed
             if (item.QuestItem)
             {
                 item.QuestItem = false;
             }
 
-            if (CheckInsuranceOnDeath(item))
-            {
-                return DeathMoveResult.MoveToBackpack;
-            }
-
-            var res = base.GetParentMoveResultFor(item);
-
-            if (res == DeathMoveResult.MoveToCorpse && item.Movable && Young)
-            {
-                res = DeathMoveResult.MoveToBackpack;
-            }
-
-            return res;
+            return base.GetParentMoveResultFor(item);
         }
 
         public override DeathMoveResult GetInventoryMoveResultFor(Item item)
         {
-            // It seems all items are unmarked on death, even blessed/insured ones
+            // It seems all items are unmarked on death, even blessed
             if (item.QuestItem)
             {
                 item.QuestItem = false;
             }
 
-            if (CheckInsuranceOnDeath(item))
-            {
-                return DeathMoveResult.MoveToBackpack;
-            }
-
-            var res = base.GetInventoryMoveResultFor(item);
-
-            if (res == DeathMoveResult.MoveToCorpse && item.Movable && Young)
-            {
-                res = DeathMoveResult.MoveToBackpack;
-            }
-
-            return res;
+            return base.GetInventoryMoveResultFor(item);
         }
 
         public override void OnDeath(Container c)
         {
-            if (m_NonAutoreinsuredItems > 0)
-            {
-                SendLocalizedMessage(1061115);
-            }
-
             base.OnDeath(c);
 
             EquipSnapshot = null;
@@ -2577,8 +2050,6 @@ namespace Server.Mobiles
 
             EndAction<PolymorphSpell>();
             EndAction<IncognitoSpell>();
-
-            MeerMage.StopEffect(this, false);
 
             if (Flying)
             {
@@ -2603,55 +2074,6 @@ namespace Server.Mobiles
                 }
             }
 
-            if (Kills >= 5 && Core.Now >= m_NextJustAward)
-            {
-                var m = FindMostRecentDamager(false);
-
-                if (m is BaseCreature bc)
-                {
-                    m = bc.GetMaster();
-                }
-
-                if (m != this && m is PlayerMobile)
-                {
-                    var gainedPath = false;
-
-                    var pointsToGain = 0;
-
-                    pointsToGain += (int)Math.Sqrt(GameTime.TotalSeconds * 4);
-                    pointsToGain *= 5;
-                    pointsToGain += (int)Math.Pow(Skills.Total / 250.0, 2);
-
-                    if (VirtueHelper.Award(m, VirtueName.Justice, pointsToGain, ref gainedPath))
-                    {
-                        if (gainedPath)
-                        {
-                            m.SendLocalizedMessage(1049367); // You have gained a path in Justice!
-                        }
-                        else
-                        {
-                            m.SendLocalizedMessage(1049363); // You have gained in Justice.
-                        }
-
-                        m.FixedParticles(0x375A, 9, 20, 5027, EffectLayer.Waist);
-                        m.PlaySound(0x1F7);
-
-                        m_NextJustAward = Core.Now + TimeSpan.FromMinutes(pointsToGain / 3.0);
-                    }
-                }
-            }
-
-            if (m_InsuranceAward is PlayerMobile pm)
-            {
-                if (pm.m_InsuranceBonus > 0)
-                {
-                    pm.SendLocalizedMessage(
-                        1060397,
-                        pm.m_InsuranceBonus.ToString()
-                    ); // ~1_AMOUNT~ gold has been deposited into your bank box.
-                }
-            }
-
             var killer = FindMostRecentDamager(true);
 
             if (killer is BaseCreature bcKiller)
@@ -2663,24 +2085,7 @@ namespace Server.Mobiles
                 }
             }
 
-            if (Young && DuelContext == null)
-            {
-                if (YoungDeathTeleport())
-                {
-                    Timer.StartTimer(TimeSpan.FromSeconds(2.5), SendYoungDeathNotice);
-                }
-            }
-
-            if (DuelContext?.Registered != true || !DuelContext.Started || m_DuelPlayer?.Eliminated != false)
-            {
-                Faction.HandleDeath(this, killer);
-            }
-
             Guilds.Guild.HandleDeath(this, killer);
-
-            MLQuestSystem.HandleDeath(this);
-
-            DuelContext?.OnDeath(this, c);
 
             if (m_BuffTable != null)
             {
@@ -2937,26 +2342,9 @@ namespace Server.Mobiles
                         goto case 24;
                     }
                 case 24:
-                    {
-                        LastHonorLoss = reader.ReadDeltaTime();
-                        goto case 23;
-                    }
                 case 23:
-                    {
-                        ChampionTitles = new ChampionTitleInfo(reader);
-                        goto case 22;
-                    }
                 case 22:
-                    {
-                        LastValorLoss = reader.ReadDateTime();
-                        goto case 21;
-                    }
                 case 21:
-                    {
-                        ToTItemsTurnedIn = reader.ReadEncodedInt();
-                        ToTTotalMonsterFame = reader.ReadInt();
-                        goto case 20;
-                    }
                 case 20:
                     {
                         AllianceMessageHue = reader.ReadEncodedInt();
@@ -2978,84 +2366,17 @@ namespace Server.Mobiles
                         goto case 18;
                     }
                 case 18:
-                    {
-                        SolenFriendship = (SolenFriendship)reader.ReadEncodedInt();
-
-                        goto case 17;
-                    }
-                case 17: // changed how DoneQuests is serialized
+                case 17:
                 case 16:
                     {
-                        Quest = QuestSerializer.DeserializeQuest(reader);
-
-                        if (Quest != null)
-                        {
-                            Quest.From = this;
-                        }
-
-                        var count = reader.ReadEncodedInt();
-
-                        if (count > 0)
-                        {
-                            DoneQuests = new List<QuestRestartInfo>();
-
-                            for (var i = 0; i < count; ++i)
-                            {
-                                var questType = QuestSerializer.ReadType(QuestSystem.QuestTypes, reader);
-                                DateTime restartTime;
-
-                                if (version < 17)
-                                {
-                                    restartTime = DateTime.MaxValue;
-                                }
-                                else
-                                {
-                                    restartTime = reader.ReadDateTime();
-                                }
-
-                                DoneQuests.Add(new QuestRestartInfo(questType, restartTime));
-                            }
-                        }
-
                         Profession = reader.ReadEncodedInt();
                         goto case 15;
                     }
                 case 15:
-                    {
-                        LastCompassionLoss = reader.ReadDeltaTime();
-                        goto case 14;
-                    }
                 case 14:
-                    {
-                        CompassionGains = reader.ReadEncodedInt();
-
-                        if (CompassionGains > 0)
-                        {
-                            NextCompassionDay = reader.ReadDeltaTime();
-                        }
-
-                        goto case 13;
-                    }
-                case 13: // just removed m_PaidInsurance list
+                case 13:
                 case 12:
-                    {
-                        BOBFilter = new BOBFilter(reader);
-                        goto case 11;
-                    }
                 case 11:
-                    {
-                        if (version < 13)
-                        {
-                            var paid = reader.ReadEntityList<Item>();
-
-                            for (var i = 0; i < paid.Count; ++i)
-                            {
-                                paid[i].PaidInsurance = true;
-                            }
-                        }
-
-                        goto case 10;
-                    }
                 case 10:
                     {
                         if (reader.ReadBool())
@@ -3093,28 +2414,9 @@ namespace Server.Mobiles
                         goto case 6;
                     }
                 case 6:
-                    {
-                        NextTailorBulkOrder = reader.ReadTimeSpan();
-                        goto case 5;
-                    }
                 case 5:
-                    {
-                        NextSmithBulkOrder = reader.ReadTimeSpan();
-                        goto case 4;
-                    }
                 case 4:
-                    {
-                        LastJusticeLoss = reader.ReadDeltaTime();
-                        JusticeProtectors = reader.ReadEntityList<Mobile>();
-                        goto case 3;
-                    }
                 case 3:
-                    {
-                        LastSacrificeGain = reader.ReadDeltaTime();
-                        LastSacrificeLoss = reader.ReadDeltaTime();
-                        AvailableResurrects = reader.ReadInt();
-                        goto case 2;
-                    }
                 case 2:
                     {
                         Flags = (PlayerFlag)reader.ReadInt();
@@ -3146,8 +2448,6 @@ namespace Server.Mobiles
             }
 
             PermaFlags ??= new List<Mobile>();
-            JusticeProtectors ??= new List<Mobile>();
-            BOBFilter ??= new BOBFilter();
 
             // Default to member if going from older version to new version (only time it should be null)
             m_GuildRank ??= RankDefinition.Member;
@@ -3156,8 +2456,6 @@ namespace Server.Mobiles
             {
                 LastOnline = ((Account)Account).LastLogin;
             }
-
-            ChampionTitles ??= new ChampionTitleInfo();
 
             if (AccessLevel > AccessLevel.Player)
             {
@@ -3176,7 +2474,6 @@ namespace Server.Mobiles
             }
 
             CheckKillDecay();
-            CheckAtrophies();
 
             if (Hidden) // Hiding is the only buff where it has an effect that's serialized.
             {
@@ -3226,53 +2523,13 @@ namespace Server.Mobiles
                 }
             }
 
-            writer.WriteDeltaTime(LastHonorLoss);
-
-            ChampionTitleInfo.Serialize(writer, ChampionTitles);
-
-            writer.Write(LastValorLoss);
-            writer.WriteEncodedInt(ToTItemsTurnedIn);
-            writer.Write(ToTTotalMonsterFame); // This ain't going to be a small #.
-
             writer.WriteEncodedInt(AllianceMessageHue);
             writer.WriteEncodedInt(GuildMessageHue);
 
             writer.WriteEncodedInt(m_GuildRank.Rank);
             writer.Write(LastOnline);
 
-            writer.WriteEncodedInt((int)SolenFriendship);
-
-            QuestSerializer.Serialize(Quest, writer);
-
-            if (DoneQuests == null)
-            {
-                writer.WriteEncodedInt(0);
-            }
-            else
-            {
-                writer.WriteEncodedInt(DoneQuests.Count);
-
-                for (var i = 0; i < DoneQuests.Count; ++i)
-                {
-                    var restartInfo = DoneQuests[i];
-
-                    QuestSerializer.Write(restartInfo.QuestType, QuestSystem.QuestTypes, writer);
-                    writer.Write(restartInfo.RestartTime);
-                }
-            }
-
             writer.WriteEncodedInt(Profession);
-
-            writer.WriteDeltaTime(LastCompassionLoss);
-
-            writer.WriteEncodedInt(CompassionGains);
-
-            if (CompassionGains > 0)
-            {
-                writer.WriteDeltaTime(NextCompassionDay);
-            }
-
-            BOBFilter.Serialize(writer);
 
             var useMods = m_HairModID != -1 || m_BeardModID != -1;
 
@@ -3295,18 +2552,6 @@ namespace Server.Mobiles
             PermaFlags.Tidy();
             writer.Write(PermaFlags);
 
-            writer.Write(NextTailorBulkOrder);
-
-            writer.Write(NextSmithBulkOrder);
-
-            writer.WriteDeltaTime(LastJusticeLoss);
-            JusticeProtectors.Tidy();
-            writer.Write(JusticeProtectors);
-
-            writer.WriteDeltaTime(LastSacrificeGain);
-            writer.WriteDeltaTime(LastSacrificeLoss);
-            writer.Write(AvailableResurrects);
-
             writer.Write((int)Flags);
 
             writer.Write(m_LongTermElapse);
@@ -3315,34 +2560,13 @@ namespace Server.Mobiles
         }
 
         // Do we need to run an after serialize?
-        public override bool ShouldExecuteAfterSerialize => ShouldKillDecay() || ShouldAtrophy();
+        public override bool ShouldExecuteAfterSerialize => ShouldKillDecay();
 
         public override void AfterSerialize()
         {
             base.AfterSerialize();
 
             CheckKillDecay();
-            CheckAtrophies();
-        }
-
-        public bool ShouldAtrophy()
-        {
-            var sacrifice = SacrificeVirtue.ShouldAtrophy(this);
-            var justice = JusticeVirtue.ShouldAtrophy(this);
-            var compassion = CompassionVirtue.ShouldAtrophy(this);
-            var valor = ValorVirtue.ShouldAtrophy(this);
-            var titles = ChampionTitleInfo.ShouldAtrophy(this);
-
-            return sacrifice || justice || compassion || valor || titles;
-        }
-
-        public void CheckAtrophies()
-        {
-            SacrificeVirtue.CheckAtrophy(this);
-            JusticeVirtue.CheckAtrophy(this);
-            CompassionVirtue.CheckAtrophy(this);
-            ValorVirtue.CheckAtrophy(this);
-            ChampionTitleInfo.CheckAtrophy(this);
         }
 
         public bool ShouldKillDecay() => m_ShortTermElapse < GameTime || m_LongTermElapse < GameTime;
@@ -3376,34 +2600,9 @@ namespace Server.Mobiles
 
         public override bool CanSee(Mobile m)
         {
-            if (m is CharacterStatue statue)
-            {
-                statue.OnRequestedAnimation(this);
-            }
-
             if (m is PlayerMobile mobile && mobile.VisibilityList.Contains(this))
             {
                 return true;
-            }
-
-            if (DuelContext?.Finished == false && DuelContext.m_Tournament != null && m_DuelPlayer?.Eliminated == false)
-            {
-                var owner = m;
-
-                if (owner is BaseCreature bc)
-                {
-                    var master = bc.GetMaster();
-
-                    if (master != null)
-                    {
-                        owner = master;
-                    }
-                }
-
-                if (m.AccessLevel == AccessLevel.Player && owner is PlayerMobile pm && pm.DuelContext != DuelContext)
-                {
-                    return false;
-                }
             }
 
             return base.CanSee(m);
@@ -3424,12 +2623,6 @@ namespace Server.Mobiles
         {
             base.OnAfterDelete();
 
-            var faction = Faction.Find(this);
-
-            faction?.RemoveMember(this);
-
-            MLQuestSystem.HandleDeletion(this);
-
             BaseHouse.HandleDeletion(this);
 
             DisguisePersistence.RemoveTimer(this);
@@ -3438,47 +2631,6 @@ namespace Server.Mobiles
         public override void GetProperties(IPropertyList list)
         {
             base.GetProperties(list);
-
-            if (Map == Faction.Facet)
-            {
-                var pl = PlayerState.Find(this);
-
-                if (pl != null)
-                {
-                    var faction = pl.Faction;
-
-                    if (faction.Commander == this)
-                    {
-                        // Commanding Lord of the ~1_FACTION_NAME~
-                        list.Add(1042733, $"{faction.Definition.PropName}");
-                    }
-                    else if (pl.Sheriff != null)
-                    {
-                        list.Add(
-                            1042734, // The Sheriff of  ~1_CITY~, ~2_FACTION_NAME~
-                            $"{pl.Sheriff.Definition.FriendlyName}\t{faction.Definition.PropName}"
-                        );
-                    }
-                    else if (pl.Finance != null)
-                    {
-                        list.Add(
-                            1042735, // The Finance Minister of ~1_CITY~, ~2_FACTION_NAME~
-                            $"{pl.Finance.Definition.FriendlyName}\t{faction.Definition.PropName}"
-                        );
-                    }
-                    else if (pl.MerchantTitle != MerchantTitle.None)
-                    {
-                        list.Add(
-                            1060776, // ~1_val~, ~2_val~
-                            $"{MerchantTitles.GetInfo(pl.MerchantTitle).Title}\t{faction.Definition.PropName}"
-                        );
-                    }
-                    else
-                    {
-                        list.Add(1060776, $"{pl.Rank.Title}\t{faction.Definition.PropName}"); // ~1_val~, ~2_val~
-                    }
-                }
-            }
 
             if (Core.ML)
             {
@@ -3491,50 +2643,6 @@ namespace Server.Mobiles
                     }
                 }
             }
-        }
-
-        public override void OnSingleClick(Mobile from)
-        {
-            if (Map == Faction.Facet)
-            {
-                var pl = PlayerState.Find(this);
-
-                if (pl != null)
-                {
-                    string text;
-                    var ascii = false;
-
-                    var faction = pl.Faction;
-
-                    if (faction.Commander == this)
-                    {
-                        text =
-                            $"{(Female ? "(Commanding Lady of the " : "(Commanding Lord of the ")}{faction.Definition.FriendlyName})";
-                    }
-                    else if (pl.Sheriff != null)
-                    {
-                        text = $"(The Sheriff of {pl.Sheriff.Definition.FriendlyName}, {faction.Definition.FriendlyName})";
-                    }
-                    else if (pl.Finance != null)
-                    {
-                        text =
-                            $"(The Finance Minister of {pl.Finance.Definition.FriendlyName}, {faction.Definition.FriendlyName})";
-                    }
-                    else
-                    {
-                        ascii = true;
-
-                        var title = MerchantTitles.GetInfo(pl.MerchantTitle)?.Title?.String ?? pl.Rank.Title.String;
-                        text = $"({title}, {faction.Definition.FriendlyName})";
-                    }
-
-                    var hue = Faction.Find(from) == faction ? 98 : 38;
-
-                    PrivateOverheadMessage(MessageType.Label, hue, ascii, text, from.NetState);
-                }
-            }
-
-            base.OnSingleClick(from);
         }
 
         protected override bool OnMove(Direction d)
@@ -3604,11 +2712,6 @@ namespace Server.Mobiles
                     }
 
                     if (pet is PackLlama or PackHorse or Beetle && pet.Backpack?.Items.Count > 0)
-                    {
-                        continue;
-                    }
-
-                    if (pet is BaseEscortable)
                     {
                         continue;
                     }
@@ -3746,275 +2849,6 @@ namespace Server.Mobiles
             RecoverableAmmo.Clear();
         }
 
-        private static int GetInsuranceCost(Item item) => 600;
-
-        private void ToggleItemInsurance()
-        {
-            if (!CheckAlive())
-            {
-                return;
-            }
-
-            BeginTarget(-1, false, TargetFlags.None, ToggleItemInsurance_Callback);
-            SendLocalizedMessage(1060868); // Target the item you wish to toggle insurance status on <ESC> to cancel
-        }
-
-        private bool CanInsure(Item item)
-        {
-            if (item is Container && item is not BaseQuiver || item is BagOfSending or KeyRing or PotionKeg or Sigil)
-            {
-                return false;
-            }
-
-            if (item.Stackable)
-            {
-                return false;
-            }
-
-            if (item.LootType == LootType.Cursed)
-            {
-                return false;
-            }
-
-            if (item.ItemID == 0x204E) // death shroud
-            {
-                return false;
-            }
-
-            if (item.Layer == Layer.Mount)
-            {
-                return false;
-            }
-
-            return item.LootType != LootType.Blessed && item.LootType != LootType.Newbied && item.BlessedFor != this;
-        }
-
-        private void ToggleItemInsurance_Callback(Mobile from, object obj)
-        {
-            if (!CheckAlive())
-            {
-                return;
-            }
-
-            ToggleItemInsurance_Callback(from, obj as Item, true);
-        }
-
-        private void ToggleItemInsurance_Callback(Mobile from, Item item, bool target)
-        {
-            if (item?.IsChildOf(this) != true)
-            {
-                if (target)
-                {
-                    BeginTarget(-1, false, TargetFlags.None, ToggleItemInsurance_Callback);
-                }
-
-                SendLocalizedMessage(
-                    1060871,
-                    "",
-                    0x23
-                ); // You can only insure items that you have equipped or that are in your backpack
-            }
-            else if (item.Insured)
-            {
-                item.Insured = false;
-
-                SendLocalizedMessage(1060874, "", 0x35); // You cancel the insurance on the item
-
-                if (target)
-                {
-                    BeginTarget(-1, false, TargetFlags.None, ToggleItemInsurance_Callback);
-                    SendLocalizedMessage(
-                        1060868,
-                        "",
-                        0x23
-                    ); // Target the item you wish to toggle insurance status on <ESC> to cancel
-                }
-            }
-            else if (!CanInsure(item))
-            {
-                if (target)
-                {
-                    BeginTarget(-1, false, TargetFlags.None, ToggleItemInsurance_Callback);
-                }
-
-                SendLocalizedMessage(1060869, "", 0x23); // You cannot insure that
-            }
-            else
-            {
-                if (!item.PaidInsurance)
-                {
-                    var cost = GetInsuranceCost(item);
-
-                    if (Banker.Withdraw(from, cost))
-                    {
-                        SendLocalizedMessage(
-                            1060398,
-                            cost.ToString()
-                        ); // ~1_AMOUNT~ gold has been withdrawn from your bank box.
-                        item.PaidInsurance = true;
-                    }
-                    else
-                    {
-                        SendLocalizedMessage(1061079, "", 0x23); // You lack the funds to purchase the insurance
-                        return;
-                    }
-                }
-
-                item.Insured = true;
-
-                SendLocalizedMessage(1060873, "", 0x23); // You have insured the item
-
-                if (target)
-                {
-                    BeginTarget(-1, false, TargetFlags.None, ToggleItemInsurance_Callback);
-                    SendLocalizedMessage(
-                        1060868,
-                        "",
-                        0x23
-                    ); // Target the item you wish to toggle insurance status on <ESC> to cancel
-                }
-            }
-        }
-
-        private void AutoRenewInventoryInsurance()
-        {
-            if (!CheckAlive())
-            {
-                return;
-            }
-
-            SendLocalizedMessage(
-                1060881,
-                "",
-                0x23
-            ); // You have selected to automatically reinsure all insured items upon death
-            AutoRenewInsurance = true;
-        }
-
-        private void CancelRenewInventoryInsurance()
-        {
-            if (!CheckAlive())
-            {
-                return;
-            }
-
-            if (Core.SE)
-            {
-                if (!HasGump<CancelRenewInventoryInsuranceGump>())
-                {
-                    SendGump(new CancelRenewInventoryInsuranceGump(this, null));
-                }
-            }
-            else
-            {
-                SendLocalizedMessage(
-                    1061075,
-                    "",
-                    0x23
-                ); // You have cancelled automatically reinsuring all insured items upon death
-                AutoRenewInsurance = false;
-            }
-        }
-
-        private void OpenItemInsuranceMenu()
-        {
-            if (!CheckAlive())
-            {
-                return;
-            }
-
-            var items = new List<Item>();
-
-            foreach (var item in Items)
-            {
-                if (DisplayInItemInsuranceGump(item))
-                {
-                    items.Add(item);
-                }
-            }
-
-            var pack = Backpack;
-
-            if (pack != null)
-            {
-                items.AddRange(pack.FindItemsByType<Item>(DisplayInItemInsuranceGump));
-            }
-
-            // TODO: Investigate item sorting
-
-            CloseGump<ItemInsuranceMenuGump>();
-
-            if (items.Count == 0)
-            {
-                SendLocalizedMessage(1114915, "", 0x35); // None of your current items meet the requirements for insurance.
-            }
-            else
-            {
-                SendGump(new ItemInsuranceMenuGump(this, items.ToArray()));
-            }
-        }
-
-        private bool DisplayInItemInsuranceGump(Item item) => (item.Visible || AccessLevel >= AccessLevel.GameMaster) &&
-                                                              (item.Insured || CanInsure(item));
-
-        private void ToggleQuestItem()
-        {
-            if (!CheckAlive())
-            {
-                return;
-            }
-
-            ToggleQuestItemTarget();
-        }
-
-        private void ToggleQuestItemTarget()
-        {
-            BaseQuestGump.CloseOtherGumps(this);
-            CloseGump<QuestLogDetailedGump>();
-            CloseGump<QuestLogGump>();
-            CloseGump<QuestOfferGump>();
-            // CloseGump( typeof( UnknownGump802 ) );
-            // CloseGump( typeof( UnknownGump804 ) );
-
-            BeginTarget(-1, false, TargetFlags.None, ToggleQuestItem_Callback);
-            SendLocalizedMessage(1072352); // Target the item you wish to toggle Quest Item status on <ESC> to cancel
-        }
-
-        private void ToggleQuestItem_Callback(Mobile from, object obj)
-        {
-            if (!CheckAlive())
-            {
-                return;
-            }
-
-            if (obj is not Item item)
-            {
-                return;
-            }
-
-            if (from.Backpack == null || item.Parent != from.Backpack)
-            {
-                // An item must be in your backpack (and not in a container within) to be toggled as a quest item.
-                SendLocalizedMessage(1074769);
-            }
-            else if (item.QuestItem)
-            {
-                item.QuestItem = false;
-                SendLocalizedMessage(1072354); // You remove Quest Item status from the item
-            }
-            else if (MLQuestSystem.MarkQuestItem(this, item))
-            {
-                SendLocalizedMessage(1072353); // You set the item to Quest Item status
-            }
-            else
-            {
-                // That item does not match any of your quest criteria
-                SendLocalizedMessage(1072355, "", 0x23);
-            }
-
-            ToggleQuestItemTarget();
-        }
-
         public bool CanUseStuckMenu()
         {
             if (m_StuckMenuUses == null)
@@ -4072,31 +2906,6 @@ namespace Server.Mobiles
             return result;
         }
 
-        public override bool CheckPoisonImmunity(Mobile from, Poison poison) =>
-            Young && (DuelContext?.Started != true || DuelContext.Finished) || base.CheckPoisonImmunity(from, poison);
-
-        public override void OnPoisonImmunity(Mobile from, Poison poison)
-        {
-            if (Young && (DuelContext?.Started != true || DuelContext.Finished))
-            {
-                // You would have been poisoned, were you not new to the land of Britannia.
-                // Be careful in the future.
-                SendLocalizedMessage(502808);
-            }
-            else
-            {
-                base.OnPoisonImmunity(from, poison);
-            }
-        }
-
-        public override void OnKillsChange(int oldValue)
-        {
-            if (Young && Kills > oldValue)
-            {
-                ((Account)Account)?.RemoveYoungStatus(0);
-            }
-        }
-
         public override void OnGenderChanged(bool oldFemale)
         {
         }
@@ -4117,20 +2926,6 @@ namespace Server.Mobiles
         {
         }
 
-        public override void OnSkillChange(SkillName skill, double oldBase)
-        {
-            if (Young && SkillsTotal >= 4500)
-            {
-                // You have successfully obtained a respectable skill level, and have outgrown your status as a young player!
-                ((Account)Account)?.RemoveYoungStatus(1019036);
-            }
-
-            if (MLQuestSystem.Enabled)
-            {
-                MLQuestSystem.HandleSkillGain(this, skill);
-            }
-        }
-
         public override void OnAccessLevelChanged(AccessLevel oldLevel)
         {
             IgnoreMobiles = AccessLevel != AccessLevel.Player;
@@ -4138,12 +2933,6 @@ namespace Server.Mobiles
 
         public override void OnRawStatChange(StatType stat, int oldValue)
         {
-        }
-
-        public override void OnDelete()
-        {
-            ReceivedHonorContext?.Cancel();
-            SentHonorContext?.Cancel();
         }
 
         public override int ComputeMovementSpeed(Direction dir, bool checkTurning = true)
@@ -4255,166 +3044,14 @@ namespace Server.Mobiles
             CreateHair(hair, id, 0);
         }
 
-        public override string ApplyNameSuffix(string suffix)
-        {
-            if (Young)
-            {
-                suffix = suffix.Length == 0 ? "(Young)" : $"{suffix} (Young)";
-            }
-
-            if (EthicPlayer != null)
-            {
-                if (suffix.Length == 0)
-                {
-                    suffix = EthicPlayer.Ethic.Definition.Adjunct.String;
-                }
-                else
-                {
-                    suffix = $"{suffix} {EthicPlayer.Ethic.Definition.Adjunct.String}";
-                }
-            }
-
-            if (Core.ML && Map == Faction.Facet)
-            {
-                var faction = Faction.Find(this);
-
-                if (faction != null)
-                {
-                    var adjunct = $"[{faction.Definition.Abbreviation}]";
-                    suffix = suffix.Length == 0 ? adjunct : $"{suffix} {adjunct}";
-                }
-            }
-
-            return base.ApplyNameSuffix(suffix);
-        }
-
         public override TimeSpan GetLogoutDelay()
         {
-            if (Young || BedrollLogout || TestCenter.Enabled)
+            if (BedrollLogout)
             {
                 return TimeSpan.Zero;
             }
 
             return base.GetLogoutDelay();
-        }
-
-        public bool CheckYoungProtection(Mobile from)
-        {
-            if (!Young)
-            {
-                return false;
-            }
-
-            if (Region is BaseRegion region && !region.YoungProtected)
-            {
-                return false;
-            }
-
-            if (from is BaseCreature creature && creature.IgnoreYoungProtection)
-            {
-                return false;
-            }
-
-            if (Quest?.IgnoreYoungProtection(from) == true)
-            {
-                return false;
-            }
-
-            if (Core.Now - m_LastYoungMessage > TimeSpan.FromMinutes(1.0))
-            {
-                m_LastYoungMessage = Core.Now;
-                // A monster looks at you menacingly but does not attack.
-                // You would be under attack now if not for your status as a new citizen of Britannia.
-                SendLocalizedMessage(1019067);
-            }
-
-            return true;
-        }
-
-        public bool CheckYoungHealTime()
-        {
-            if (Core.Now - m_LastYoungHeal > TimeSpan.FromMinutes(5.0))
-            {
-                m_LastYoungHeal = Core.Now;
-                return true;
-            }
-
-            return false;
-        }
-
-        public bool YoungDeathTeleport()
-        {
-            if (Region.IsPartOf<JailRegion>()
-                || Region.IsPartOf("Samurai start location")
-                || Region.IsPartOf("Ninja start location")
-                || Region.IsPartOf("Ninja cave"))
-            {
-                return false;
-            }
-
-            Point3D loc;
-            Map map;
-
-            var dungeon = Region.GetRegion<DungeonRegion>();
-            if (dungeon != null && dungeon.Entrance != Point3D.Zero)
-            {
-                loc = dungeon.Entrance;
-                map = dungeon.Map;
-            }
-            else
-            {
-                loc = Location;
-                map = Map;
-            }
-
-            Point3D[] list;
-
-            if (map == Map.Trammel)
-            {
-                list = m_TrammelDeathDestinations;
-            }
-            else if (map == Map.Ilshenar)
-            {
-                list = m_IlshenarDeathDestinations;
-            }
-            else if (map == Map.Malas)
-            {
-                list = m_MalasDeathDestinations;
-            }
-            else if (map == Map.Tokuno)
-            {
-                list = m_TokunoDeathDestinations;
-            }
-            else
-            {
-                return false;
-            }
-
-            var dest = Point3D.Zero;
-            var sqDistance = int.MaxValue;
-
-            for (var i = 0; i < list.Length; i++)
-            {
-                var curDest = list[i];
-
-                var width = loc.X - curDest.X;
-                var height = loc.Y - curDest.Y;
-                var curSqDistance = width * width + height * height;
-
-                if (curSqDistance < sqDistance)
-                {
-                    dest = curDest;
-                    sqDistance = curSqDistance;
-                }
-            }
-
-            MoveToWorld(dest, map);
-            return true;
-        }
-
-        private void SendYoungDeathNotice()
-        {
-            SendGump(new YoungDeathNotice());
         }
 
         public override void OnSpeech(SpeechEventArgs e)
@@ -4428,27 +3065,6 @@ namespace Server.Mobiles
 
                 SpeechLog.Add(e.Mobile, e.Speech);
             }
-        }
-
-        private void ToggleChampionTitleDisplay()
-        {
-            if (!CheckAlive())
-            {
-                return;
-            }
-
-            if (DisplayChampionTitle)
-            {
-                // You have chosen to hide your monster kill title.
-                SendLocalizedMessage(1062419, "", 0x23);
-            }
-            else
-            {
-                // You have chosen to display your monster kill title.
-                SendLocalizedMessage(1062418, "", 0x23);
-            }
-
-            DisplayChampionTitle = !DisplayChampionTitle;
         }
 
         public virtual bool HasRecipe(Recipe r) => r != null && HasRecipe(r.ID);
@@ -4581,314 +3197,6 @@ namespace Server.Mobiles
             public override void OnClick()
             {
                 m_Callback?.Invoke();
-            }
-        }
-
-        private class CancelRenewInventoryInsuranceGump : Gump
-        {
-            private readonly ItemInsuranceMenuGump m_InsuranceGump;
-            private readonly PlayerMobile m_Player;
-
-            public CancelRenewInventoryInsuranceGump(PlayerMobile player, ItemInsuranceMenuGump insuranceGump) : base(
-                250,
-                200
-            )
-            {
-                m_Player = player;
-                m_InsuranceGump = insuranceGump;
-
-                AddBackground(0, 0, 240, 142, 0x13BE);
-                AddImageTiled(6, 6, 228, 100, 0xA40);
-                AddImageTiled(6, 116, 228, 20, 0xA40);
-                AddAlphaRegion(6, 6, 228, 142);
-
-                AddHtmlLocalized(
-                    8,
-                    8,
-                    228,
-                    100,
-                    1071021,
-                    0x7FFF
-                ); // You are about to disable inventory insurance auto-renewal.
-
-                AddButton(6, 116, 0xFB1, 0xFB2, 0);
-                AddHtmlLocalized(40, 118, 450, 20, 1060051, 0x7FFF); // CANCEL
-
-                AddButton(114, 116, 0xFA5, 0xFA7, 1);
-                AddHtmlLocalized(148, 118, 450, 20, 1071022, 0x7FFF); // DISABLE IT!
-            }
-
-            public override void OnResponse(NetState sender, RelayInfo info)
-            {
-                if (!m_Player.CheckAlive())
-                {
-                    return;
-                }
-
-                if (info.ButtonID == 1)
-                {
-                    // You have cancelled automatically reinsuring all insured items upon death
-                    m_Player.SendLocalizedMessage(1061075, "", 0x23);
-                    m_Player.AutoRenewInsurance = false;
-                }
-                else
-                {
-                    m_Player.SendLocalizedMessage(1042021); // Cancelled.
-                }
-
-                if (m_InsuranceGump != null)
-                {
-                    m_Player.SendGump(m_InsuranceGump.NewInstance());
-                }
-            }
-        }
-
-        private class ItemInsuranceMenuGump : Gump
-        {
-            private readonly PlayerMobile m_From;
-            private readonly bool[] m_Insure;
-            private readonly Item[] m_Items;
-            private readonly int m_Page;
-
-            public ItemInsuranceMenuGump(PlayerMobile from, Item[] items, bool[] insure = null, int page = 0)
-                : base(25, 50)
-            {
-                m_From = from;
-                m_Items = items;
-
-                if (insure == null)
-                {
-                    insure = new bool[items.Length];
-
-                    for (var i = 0; i < items.Length; ++i)
-                    {
-                        insure[i] = items[i].Insured;
-                    }
-                }
-
-                m_Insure = insure;
-                m_Page = page;
-
-                AddPage(0);
-
-                AddBackground(0, 0, 520, 510, 0x13BE);
-                AddImageTiled(10, 10, 500, 30, 0xA40);
-                AddImageTiled(10, 50, 500, 355, 0xA40);
-                AddImageTiled(10, 415, 500, 80, 0xA40);
-                AddAlphaRegion(10, 10, 500, 485);
-
-                AddButton(15, 470, 0xFB1, 0xFB2, 0);
-                AddHtmlLocalized(50, 472, 80, 20, 1011012, 0x7FFF); // CANCEL
-
-                if (from.AutoRenewInsurance)
-                {
-                    AddButton(360, 10, 9723, 9724, 1);
-                }
-                else
-                {
-                    AddButton(360, 10, 9720, 9722, 1);
-                }
-
-                AddHtmlLocalized(395, 14, 105, 20, 1114122, 0x7FFF); // AUTO REINSURE
-
-                AddButton(395, 470, 0xFA5, 0xFA6, 2);
-                AddHtmlLocalized(430, 472, 50, 20, 1006044, 0x7FFF); // OK
-
-                AddHtmlLocalized(10, 14, 150, 20, 1114121, 0x7FFF); // <CENTER>ITEM INSURANCE MENU</CENTER>
-
-                AddHtmlLocalized(45, 54, 70, 20, 1062214, 0x7FFF);  // Item
-                AddHtmlLocalized(250, 54, 70, 20, 1061038, 0x7FFF); // Cost
-                AddHtmlLocalized(400, 54, 70, 20, 1114311, 0x7FFF); // Insured
-
-                var balance = Banker.GetBalance(from);
-                var cost = 0;
-
-                for (var i = 0; i < items.Length; ++i)
-                {
-                    if (insure[i])
-                    {
-                        cost += GetInsuranceCost(items[i]);
-                    }
-                }
-
-                AddHtmlLocalized(15, 420, 300, 20, 1114310, 0x7FFF); // GOLD AVAILABLE:
-                AddLabel(215, 420, 0x481, balance.ToString());
-                AddHtmlLocalized(15, 435, 300, 20, 1114123, 0x7FFF); // TOTAL COST OF INSURANCE:
-                AddLabel(215, 435, 0x481, cost.ToString());
-
-                if (cost != 0)
-                {
-                    AddHtmlLocalized(15, 450, 300, 20, 1114125, 0x7FFF); // NUMBER OF DEATHS PAYABLE:
-                    AddLabel(215, 450, 0x481, (balance / cost).ToString());
-                }
-
-                for (int i = page * 4, y = 72; i < (page + 1) * 4 && i < items.Length; ++i, y += 75)
-                {
-                    var item = items[i];
-                    var b = ItemBounds.Table[item.ItemID];
-
-                    AddImageTiledButton(
-                        40,
-                        y,
-                        0x918,
-                        0x918,
-                        0,
-                        GumpButtonType.Page,
-                        0,
-                        item.ItemID,
-                        item.Hue,
-                        40 - b.Width / 2 - b.X,
-                        30 - b.Height / 2 - b.Y
-                    );
-                    AddItemProperty(item.Serial);
-
-                    if (insure[i])
-                    {
-                        AddButton(400, y, 9723, 9724, 100 + i);
-                        AddLabel(250, y, 0x481, GetInsuranceCost(item).ToString());
-                    }
-                    else
-                    {
-                        AddButton(400, y, 9720, 9722, 100 + i);
-                        AddLabel(250, y, 0x66C, GetInsuranceCost(item).ToString());
-                    }
-                }
-
-                if (page >= 1)
-                {
-                    AddButton(15, 380, 0xFAE, 0xFAF, 3);
-                    AddHtmlLocalized(50, 380, 450, 20, 1044044, 0x7FFF); // PREV PAGE
-                }
-
-                if ((page + 1) * 4 < items.Length)
-                {
-                    AddButton(400, 380, 0xFA5, 0xFA7, 4);
-                    AddHtmlLocalized(435, 380, 70, 20, 1044045, 0x7FFF); // NEXT PAGE
-                }
-            }
-
-            public ItemInsuranceMenuGump NewInstance() => new(m_From, m_Items, m_Insure, m_Page);
-
-            public override void OnResponse(NetState sender, RelayInfo info)
-            {
-                if (info.ButtonID == 0 || !m_From.CheckAlive())
-                {
-                    return;
-                }
-
-                switch (info.ButtonID)
-                {
-                    case 1: // Auto Reinsure
-                        {
-                            if (m_From.AutoRenewInsurance)
-                            {
-                                if (!m_From.HasGump<CancelRenewInventoryInsuranceGump>())
-                                {
-                                    m_From.SendGump(new CancelRenewInventoryInsuranceGump(m_From, this));
-                                }
-                            }
-                            else
-                            {
-                                m_From.AutoRenewInventoryInsurance();
-                                m_From.SendGump(new ItemInsuranceMenuGump(m_From, m_Items, m_Insure, m_Page));
-                            }
-
-                            break;
-                        }
-                    case 2: // OK
-                        {
-                            m_From.SendGump(new ItemInsuranceMenuConfirmGump(m_From, m_Items, m_Insure, m_Page));
-
-                            break;
-                        }
-                    case 3: // Prev
-                        {
-                            if (m_Page >= 1)
-                            {
-                                m_From.SendGump(new ItemInsuranceMenuGump(m_From, m_Items, m_Insure, m_Page - 1));
-                            }
-
-                            break;
-                        }
-                    case 4: // Next
-                        {
-                            if ((m_Page + 1) * 4 < m_Items.Length)
-                            {
-                                m_From.SendGump(new ItemInsuranceMenuGump(m_From, m_Items, m_Insure, m_Page + 1));
-                            }
-
-                            break;
-                        }
-                    default:
-                        {
-                            var idx = info.ButtonID - 100;
-
-                            if (idx >= 0 && idx < m_Items.Length)
-                            {
-                                m_Insure[idx] = !m_Insure[idx];
-                            }
-
-                            m_From.SendGump(new ItemInsuranceMenuGump(m_From, m_Items, m_Insure, m_Page));
-
-                            break;
-                        }
-                }
-            }
-        }
-
-        private class ItemInsuranceMenuConfirmGump : Gump
-        {
-            private readonly PlayerMobile m_From;
-            private readonly bool[] m_Insure;
-            private readonly Item[] m_Items;
-            private readonly int m_Page;
-
-            public ItemInsuranceMenuConfirmGump(PlayerMobile from, Item[] items, bool[] insure, int page)
-                : base(250, 200)
-            {
-                m_From = from;
-                m_Items = items;
-                m_Insure = insure;
-                m_Page = page;
-
-                AddBackground(0, 0, 240, 142, 0x13BE);
-                AddImageTiled(6, 6, 228, 100, 0xA40);
-                AddImageTiled(6, 116, 228, 20, 0xA40);
-                AddAlphaRegion(6, 6, 228, 142);
-
-                AddHtmlLocalized(8, 8, 228, 100, 1114300, 0x7FFF); // Do you wish to insure all newly selected items?
-
-                AddButton(6, 116, 0xFB1, 0xFB2, 0);
-                AddHtmlLocalized(40, 118, 450, 20, 1060051, 0x7FFF); // CANCEL
-
-                AddButton(114, 116, 0xFA5, 0xFA7, 1);
-                AddHtmlLocalized(148, 118, 450, 20, 1073996, 0x7FFF); // ACCEPT
-            }
-
-            public override void OnResponse(NetState sender, RelayInfo info)
-            {
-                if (!m_From.CheckAlive())
-                {
-                    return;
-                }
-
-                if (info.ButtonID == 1)
-                {
-                    for (var i = 0; i < m_Items.Length; ++i)
-                    {
-                        var item = m_Items[i];
-
-                        if (item.Insured != m_Insure[i])
-                        {
-                            m_From.ToggleItemInsurance_Callback(m_From, item, false);
-                        }
-                    }
-                }
-                else
-                {
-                    m_From.SendLocalizedMessage(1042021); // Cancelled.
-                    m_From.SendGump(new ItemInsuranceMenuGump(m_From, m_Items, m_Insure, m_Page));
-                }
             }
         }
     }

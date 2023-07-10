@@ -1,6 +1,5 @@
 using ModernUO.Serialization;
 using System;
-using Server.Engines.Plants;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -44,11 +43,6 @@ namespace Server.Mobiles
             Tamable = true;
             ControlSlots = 2;
             MinTameSkill = 80.7;
-
-            if (Utility.RandomDouble() < .25)
-            {
-                PackItem(Seed.RandomBonsaiSeed());
-            }
         }
 
         public override string CorpseName => "a bake kitsune corpse";

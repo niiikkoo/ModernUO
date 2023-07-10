@@ -59,11 +59,6 @@ namespace Server.Items
                     }
                 }
 
-                if ((attacker as PlayerMobile)?.DuelContext?.CheckItemEquip(attacker, this) == false)
-                {
-                    canSwing = false;
-                }
-
                 if (canSwing && attacker.HarmfulCheck(defender))
                 {
                     attacker.DisruptiveAction();
@@ -172,26 +167,26 @@ namespace Server.Items
         {
             if (attacker.Player)
             {
-                var quiver = attacker.FindItemOnLayer<BaseQuiver>(Layer.Cloak);
+                //var quiver = attacker.FindItemOnLayer<BaseQuiver>(Layer.Cloak);
                 var pack = attacker.Backpack;
 
-                if (quiver == null || Utility.Random(100) >= quiver.LowerAmmoCost)
+                /*if (quiver == null || Utility.Random(100) >= quiver.LowerAmmoCost)
                 {
                     // consume ammo
                     if (quiver?.ConsumeTotal(AmmoType) == true)
                     {
                         quiver.InvalidateWeight();
                     }
-                    else if (pack?.ConsumeTotal(AmmoType) != true)
+                    else */if (pack?.ConsumeTotal(AmmoType) != true)
                     {
                         return false;
                     }
-                }
+                /*}
                 else if (quiver.FindItemByType(AmmoType) == null && pack?.FindItemByType(AmmoType) == null)
                 {
                     // lower ammo cost should not work when we have no ammo at all
                     return false;
-                }
+                }*/
             }
 
             attacker.MovingEffect(defender, EffectID, 18, 1, false, false);

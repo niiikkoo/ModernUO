@@ -45,8 +45,6 @@ public partial class Bola : Item
         }
         else
         {
-            EtherealMount.StopMounting(from);
-
             from.Target = new BolaTarget(this);
             from.LocalOverheadMessage(MessageType.Emote, 0x3B2, 1049632); // * You begin to swing the bola...*
             // ~1_NAME~ begins to menacingly swing a bola...
@@ -61,16 +59,7 @@ public partial class Bola : Item
             new Bola().MoveToWorld(to.Location, to.Map);
         }
 
-        if (to is ChaosDragoon or ChaosDragoonElite)
-        {
-            from.SendLocalizedMessage(1042047); // You fail to knock the rider from its mount.
-        }
-
         var mt = to.Mount;
-        if (mt != null && !(to is ChaosDragoon or ChaosDragoonElite))
-        {
-            mt.Rider = null;
-        }
 
         if (to is PlayerMobile mobile)
         {
@@ -185,8 +174,6 @@ public partial class Bola : Item
             }
             else if (from.BeginAction<Bola>())
             {
-                EtherealMount.StopMounting(from);
-
                 from.DoHarmful(to);
 
                 m_Bola.Consume();

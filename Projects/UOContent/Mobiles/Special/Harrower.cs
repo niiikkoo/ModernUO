@@ -9,21 +9,6 @@ namespace Server.Mobiles
     {
         private static readonly SpawnEntry[] m_Entries =
         {
-            new(new Point3D(5242, 945, -40), new Point3D(1176, 2638, 0)),  // Destard
-            new(new Point3D(5225, 798, 0), new Point3D(1176, 2638, 0)),    // Destard
-            new(new Point3D(5556, 886, 30), new Point3D(1298, 1080, 0)),   // Despise
-            new(new Point3D(5187, 615, 0), new Point3D(4111, 432, 5)),     // Deceit
-            new(new Point3D(5319, 583, 0), new Point3D(4111, 432, 5)),     // Deceit
-            new(new Point3D(5713, 1334, -1), new Point3D(2923, 3407, 8)),  // Fire
-            new(new Point3D(5860, 1460, -2), new Point3D(2923, 3407, 8)),  // Fire
-            new(new Point3D(5328, 1620, 0), new Point3D(5451, 3143, -60)), // Terathan Keep
-            new(new Point3D(5690, 538, 0), new Point3D(2042, 224, 14)),    // Wrong
-            new(new Point3D(5609, 195, 0), new Point3D(514, 1561, 0)),     // Shame
-            new(new Point3D(5475, 187, 0), new Point3D(514, 1561, 0)),     // Shame
-            new(new Point3D(6085, 179, 0), new Point3D(4721, 3822, 0)),    // Hythloth
-            new(new Point3D(6084, 66, 0), new Point3D(4721, 3822, 0)),     // Hythloth
-            new(new Point3D(5499, 2003, 0), new Point3D(2499, 919, 0)),    // Covetous
-            new(new Point3D(5579, 1858, 0), new Point3D(2499, 919, 0))     // Covetous
         };
 
         private static readonly double[] m_Offsets =
@@ -39,8 +24,6 @@ namespace Server.Mobiles
             Math.Cos(320.0 / 180.0 * Math.PI), Math.Sin(320.0 / 180.0 * Math.PI)
         };
 
-        private Dictionary<Mobile, int> m_DamageEntries;
-        private Item m_GateItem;
         private List<HarrowerTentacles> m_Tentacles;
         private Timer m_Timer;
 
@@ -88,10 +71,6 @@ namespace Server.Mobiles
             Instances.Add(this);
         }
 
-        public static Type[] UniqueList => new[] { typeof(AcidProofRobe) };
-        public static Type[] SharedList => new[] { typeof(TheRobeOfBritanniaAri) };
-        public static Type[] DecorativeList => new[] { typeof(EvilIdolSkull), typeof(SkullPole) };
-
         public static List<Harrower> Instances { get; } = new();
 
         public static bool CanSpawn => Instances.Count == 0;
@@ -121,9 +100,9 @@ namespace Server.Mobiles
 
             var harrower = new Harrower();
 
-            harrower.MoveToWorld(entry.m_Location, Map.Felucca);
+            harrower.MoveToWorld(entry.m_Location, Map.Gaia);
 
-            harrower.m_GateItem = new HarrowerGate(harrower, platLoc, platMap, entry.m_Entrance, Map.Felucca);
+            //harrower.m_GateItem = new HarrowerGate(harrower, platLoc, platMap, entry.m_Entrance, Map.Gaia);
 
             return harrower;
         }
@@ -219,7 +198,6 @@ namespace Server.Mobiles
             writer.Write(0); // version
 
             writer.Write(m_TrueForm);
-            writer.Write(m_GateItem);
             writer.Write(m_Tentacles);
         }
 
@@ -234,7 +212,6 @@ namespace Server.Mobiles
                 case 0:
                     {
                         m_TrueForm = reader.ReadBool();
-                        m_GateItem = reader.ReadEntity<Item>();
                         m_Tentacles = reader.ReadEntityList<HarrowerTentacles>();
 
                         m_Timer = new TeleportTimer(this);
@@ -245,247 +222,16 @@ namespace Server.Mobiles
             }
         }
 
-        public void GivePowerScrolls()
-        {
-            var toGive = new List<Mobile>();
-            var rights = GetLootingRights(DamageEntries, HitsMax);
-
-            for (var i = rights.Count - 1; i >= 0; --i)
-            {
-                var ds = rights[i];
-
-                if (ds.m_HasRight)
-                {
-                    toGive.Add(ds.m_Mobile);
-                }
-            }
-
-            if (toGive.Count == 0)
-            {
-                return;
-            }
-
-            toGive.Shuffle();
-
-            for (var i = 0; i < 16; ++i)
-            {
-                var level = Utility.RandomDouble() switch
-                {
-                    < 0.1  => 25,
-                    < 0.25 => 20,
-                    < 0.45 => 15,
-                    < 0.70 => 10,
-                    _       => 5
-                };
-
-                var m = toGive[i % toGive.Count];
-
-                m.SendLocalizedMessage(1049524); // You have received a scroll of power!
-                m.AddToBackpack(new StatCapScroll(225 + level));
-
-                if (m is PlayerMobile pm)
-                {
-                    for (var j = 0; j < pm.JusticeProtectors.Count; ++j)
-                    {
-                        var prot = pm.JusticeProtectors[j];
-
-                        if (prot.Map != pm.Map || prot.Kills >= 5 || prot.Criminal ||
-                            !JusticeVirtue.CheckMapRegion(pm, prot))
-                        {
-                            continue;
-                        }
-
-                        var chance = VirtueHelper.GetLevel(prot, VirtueName.Justice) switch
-                        {
-                            VirtueLevel.Seeker   => 60,
-                            VirtueLevel.Follower => 80,
-                            VirtueLevel.Knight   => 100,
-                            _                    => 0
-                        };
-
-                        if (chance > Utility.Random(100))
-                        {
-                            prot.SendLocalizedMessage(1049368); // You have been rewarded for your dedication to Justice!
-                            prot.AddToBackpack(new StatCapScroll(225 + level));
-                        }
-                    }
-                }
-            }
-        }
-
         public override bool OnBeforeDeath()
         {
             if (m_TrueForm)
             {
-                var rights = GetLootingRights(DamageEntries, HitsMax);
-
-                for (var i = rights.Count - 1; i >= 0; --i)
-                {
-                    var ds = rights[i];
-
-                    if (ds.m_HasRight && ds.m_Mobile is PlayerMobile mobile)
-                    {
-                        ChampionTitleInfo.AwardHarrowerTitle(mobile);
-                    }
-                }
-
-                if (!NoKillAwards)
-                {
-                    GivePowerScrolls();
-
-                    var map = Map;
-
-                    if (map != null)
-                    {
-                        for (var x = -16; x <= 16; ++x)
-                        {
-                            for (var y = -16; y <= 16; ++y)
-                            {
-                                var dist = Math.Sqrt(x * x + y * y);
-
-                                if (dist <= 16)
-                                {
-                                    new GoodiesTimer(map, X + x, Y + y).Start();
-                                }
-                            }
-                        }
-                    }
-
-                    m_DamageEntries = new Dictionary<Mobile, int>();
-
-                    for (var i = 0; i < m_Tentacles.Count; ++i)
-                    {
-                        Mobile m = m_Tentacles[i];
-
-                        if (!m.Deleted)
-                        {
-                            m.Kill();
-                        }
-
-                        RegisterDamageTo(m);
-                    }
-
-                    m_Tentacles.Clear();
-
-                    RegisterDamageTo(this);
-                    AwardArtifact(GetArtifact());
-
-                    m_GateItem?.Delete();
-                }
-
                 return base.OnBeforeDeath();
             }
 
             Morph();
             return false;
         }
-
-        public virtual void RegisterDamageTo(Mobile m)
-        {
-            if (m == null)
-            {
-                return;
-            }
-
-            foreach (var de in m.DamageEntries)
-            {
-                var damager = de.Damager;
-
-                var master = damager.GetDamageMaster(m);
-
-                if (master != null)
-                {
-                    damager = master;
-                }
-
-                RegisterDamage(damager, de.DamageGiven);
-            }
-        }
-
-        public void RegisterDamage(Mobile from, int amount)
-        {
-            if (from?.Player != true)
-            {
-                return;
-            }
-
-            m_DamageEntries[from] = amount + (m_DamageEntries.TryGetValue(from, out var value) ? value : 0);
-
-            from.SendMessage($"Total Damage: {m_DamageEntries[from]}");
-        }
-
-        public void AwardArtifact(Item artifact)
-        {
-            if (artifact == null)
-            {
-                return;
-            }
-
-            var totalDamage = 0;
-
-            var validEntries = new Dictionary<Mobile, int>();
-
-            foreach (var kvp in m_DamageEntries)
-            {
-                if (IsEligible(kvp.Key, artifact))
-                {
-                    validEntries.Add(kvp.Key, kvp.Value);
-                    totalDamage += kvp.Value;
-                }
-            }
-
-            var randomDamage = Utility.RandomMinMax(1, totalDamage);
-
-            totalDamage = 0;
-
-            foreach (var kvp in validEntries)
-            {
-                totalDamage += kvp.Value;
-
-                if (totalDamage >= randomDamage)
-                {
-                    GiveArtifact(kvp.Key, artifact);
-                    return;
-                }
-            }
-
-            artifact.Delete();
-        }
-
-        public void GiveArtifact(Mobile to, Item artifact)
-        {
-            if (to == null || artifact == null)
-            {
-                return;
-            }
-
-            var pack = to.Backpack;
-
-            if (pack?.TryDropItem(to, artifact, false) != true)
-            {
-                artifact.Delete();
-            }
-            else
-            {
-                // For your valor in combating the fallen beast, a special artifact has been bestowed on you.
-                to.SendLocalizedMessage(1062317);
-            }
-        }
-
-        public bool IsEligible(Mobile m, Item artifact) =>
-            m.Player && m.Alive && m.InRange(Location, 32) &&
-            m.Backpack?.CheckHold(m, artifact, false) == true;
-
-        public Item GetArtifact() =>
-            Utility.RandomDouble() switch
-            {
-                < 0.05 => CreateArtifact(UniqueList),
-                < 0.15 => CreateArtifact(SharedList),
-                < 0.30 => CreateArtifact(DecorativeList),
-                _      => null
-            };
-
-        public Item CreateArtifact(Type[] list) => Loot.Construct(list.RandomElement());
 
         private class SpawnEntry
         {

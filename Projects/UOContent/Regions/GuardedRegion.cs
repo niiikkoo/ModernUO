@@ -39,11 +39,6 @@ public class GuardedRegion : BaseRegion
     {
         get
         {
-            if (Map == Map.Ilshenar || Map == Map.Malas)
-            {
-                return typeof(ArcherGuard);
-            }
-
             return typeof(WarriorGuard);
         }
     }

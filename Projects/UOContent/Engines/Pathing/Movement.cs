@@ -366,7 +366,7 @@ namespace Server.Movement
             var checkTop = startZ + PersonHeight;
 
             var ignoreDoors = AlwaysIgnoreDoors || !m.Alive || m.Body.BodyID == 0x3DB || m.IsDeadBondedPet;
-            var ignoreSpellFields = m is PlayerMobile && map != Map.Felucca;
+            var ignoreSpellFields = m is PlayerMobile && map != Map.Gaia;
 
             int testTop;
 
@@ -379,29 +379,6 @@ namespace Server.Movement
                 {
                     newZ = tile.Z;
                     return true;
-                }
-
-                // Stygian Dragon
-                if (m.Body == 826 && map == Map.TerMur)
-                {
-                    if (x is >= 307 and <= 354 && y is >= 126 and <= 192)
-                    {
-                        if (tile.Z > newZ)
-                        {
-                            newZ = tile.Z;
-                        }
-
-                        moveIsOk = true;
-                    }
-                    else if (x is >= 42 and <= 89 && y is >= 333 and <= 399 or >= 531 and <= 597 or >= 739 and <= 805)
-                    {
-                        if (tile.Z > newZ)
-                        {
-                            newZ = tile.Z;
-                        }
-
-                        moveIsOk = true;
-                    }
                 }
 
                 var notWater = !itemData.Wet;

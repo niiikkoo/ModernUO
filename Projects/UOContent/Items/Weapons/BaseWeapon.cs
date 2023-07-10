@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using Server.Collections;
 using Server.Engines.Craft;
-using Server.Ethics;
-using Server.Factions;
 using Server.Mobiles;
 using Server.Network;
 using Server.SkillHandlers;
@@ -23,7 +21,7 @@ namespace Server.Items
         SlayerName Slayer2 { get; set; }
     }
 
-    public abstract class BaseWeapon : Item, IWeapon, IFactionItem, ICraftable, ISlayer, IDurability, IAosItem
+    public abstract class BaseWeapon : Item, IWeapon, ICraftable, ISlayer, IDurability, IAosItem
     {
         private static bool _enableInstaHit;
 
@@ -56,8 +54,6 @@ namespace Server.Items
         private WeaponDamageLevel m_DamageLevel;
         private WeaponDurabilityLevel m_DurabilityLevel;
         private string m_EngravedText;
-
-        private FactionItem m_FactionState;
         private int m_Hits;
         private int m_HitSound, m_MissSound;
         private bool m_Identified;
@@ -644,22 +640,6 @@ namespace Server.Items
             }
         }
 
-        public FactionItem FactionItemState
-        {
-            get => m_FactionState;
-            set
-            {
-                m_FactionState = value;
-
-                if (m_FactionState == null)
-                {
-                    Hue = CraftResources.GetHue(Resource);
-                }
-
-                LootType = m_FactionState == null ? LootType.Regular : LootType.Blessed;
-            }
-        }
-
         [CommandProperty(AccessLevel.GameMaster)]
         public SlayerName Slayer
         {
@@ -728,11 +708,6 @@ namespace Server.Items
                 {
                     canSwing = attacker is not PlayerMobile p || p.PeacedUntil <= Core.Now;
                 }
-            }
-
-            if ((attacker as PlayerMobile)?.DuelContext?.CheckItemEquip(attacker, this) == false)
-            {
-                canSwing = false;
             }
 
             if (canSwing && attacker.HarmfulCheck(defender))
@@ -885,17 +860,8 @@ namespace Server.Items
             return false;
         }
 
-        public override bool AllowSecureTrade(Mobile from, Mobile to, Mobile newOwner, bool accepted) =>
-            Ethic.CheckTrade(from, to, newOwner, this) &&
-            base.AllowSecureTrade(from, to, newOwner, accepted);
-
         public override bool CanEquip(Mobile from)
         {
-            if (!Ethic.CheckEquip(from, this))
-            {
-                return false;
-            }
-
             if (!CheckRace(from))
             {
                 return false;
@@ -1122,8 +1088,8 @@ namespace Server.Items
                     bonus += 10; // attacker gets 10% bonus when they're under divine fury
                 }
 
-                if (AnimalForm.UnderTransformation(attacker, typeof(GreyWolf)) ||
-                    AnimalForm.UnderTransformation(attacker, typeof(BakeKitsune)))
+                if (AnimalForm.UnderTransformation(attacker, typeof(GreyWolf)) /*||
+                    AnimalForm.UnderTransformation(attacker, typeof(BakeKitsune))*/)
                 {
                     bonus += 20; // attacker gets 20% bonus when under Wolf or Bake Kitsune form
                 }
@@ -1721,19 +1687,6 @@ namespace Server.Items
                 percentageBonus += 25;
             }
 
-            if (attacker is PlayerMobile pmAttacker && !(Core.ML && defender is PlayerMobile))
-            {
-                if (pmAttacker.HonorActive && pmAttacker.InRange(defender, 1))
-                {
-                    percentageBonus += 25;
-                }
-
-                if (pmAttacker.SentHonorContext != null && pmAttacker.SentHonorContext.Target == defender)
-                {
-                    percentageBonus += pmAttacker.SentHonorContext.PerfectionDamageBonus;
-                }
-            }
-
             if (attacker.Talisman is BaseTalisman talisman && talisman.Killer != null)
             {
                 percentageBonus += talisman.Killer.DamageBonus(defender);
@@ -1776,12 +1729,12 @@ namespace Server.Items
                 out var direct
             );
 
-            if (Core.ML && this is BaseRanged)
+            /*if (Core.ML && this is BaseRanged)
             {
                 attacker
                     .FindItemOnLayer<BaseQuiver>(Layer.Cloak)
                     ?.AlterBowDamage(ref phys, ref fire, ref cold, ref pois, ref nrgy, ref chaos, ref direct);
-            }
+            }*/
 
             if (Consecrated)
             {
@@ -2087,11 +2040,6 @@ namespace Server.Items
 
             ForceOfNature.OnHit(attacker, defender);
 
-            if (defender is IHonorTarget it)
-            {
-                it.ReceivedHonorContext?.OnTargetHit(attacker);
-            }
-
             if (this is not BaseRanged)
             {
                 if (AnimalForm.UnderTransformation(attacker, typeof(GiantSerpent)))
@@ -2292,11 +2240,6 @@ namespace Server.Items
 
             WeaponAbility.GetCurrentAbility(attacker)?.OnMiss(attacker, defender);
             SpecialMove.GetCurrentMove(attacker)?.OnMiss(attacker, defender);
-
-            if (defender is IHonorTarget target)
-            {
-                target.ReceivedHonorContext?.OnTargetMissed(attacker);
-            }
         }
 
         public virtual void GetBaseDamageRange(Mobile attacker, out int min, out int max)
@@ -2784,11 +2727,6 @@ namespace Server.Items
                 list.Add(1050043, m_Crafter.Name); // crafted by ~1_NAME~
             }
 
-            if (m_FactionState != null)
-            {
-                list.Add(1041350); // faction item
-            }
-
             SkillBonuses?.GetProperties(list);
 
             if (m_Quality == WeaponQuality.Exceptional)
@@ -3200,11 +3138,6 @@ namespace Server.Items
                 {
                     attrs.Add(new EquipInfoAttribute(1049643)); // cursed
                 }
-            }
-
-            if (m_FactionState != null)
-            {
-                attrs.Add(new EquipInfoAttribute(1041350)); // faction item
             }
 
             if (m_Quality == WeaponQuality.Exceptional)

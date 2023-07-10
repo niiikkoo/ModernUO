@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using ModernUO.Serialization;
 using Server.Commands;
 using Server.Engines.Craft;
-using Server.Ethics;
 using Server.Multis;
 using Server.Network;
 using Server.Spells;
@@ -486,12 +485,6 @@ public partial class Spellbook : Item, ICraftable, ISlayer, IAosItem
 
     public static bool ValidateSpellbook(Spellbook book, int spellID, SpellbookType type) =>
         book.SpellbookType == type && (spellID == -1 || book.HasSpell(spellID));
-
-    public override bool AllowSecureTrade(Mobile from, Mobile to, Mobile newOwner, bool accepted) =>
-        Ethic.CheckTrade(from, to, newOwner, this) && base.AllowSecureTrade(from, to, newOwner, accepted);
-
-    public override bool CanEquip(Mobile from) =>
-        Ethic.CheckEquip(from, this) && from.CanBeginAction<BaseWeapon>() && base.CanEquip(from);
 
     public override bool AllowEquippedCast(Mobile from) => true;
 

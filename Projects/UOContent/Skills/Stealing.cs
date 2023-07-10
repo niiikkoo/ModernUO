@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Server.Engines.ConPVP;
-using Server.Engines.Stealables;
-using Server.Factions;
 using Server.Items;
 using Server.Mobiles;
 using Server.Spells;
@@ -48,10 +45,6 @@ namespace Server.SkillHandlers
             {
                 m.SendLocalizedMessage(1005584); // Both hands must be free to steal.
             }
-            else if (m.Region.IsPartOf<SafeZone>())
-            {
-                m.SendMessage("You may not steal in this area.");
-            }
             else
             {
                 m.Target = new StealingTarget(m);
@@ -80,17 +73,9 @@ namespace Server.SkillHandlers
                 var root = toSteal.RootParent;
                 var mobRoot = root as Mobile;
 
-                StealableArtifacts.StealableInstance si = toSteal.Parent == null || !toSteal.Movable
-                    ? StealableArtifacts.GetStealableInstance(toSteal)
-                    : null;
-
                 if (!IsEmptyHanded(m_Thief))
                 {
                     m_Thief.SendLocalizedMessage(1005584); // Both hands must be free to steal.
-                }
-                else if (m_Thief.Region.IsPartOf<SafeZone>())
-                {
-                    m_Thief.SendMessage("You may not steal in this area.");
                 }
                 else if (mobRoot?.Player == true && !IsInGuild(m_Thief))
                 {
@@ -117,114 +102,13 @@ namespace Server.SkillHandlers
                 {
                     m_Thief.SendLocalizedMessage(1048147); // Your backpack can't hold anything else.
                 }
-                else if (toSteal is Sigil sig)
-                {
-                    var pl = PlayerState.Find(m_Thief);
-                    var faction = pl?.Faction;
-
-                    if (!m_Thief.InRange(sig.GetWorldLocation(), 1))
-                    {
-                        m_Thief.SendLocalizedMessage(502703); // You must be standing next to an item to steal it.
-                    }
-                    else if (root != null) // not on the ground
-                    {
-                        m_Thief.SendLocalizedMessage(502710); // You can't steal that!
-                    }
-                    else if (faction != null)
-                    {
-                        if (!m_Thief.CanBeginAction<IncognitoSpell>())
-                        {
-                            m_Thief.SendLocalizedMessage(1010581); // You cannot steal the sigil when you are incognito
-                        }
-                        else if (DisguisePersistence.IsDisguised(m_Thief))
-                        {
-                            m_Thief.SendLocalizedMessage(1010583); // You cannot steal the sigil while disguised
-                        }
-                        else if (!m_Thief.CanBeginAction<PolymorphSpell>())
-                        {
-                            m_Thief.SendLocalizedMessage(1010582); // You cannot steal the sigil while polymorphed
-                        }
-                        else if (TransformationSpellHelper.UnderTransformation(m_Thief))
-                        {
-                            m_Thief.SendLocalizedMessage(1061622); // You cannot steal the sigil while in that form.
-                        }
-                        else if (AnimalForm.UnderTransformation(m_Thief))
-                        {
-                            m_Thief.SendLocalizedMessage(1063222); // You cannot steal the sigil while mimicking an animal.
-                        }
-                        else if (pl.IsLeaving)
-                        {
-                            // You are currently quitting a faction and cannot steal the town sigil
-                            m_Thief.SendLocalizedMessage(1005589);
-                        }
-                        else if (sig.IsBeingCorrupted && sig.LastMonolith.Faction == faction)
-                        {
-                            m_Thief.SendLocalizedMessage(1005590); // You cannot steal your own sigil
-                        }
-                        else if (sig.IsPurifying)
-                        {
-                            m_Thief.SendLocalizedMessage(1005592); // You cannot steal this sigil until it has been purified
-                        }
-                        else if (m_Thief.CheckTargetSkill(SkillName.Stealing, toSteal, 80.0, 80.0))
-                        {
-                            if (Sigil.ExistsOn(m_Thief))
-                            {
-                                // The sigil has gone back to its home location because you already have a sigil.
-                                m_Thief.SendLocalizedMessage(1010258);
-                            }
-                            else if (m_Thief.Backpack?.CheckHold(m_Thief, sig, false, true) != true)
-                            {
-                                // The sigil has gone home because your backpack is full
-                                m_Thief.SendLocalizedMessage(1010259);
-                            }
-                            else
-                            {
-                                if (sig.IsBeingCorrupted)
-                                {
-                                    sig.GraceStart = Core.Now; // begin grace period
-                                }
-
-                                m_Thief.SendLocalizedMessage(1010586); // YOU STOLE THE SIGIL!!!   (woah, calm down now)
-
-                                if (sig.LastMonolith?.Sigil != null)
-                                {
-                                    sig.LastMonolith.Sigil = null;
-                                    sig.LastStolen = Core.Now;
-                                }
-
-                                return sig;
-                            }
-                        }
-                        else
-                        {
-                            m_Thief.SendLocalizedMessage(1005594); // You do not have enough skill to steal the sigil
-                        }
-                    }
-                    else
-                    {
-                        m_Thief.SendLocalizedMessage(1005588); // You must join a faction to do that
-                    }
-                }
-                else if (si == null && (toSteal.Parent == null || !toSteal.Movable))
-                {
-                    m_Thief.SendLocalizedMessage(502710); // You can't steal that!
-                }
                 else if (toSteal.LootType == LootType.Newbied || toSteal.CheckBlessed(mobRoot))
-                {
-                    m_Thief.SendLocalizedMessage(502710); // You can't steal that!
-                }
-                else if (Core.AOS && si == null && toSteal is Container)
                 {
                     m_Thief.SendLocalizedMessage(502710); // You can't steal that!
                 }
                 else if (!m_Thief.InRange(toSteal.GetWorldLocation(), 1))
                 {
                     m_Thief.SendLocalizedMessage(502703); // You must be standing next to an item to steal it.
-                }
-                else if (si != null && m_Thief.Skills.Stealing.Value < 100.0)
-                {
-                    // You're not skilled enough to attempt the theft of this item.
-                    m_Thief.SendLocalizedMessage(1060025, "", 0x66D);
                 }
                 else if (toSteal.Parent is Mobile)
                 {
@@ -310,12 +194,6 @@ namespace Server.SkillHandlers
                         if (stolen != null)
                         {
                             m_Thief.SendLocalizedMessage(502724); // You successfully steal the item.
-
-                            if (si != null)
-                            {
-                                toSteal.Movable = true;
-                                si.Item = null;
-                            }
                         }
                         else
                         {

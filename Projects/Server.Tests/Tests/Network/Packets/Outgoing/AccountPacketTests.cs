@@ -130,7 +130,7 @@ namespace Server.Tests.Network
             m.Y = 10;
             m.Z = -10;
             m.Direction = Direction.Down;
-            m.LogoutMap = Map.Felucca;
+            m.LogoutMap = Map.Gaia;
 
             var expected = new LoginConfirm(m).Compile();
 

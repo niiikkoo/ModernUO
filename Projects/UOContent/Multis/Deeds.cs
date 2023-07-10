@@ -39,10 +39,6 @@ namespace Server.Multis.Deeds
                 // The house could not be created here.  Either something is blocking the house, or the house would not be on valid terrain.
                 from.SendLocalizedMessage(1043287);
             }
-            else if (reg.IsPartOf<HouseRaffleRegion>())
-            {
-                from.SendLocalizedMessage(1150493); // You must have a deed for this plot of land in order to build here.
-            }
             else
             {
                 from.SendLocalizedMessage(501265); // Housing can not be created in this area.

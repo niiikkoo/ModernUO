@@ -60,15 +60,5 @@ namespace Server.Mobiles
             AddLoot(LootPack.LowScrolls);
             AddLoot(LootPack.Gems, 2);
         }
-
-        public override void OnDeath(Container c)
-        {
-            base.OnDeath(c);
-
-            if (Utility.RandomDouble() < 0.35)
-            {
-                c.DropItem(new PixieLeg());
-            }
-        }
     }
 }

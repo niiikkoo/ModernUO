@@ -9,7 +9,6 @@ namespace Server.Mobiles
         [Constructible]
         public Malefic()
         {
-            IsParagon = true;
             Hue = 0x455;
 
             SetStr(210, 284);
@@ -51,7 +50,6 @@ namespace Server.Mobiles
         public override string CorpseName => "a Malefic corpse";
         public override string DefaultName => "Malefic";
 
-        public override bool GivesMLMinorArtifact => true;
 
         public override void GenerateLoot()
         {

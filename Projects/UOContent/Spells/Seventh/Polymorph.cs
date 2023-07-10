@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Server.Factions;
 using Server.Gumps;
 using Server.Items;
 using Server.Spells.Fifth;
@@ -37,11 +36,6 @@ namespace Server.Spells.Seventh
               return false;
             }
             else */
-            if (Sigil.ExistsOn(caster))
-            {
-                caster.SendLocalizedMessage(1010521); // You cannot polymorph while you have a Town Sigil
-                return false;
-            }
 
             if (TransformationSpellHelper.UnderTransformation(caster))
             {
@@ -95,12 +89,6 @@ namespace Server.Spells.Seventh
               caster.SendLocalizedMessage(1042561); // Please dismount first.
               return;
             }*/
-
-            if (Sigil.ExistsOn(caster))
-            {
-                caster.SendLocalizedMessage(1010521); // You cannot polymorph while you have a Town Sigil
-                return;
-            }
 
             if (!caster.CanBeginAction<PolymorphSpell>())
             {

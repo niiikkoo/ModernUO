@@ -1,4 +1,3 @@
-using Server.Factions;
 using Server.Guilds;
 using Server.Targeting;
 
@@ -24,12 +23,6 @@ namespace Server.Gumps
 
             if (targeted is Mobile m)
             {
-                var guildState = PlayerState.Find(m_Guild.Leader);
-                var targetState = PlayerState.Find(m);
-
-                var guildFaction = guildState?.Faction;
-                var targetFaction = targetState?.Faction;
-
                 if (!m.Player)
                 {
                     m_Mobile.SendLocalizedMessage(501161); // You may only recruit players into the guild.
@@ -55,28 +48,6 @@ namespace Server.Gumps
                 else if (m.Guild != null)
                 {
                     m_Mobile.SendLocalizedMessage(501166); // You can only recruit candidates who are not already in a guild.
-                }
-                else if (guildFaction != targetFaction)
-                {
-                    if (guildFaction == null)
-                    {
-                        m_Mobile.SendLocalizedMessage(1013027); // That player cannot join a non-faction guild.
-                    }
-                    else if (targetFaction == null)
-                    {
-                        m_Mobile.SendLocalizedMessage(
-                            1013026
-                        ); // That player must be in a faction before joining this guild.
-                    }
-                    else
-                    {
-                        m_Mobile.SendLocalizedMessage(1013028); // That person has a different faction affiliation.
-                    }
-                }
-                else if (targetState?.IsLeaving == true)
-                {
-                    // OSI does this quite strangely, so we'll just do it this way
-                    m_Mobile.SendMessage("That person is quitting their faction and so you may not recruit them.");
                 }
                 else if (m_Mobile.AccessLevel >= AccessLevel.GameMaster || m_Guild.Leader == m_Mobile)
                 {

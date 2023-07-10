@@ -754,9 +754,9 @@ public partial class FillableContent
             new FillableEntry(2, typeof(Springs)),
             new FillableEntry(5, typeof(TinkerTools)),
             new FillableEntry(4, typeof(Key)),
-            new FillableEntry(1, typeof(DecoArrowShafts)),
+            /*new FillableEntry(1, typeof(DecoArrowShafts)),
             new FillableEntry(1, typeof(Lockpicks)),
-            new FillableEntry(1, typeof(ToolKit))
+            new FillableEntry(1, typeof(ToolKit))*/
         }
     );
 

@@ -102,30 +102,7 @@ public partial class RecallRune : Item
 
     private void CalculateHue()
     {
-        if (!_marked)
-        {
-            Hue = 0;
-        }
-        else if (_targetMap == Map.Trammel)
-        {
-            Hue = House != null ? 0x47F : 50;
-        }
-        else if (_targetMap == Map.Felucca)
-        {
-            Hue = House != null ? 0x66D : 0;
-        }
-        else if (_targetMap == Map.Ilshenar)
-        {
-            Hue = House != null ? 0x55F : 1102;
-        }
-        else if (_targetMap == Map.Malas)
-        {
-            Hue = House != null ? 0x55F : 1102;
-        }
-        else if (_targetMap == Map.Tokuno)
-        {
-            Hue = House != null ? 0x47F : 1154;
-        }
+        Hue = 0;
     }
 
     public void Mark(Mobile m)
@@ -194,21 +171,9 @@ public partial class RecallRune : Item
                 desc = "an unknown location";
             }
 
-            if (_targetMap == Map.Tokuno)
+            if (_targetMap == Map.Gaia)
             {
-                list.Add(House != null ? 1063260 : 1063259, $"a recall rune for {desc}"); // ~1_val~ (Tokuno Islands)[(House)]
-            }
-            else if (_targetMap == Map.Malas)
-            {
-                list.Add(House != null ? 1062454 : 1060804, $"a recall rune for {desc}"); // ~1_val~ (Malas)[(House)]
-            }
-            else if (_targetMap == Map.Felucca)
-            {
-                list.Add(House != null ? 1062452 : 1060805, $"a recall rune for {desc}"); // ~1_val~ (Felucca)[(House)]
-            }
-            else if (_targetMap == Map.Trammel)
-            {
-                list.Add(House != null ? 1062453 : 1060806, $"a recall rune for {desc}"); // ~1_val~ (Trammel)[(House)]
+                list.Add(House != null ? 1062452 : 1060805, $"a recall rune for {desc}"); // ~1_val~ (Gaia)[(House)]
             }
             else if (House != null)
             {
@@ -227,35 +192,11 @@ public partial class RecallRune : Item
         {
             var desc = (_description?.Trim()).DefaultIfNullOrEmpty("an unknown location");
 
-            if (_targetMap == Map.Tokuno)
+           if (_targetMap == Map.Gaia)
             {
                 LabelTo(
                     from,
-                    House != null ? 1063260 : 1063259, // ~1_val~ (Tokuno Islands)[(House)]
-                    $"a recall rune for {desc}"
-                );
-            }
-            else if (_targetMap == Map.Malas)
-            {
-                LabelTo(
-                    from,
-                    House != null ? 1062454 : 1060804, // ~1_val~ (Malas)[(House)]
-                    $"a recall rune for {desc}"
-                );
-            }
-            else if (_targetMap == Map.Felucca)
-            {
-                LabelTo(
-                    from,
-                    House != null ? 1062452 : 1060805, // ~1_val~ (Felucca)[(House)]
-                    $"a recall rune for {desc}"
-                );
-            }
-            else if (_targetMap == Map.Trammel)
-            {
-                LabelTo(
-                    from,
-                    House != null ? 1062453 : 1060806, // ~1_val~ (Trammel)[(House)]
+                    House != null ? 1062452 : 1060805, // ~1_val~ (Gaia)[(House)]
                     $"a recall rune for {desc}"
                 );
             }

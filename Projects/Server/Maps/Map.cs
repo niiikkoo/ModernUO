@@ -353,12 +353,7 @@ public sealed class Map : IComparable<Map>, ISpanFormattable, ISpanParsable<Map>
 
     public static Map[] Maps { get; } = new Map[0x100];
 
-    public static Map Felucca => Maps[0];
-    public static Map Trammel => Maps[1];
-    public static Map Ilshenar => Maps[2];
-    public static Map Malas => Maps[3];
-    public static Map Tokuno => Maps[4];
-    public static Map TerMur => Maps[5];
+    public static Map Gaia => Maps[0];
     public static Map Internal => Maps[0x7F];
 
     public static List<Map> AllMaps { get; } = new();

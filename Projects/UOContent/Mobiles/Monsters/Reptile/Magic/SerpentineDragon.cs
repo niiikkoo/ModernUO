@@ -1,5 +1,4 @@
 using ModernUO.Serialization;
-using Server.Engines.Plants;
 
 namespace Server.Mobiles
 {
@@ -40,11 +39,6 @@ namespace Server.Mobiles
             Karma = 15000;
 
             VirtualArmor = 36;
-
-            if (Core.ML && Utility.RandomDouble() < .33)
-            {
-                PackItem(Seed.RandomPeculiarSeed(2));
-            }
         }
 
         public override string CorpseName => "a dragon corpse";

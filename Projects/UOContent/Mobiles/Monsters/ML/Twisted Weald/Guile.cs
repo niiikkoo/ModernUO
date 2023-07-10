@@ -8,7 +8,6 @@ namespace Server.Mobiles
         [Constructible]
         public Guile()
         {
-            IsParagon = true;
 
             Hue = DefaultHue;
 
@@ -44,7 +43,6 @@ namespace Server.Mobiles
         public override string CorpseName => "a Guile corpse";
         public override string DefaultName => "Guile";
         public override int DefaultHue => 0x3F;
-        public override bool GivesMLMinorArtifact => true;
 
         private static MonsterAbility[] _abilities = { MonsterAbilities.DrainLifeAttack };
         public override MonsterAbility[] GetMonsterAbilities() => _abilities;

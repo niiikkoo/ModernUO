@@ -106,16 +106,16 @@ public sealed class WorldLocationTests : IClassFixture<ServerFixture>
     [Fact]
     public void TestWorldLocationTryParse()
     {
-        var validMap = Map.Felucca;
+        var validMap = Map.Gaia;
         // Happy Path
-        Assert.True(WorldLocation.TryParse("(101, 23, 55) [Felucca]", null, out var p));
+        Assert.True(WorldLocation.TryParse("(101, 23, 55) [Gaia]", null, out var p));
         Assert.Equal(new WorldLocation(101, 23, 55, validMap), p);
-        Assert.Equal(new WorldLocation(101, 23, 55, validMap), WorldLocation.Parse("(101, 23, 55) [Felucca]", null));
+        Assert.Equal(new WorldLocation(101, 23, 55, validMap), WorldLocation.Parse("(101, 23, 55) [Gaia]", null));
 
         // Trimming
-        Assert.True(WorldLocation.TryParse(" (101,23 ,55)   [Felucca]   ", null, out p));
+        Assert.True(WorldLocation.TryParse(" (101,23 ,55)   [Gaia]   ", null, out p));
         Assert.Equal(new WorldLocation(101, 23, 55, validMap), p);
-        Assert.Equal(new WorldLocation(101, 23, 55, validMap), WorldLocation.Parse(" (101,23 ,55)   [Felucca]   ", null));
+        Assert.Equal(new WorldLocation(101, 23, 55, validMap), WorldLocation.Parse(" (101,23 ,55)   [Gaia]   ", null));
 
         // Null Map
         Assert.True(WorldLocation.TryParse(" (101,23 ,55)  [(-null-)]", null, out p));
@@ -123,22 +123,22 @@ public sealed class WorldLocationTests : IClassFixture<ServerFixture>
         Assert.Equal(new WorldLocation(101, 23, 55, null), WorldLocation.Parse(" (101,23 ,55)  [(-null-)]", null));
 
         // No Brackets
-        Assert.False(WorldLocation.TryParse("(101, 23 55) Felucca]", null, out p));
+        Assert.False(WorldLocation.TryParse("(101, 23 55) Gaia]", null, out p));
         Assert.Equal(default, p);
-        Assert.Throws<FormatException>(() => WorldLocation.Parse("(101, 23, 55) Felucca]", null));
+        Assert.Throws<FormatException>(() => WorldLocation.Parse("(101, 23, 55) Gaia]", null));
 
-        Assert.False(WorldLocation.TryParse("(101, 23 55) [Felucca", null, out p));
+        Assert.False(WorldLocation.TryParse("(101, 23 55) [Gaia", null, out p));
         Assert.Equal(default, p);
-        Assert.Throws<FormatException>(() => WorldLocation.Parse("(101, 23, 55) [Felucca", null));
+        Assert.Throws<FormatException>(() => WorldLocation.Parse("(101, 23, 55) [Gaia", null));
 
         // No parenthesis
-        Assert.False(WorldLocation.TryParse("101, 23 55) [Felucca]", null, out p));
+        Assert.False(WorldLocation.TryParse("101, 23 55) [Gaia]", null, out p));
         Assert.Equal(default, p);
-        Assert.Throws<FormatException>(() => WorldLocation.Parse("101, 23, 55) [Felucca]", null));
+        Assert.Throws<FormatException>(() => WorldLocation.Parse("101, 23, 55) [Gaia]", null));
 
-        Assert.False(WorldLocation.TryParse("(101, 23, 55 [Felucca]", null, out p));
+        Assert.False(WorldLocation.TryParse("(101, 23, 55 [Gaia]", null, out p));
         Assert.Equal(default, p);
-        Assert.Throws<FormatException>(() => WorldLocation.Parse("(101, 23, 55 [Felucca]", null));
+        Assert.Throws<FormatException>(() => WorldLocation.Parse("(101, 23, 55 [Gaia]", null));
 
         // No Map - We don't support maps with no name, sorry.
         Assert.False(WorldLocation.TryParse("(101, 23, 55) []", null, out p));
@@ -162,24 +162,24 @@ public sealed class WorldLocationTests : IClassFixture<ServerFixture>
         Assert.Equal(default, p);
         Assert.Throws<FormatException>(() => WorldLocation.Parse("() []", null));
 
-        Assert.False(WorldLocation.TryParse("(101) [Felucca]", null, out p));
+        Assert.False(WorldLocation.TryParse("(101) [Gaia]", null, out p));
         Assert.Equal(default, p);
-        Assert.Throws<FormatException>(() => WorldLocation.Parse("(101) [Felucca]", null));
+        Assert.Throws<FormatException>(() => WorldLocation.Parse("(101) [Gaia]", null));
 
-        Assert.False(WorldLocation.TryParse("(101,) [Felucca]", null, out p));
+        Assert.False(WorldLocation.TryParse("(101,) [Gaia]", null, out p));
         Assert.Equal(default, p);
-        Assert.Throws<FormatException>(() => WorldLocation.Parse("(101,) [Felucca]", null));
+        Assert.Throws<FormatException>(() => WorldLocation.Parse("(101,) [Gaia]", null));
 
-        Assert.False(WorldLocation.TryParse("(,23) [Felucca]", null, out p));
+        Assert.False(WorldLocation.TryParse("(,23) [Gaia]", null, out p));
         Assert.Equal(default, p);
-        Assert.Throws<FormatException>(() => WorldLocation.Parse("(,23) [Felucca]", null));
+        Assert.Throws<FormatException>(() => WorldLocation.Parse("(,23) [Gaia]", null));
 
-        Assert.False(WorldLocation.TryParse("(,23,55) [Felucca]", null, out p));
+        Assert.False(WorldLocation.TryParse("(,23,55) [Gaia]", null, out p));
         Assert.Equal(default, p);
-        Assert.Throws<FormatException>(() => WorldLocation.Parse("(,23,55) [Felucca]", null));
+        Assert.Throws<FormatException>(() => WorldLocation.Parse("(,23,55) [Gaia]", null));
 
-        Assert.False(WorldLocation.TryParse("(,23,) [Felucca]", null, out p));
+        Assert.False(WorldLocation.TryParse("(,23,) [Gaia]", null, out p));
         Assert.Equal(default, p);
-        Assert.Throws<FormatException>(() => WorldLocation.Parse("(,23,) [Felucca]", null));
+        Assert.Throws<FormatException>(() => WorldLocation.Parse("(,23,) [Gaia]", null));
     }
 }

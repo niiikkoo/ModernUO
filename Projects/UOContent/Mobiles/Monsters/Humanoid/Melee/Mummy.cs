@@ -1,5 +1,4 @@
 using ModernUO.Serialization;
-using Server.Engines.Plants;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -38,11 +37,6 @@ namespace Server.Mobiles
             Karma = -4000;
 
             VirtualArmor = 50;
-
-            if (Core.ML && Utility.RandomDouble() < .33)
-            {
-                PackItem(Seed.RandomPeculiarSeed(2));
-            }
 
             PackItem(new Garlic(5));
             PackItem(new Bandage(10));

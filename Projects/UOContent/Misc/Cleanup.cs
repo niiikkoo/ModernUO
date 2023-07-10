@@ -162,10 +162,10 @@ namespace Server.Misc
             return item is BaseJewel && Core.AOS ||
                    item is ICommodity or BaseBoat or Fish or BigFish or Food or CookableFood or SpecialFishingNet or
                        BaseMagicFish or Shoes or Sandals or Boots or ThighBoots or TreasureMap or MessageInABottle or
-                       BaseArmor or BaseWeapon or BaseClothing or SkullPole or EvilIdolSkull or MonsterStatuette or Pier or
+                       BaseArmor or BaseWeapon or BaseClothing /*or SkullPole or EvilIdolSkull*/ or MonsterStatuette /*or Pier or
                        ArtifactLargeVase or ArtifactVase or MinotaurStatueDeed or SwampTile or WallBlood or
                        TatteredAncientMummyWrapping or LavaTile or DemonSkull or Web or WaterTile or WindSpirit or DirtPatch
-                       or Futon;
+                       or Futon*/;
         }
     }
 }

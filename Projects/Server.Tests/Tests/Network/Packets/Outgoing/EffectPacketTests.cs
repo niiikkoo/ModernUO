@@ -105,7 +105,7 @@ namespace Server.Tests.Network
         [Fact]
         public void TestBoltEffect()
         {
-            IEntity entity = new Entity((Serial)0x1000, new Point3D(1000, 100, -10), Map.Felucca);
+            IEntity entity = new Entity((Serial)0x1000, new Point3D(1000, 100, -10), Map.Gaia);
             var hue = 0x1024;
             var expected = new BoltEffect(entity, hue).Compile();
 

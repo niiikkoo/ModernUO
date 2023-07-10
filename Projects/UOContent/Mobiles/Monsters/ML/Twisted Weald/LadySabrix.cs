@@ -9,7 +9,6 @@ namespace Server.Mobiles
         [Constructible]
         public LadySabrix()
         {
-            IsParagon = true;
             Hue = 0x497;
 
             SetStr(82, 130);
@@ -48,10 +47,10 @@ namespace Server.Mobiles
         public override void OnDeath( Container c )
         {
           base.OnDeath( c );
-    
+
           if (Utility.RandomDouble() < 0.2)
             c.DropItem( new SabrixsEye() );
-    
+
           if (Utility.RandomDouble() < 0.25)
           {
             switch ( Utility.Random( 2 ) )
@@ -60,13 +59,12 @@ namespace Server.Mobiles
               case 1: AddToBackpack( new HunterLegs() ); break;
             }
           }
-    
+
           if (Utility.RandomDouble() < 0.1)
             c.DropItem( new ParrotItem() );
         }
         */
 
-        public override bool GivesMLMinorArtifact => true;
 
         public override void GenerateLoot()
         {

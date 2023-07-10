@@ -1,14 +1,12 @@
 using System;
 using ModernUO.Serialization;
-using Server.Factions;
 using Server.Mobiles;
 
 namespace Server.Items;
 
 public enum MoonstoneType
 {
-    Felucca,
-    Trammel
+    Gaia
 }
 
 [SerializationGenerator(1, false)]
@@ -54,17 +52,9 @@ public partial class Moonstone : Item
         {
             from.SendLocalizedMessage(1005400); // You can not bury a stone in this form.
         }
-        else if (Sigil.ExistsOn(from))
-        {
-            from.SendLocalizedMessage(1061632); // You can't do that while carrying the sigil.
-        }
-        else if (from.Map == GetTargetMap() || from.Map != Map.Trammel && from.Map != Map.Felucca)
+       else if (from.Map == GetTargetMap() || from.Map != Map.Gaia)
         {
             from.SendLocalizedMessage(1005401); // You cannot bury the stone here.
-        }
-        else if (from is PlayerMobile mobile && mobile.Young)
-        {
-            mobile.SendLocalizedMessage(1049543); // You decide against traveling to Felucca while you are still young.
         }
         else if (from.Kills >= 5)
         {
@@ -95,7 +85,7 @@ public partial class Moonstone : Item
         }
     }
 
-    public Map GetTargetMap() => _type == MoonstoneType.Felucca ? Map.Felucca : Map.Trammel;
+    public Map GetTargetMap() => Map.Gaia;
 
     private void Deserialize(IGenericReader reader, int version)
     {

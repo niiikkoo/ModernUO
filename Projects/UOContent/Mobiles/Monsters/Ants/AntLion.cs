@@ -1,5 +1,4 @@
 using ModernUO.Serialization;
-using Server.Engines.Plants;
 using Server.Items;
 
 namespace Server.Mobiles
@@ -40,12 +39,6 @@ namespace Server.Mobiles
             VirtualArmor = 45;
 
             PackItem(new Bone(3));
-            PackItem(new FertileDirt(Utility.RandomMinMax(1, 5)));
-
-            if (Core.ML && Utility.RandomDouble() < .33)
-            {
-                PackItem(Seed.RandomPeculiarSeed(2));
-            }
 
             var orepile = Utility.Random(4) switch
             {

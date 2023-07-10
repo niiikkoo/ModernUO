@@ -29,7 +29,7 @@ public class InfusedThrow : WeaponAbility
         IMount mount = defender.Mount;
 
         if ((defender.Mounted || defender.Flying || AnimalForm.UnderTransformation(defender)) &&
-            !attacker.Mounted && !attacker.Flying && defender is not ChaosDragoon && defender is not ChaosDragoonElite)
+            !attacker.Mounted && !attacker.Flying)
         {
             defender.PlaySound(0x140);
             defender.FixedParticles(0x3728, 10, 15, 9955, EffectLayer.Waist);

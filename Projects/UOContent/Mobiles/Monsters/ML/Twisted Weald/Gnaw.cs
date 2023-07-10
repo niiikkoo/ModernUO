@@ -8,7 +8,6 @@ namespace Server.Mobiles
         [Constructible]
         public Gnaw()
         {
-            IsParagon = true;
 
             Hue = 0x130;
 
@@ -43,7 +42,7 @@ namespace Server.Mobiles
         public override void OnDeath( Container c )
         {
           base.OnDeath( c );
-    
+
           if (Utility.RandomDouble() < 0.3)
             c.DropItem( new GnawsFang() );
         }
@@ -51,7 +50,6 @@ namespace Server.Mobiles
 
         public override string CorpseName => "a Gnaw corpse";
         public override string DefaultName => "Gnaw";
-        public override bool GivesMLMinorArtifact => true;
         public override int Hides => 28;
         public override int Meat => 4;
 

@@ -1,14 +1,13 @@
 using ModernUO.Serialization;
 using System;
 using System.Collections.Generic;
-using Server.Engines.CannedEvil;
 using Server.Items;
 using Server.Network;
 
 namespace Server.Mobiles
 {
     [SerializationGenerator(0, false)]
-    public partial class Ilhenir : BaseChampion
+    public partial class Ilhenir : BaseCreature
     {
         private static readonly HashSet<Mobile> m_Table = new();
 
@@ -61,25 +60,6 @@ namespace Server.Mobiles
         }
 
         public override string CorpseName => "a corpse of Ilhenir";
-        public override ChampionSkullType SkullType => ChampionSkullType.Pain;
-
-        public override Type[] UniqueList => Array.Empty<Type>();
-
-        public override Type[] SharedList => new[]
-        {
-            typeof(ANecromancerShroud),
-            typeof(LieutenantOfTheBritannianRoyalGuard),
-            typeof(OblivionsNeedle),
-            typeof(TheRobeOfBritanniaAri)
-        };
-
-        public override Type[] DecorativeList => new[] { typeof(MonsterStatuette) };
-
-        public override MonsterStatuetteType[] StatueTypes => new[]
-        {
-            MonsterStatuetteType.PlagueBeast,
-            MonsterStatuetteType.RedDeath
-        };
 
         public override string DefaultName => "Ilhenir";
 
@@ -143,11 +123,6 @@ namespace Server.Mobiles
                 // TODO: Parrots
                 /*if (Utility.RandomDouble() < 0.6)
                   c.DropItem( new ParrotItem() ); */
-
-                if (Utility.RandomDouble() < 0.05)
-                {
-                    c.DropItem(new GrizzledMareStatuette());
-                }
 
                 if (Utility.RandomDouble() < 0.025)
                 {

@@ -1,10 +1,9 @@
 using System;
-using Server.Engines.CannedEvil;
 using Server.Items;
 
 namespace Server.Mobiles
 {
-    public class Mephitis : BaseChampion
+    public class Mephitis : BaseCreature
     {
         [Constructible]
         public Mephitis() : base(AIType.AI_Melee)
@@ -43,23 +42,7 @@ namespace Server.Mobiles
         public Mephitis(Serial serial) : base(serial)
         {
         }
-
-        public override ChampionSkullType SkullType => ChampionSkullType.Venom;
-
-        public override Type[] UniqueList => new[] { typeof(Calm) };
-
-        public override Type[] SharedList => new[]
-        {
-            typeof(OblivionsNeedle), typeof(ANecromancerShroud), typeof(EmbroideredOakLeafCloak),
-            typeof(TheMostKnowledgePerson)
-        };
-
-        public override Type[] DecorativeList => new[] { typeof(Web), typeof(MonsterStatuette) };
-
-        public override MonsterStatuetteType[] StatueTypes => new[] { MonsterStatuetteType.Spider };
-
         public override string DefaultName => "Mephitis";
-
         public override Poison PoisonImmune => Poison.Lethal;
         public override Poison HitPoison => Poison.Lethal;
 

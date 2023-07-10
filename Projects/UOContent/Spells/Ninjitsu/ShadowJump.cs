@@ -1,5 +1,4 @@
 using System;
-using Server.Factions;
 using Server.Items;
 using Server.Misc;
 using Server.Mobiles;
@@ -42,10 +41,6 @@ namespace Server.Spells.Ninjitsu
             if ((Caster as PlayerMobile)?.IsStealthing != true)
             {
                 Caster.SendLocalizedMessage(1063087); // You must be in stealth mode to use this ability.
-            }
-            else if (Sigil.ExistsOn(Caster))
-            {
-                Caster.SendLocalizedMessage(1061632); // You can't do that while carrying the sigil.
             }
             else if (WeightOverloading.IsOverloaded(Caster))
             {

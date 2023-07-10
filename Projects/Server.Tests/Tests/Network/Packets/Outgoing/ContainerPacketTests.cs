@@ -161,12 +161,12 @@ namespace Server.Tests.Network
         {
             var cont = new Container(World.NewItem);
             cont.AddItem(new Item(World.NewItem));
-            cont.Map = Map.Felucca;
+            cont.Map = Map.Gaia;
 
             var m = new Mobile((Serial)0x1);
             m.DefaultMobileInit();
             m.AccessLevel = AccessLevel.Administrator;
-            m.Map = Map.Felucca;
+            m.Map = Map.Gaia;
 
             var expected = new ContainerContent(m, cont).Compile();
 
@@ -182,12 +182,12 @@ namespace Server.Tests.Network
         {
             var cont = new Container(World.NewItem);
             cont.AddItem(new Item(World.NewItem));
-            cont.Map = Map.Felucca;
+            cont.Map = Map.Gaia;
 
             var m = new Mobile((Serial)0x1);
             m.DefaultMobileInit();
             m.AccessLevel = AccessLevel.Administrator;
-            m.Map = Map.Felucca;
+            m.Map = Map.Gaia;
 
             var expected = new ContainerContent6017(m, cont).Compile();
 

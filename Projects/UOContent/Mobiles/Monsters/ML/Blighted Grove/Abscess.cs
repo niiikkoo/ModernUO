@@ -9,8 +9,6 @@ namespace Server.Mobiles
         [Constructible]
         public Abscess()
         {
-            IsParagon = true;
-
             Hue = 0x8FD;
 
             SetStr(845, 871);
@@ -43,8 +41,6 @@ namespace Server.Mobiles
 
         public override string CorpseName => "an Abscess corpse";
         public override string DefaultName => "Abscess";
-
-        public override bool GivesMLMinorArtifact => true;
 
         public override void GenerateLoot()
         {

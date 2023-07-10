@@ -106,7 +106,7 @@ public partial class MapItem : Item, ICraftable
     {
         var ns = from.NetState;
 
-        if (!ns.NewCharacterList && _facet != null && _facet != Map.Felucca && _facet != Map.Trammel)
+        if (!ns.NewCharacterList && _facet != null && _facet != Map.Gaia)
         {
             from.SendMessage("You must have client 7.0.13.0 or higher to display this map.");
             return;

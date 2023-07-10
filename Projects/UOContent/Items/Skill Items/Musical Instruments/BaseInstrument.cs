@@ -279,11 +279,6 @@ public abstract partial class BaseInstrument : Item, ICraftable, ISlayer
 
         val /= 10;
 
-        if (bc?.IsParagon == true)
-        {
-            val += 40.0;
-        }
-
         if (Core.SE && val > 160.0)
         {
             val = 160.0;

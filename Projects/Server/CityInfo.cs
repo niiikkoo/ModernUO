@@ -39,12 +39,12 @@ public sealed class CityInfo
         x,
         y,
         z,
-        Map.Trammel
+        Map.Gaia
     )
     {
     }
 
-    public CityInfo(string city, string building, int x, int y, int z) : this(city, building, 0, x, y, z, Map.Trammel)
+    public CityInfo(string city, string building, int x, int y, int z) : this(city, building, 0, x, y, z, Map.Gaia)
     {
     }
 

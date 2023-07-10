@@ -56,7 +56,6 @@ namespace Server.Mobiles
         }
 
         public override string CorpseName => "a demon knight corpse";
-        public override bool IgnoreYoungProtection => Core.ML;
 
         public static Type[] ArtifactRarity10 { get; } =
         {

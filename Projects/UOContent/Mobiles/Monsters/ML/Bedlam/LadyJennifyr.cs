@@ -12,8 +12,6 @@ namespace Server.Mobiles
         [Constructible]
         public LadyJennifyr()
         {
-            IsParagon = true;
-
             Hue = 0x76D;
 
             SetStr(208, 309);
@@ -58,8 +56,6 @@ namespace Server.Mobiles
             c.DropItem( new ParrotItem() );
         }
         */
-
-        public override bool GivesMLMinorArtifact => true;
 
         public override void GenerateLoot()
         {

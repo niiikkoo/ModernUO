@@ -52,7 +52,7 @@ namespace Server.Misc
                 points += 4;
             }
 
-            if (bc?.IsParagon == true || from is Leviathan)
+            if (from is Leviathan)
             {
                 points += 40;
             }
@@ -96,7 +96,7 @@ namespace Server.Misc
 
             var points = (int)(from.Skills.Focus.Value * 0.1);
 
-            if (from is BaseCreature creature && creature.IsParagon || from is Leviathan)
+            if (from is Leviathan)
             {
                 points += 40;
             }
@@ -160,7 +160,7 @@ namespace Server.Misc
 
                 var totalPoints = focusPoints + medPoints + (from.Meditating ? medPoints > 13.0 ? 13.0 : medPoints : 0.0);
 
-                if (from is BaseCreature creature && creature.IsParagon || from is Leviathan)
+                if (from is Leviathan)
                 {
                     totalPoints += 40;
                 }

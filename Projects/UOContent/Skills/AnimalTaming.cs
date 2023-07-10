@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Server.Factions;
 using Server.Mobiles;
 using Server.Spells;
 using Server.Spells.Necromancy;
@@ -38,7 +37,7 @@ namespace Server.SkillHandlers
         public static bool CheckMastery(Mobile tamer, BaseCreature creature) =>
             SummonFamiliarSpell.Table.TryGetValue(tamer, out var bc)
             && bc is DarkWolfFamiliar { Deleted: false }
-            && creature is DireWolf or GreyWolf or TimberWolf or WhiteWolf or BakeKitsune;
+            && creature is DireWolf or GreyWolf or TimberWolf or WhiteWolf /*or BakeKitsune*/;
 
         public static bool MustBeSubdued(BaseCreature bc) =>
             bc.Owners.Count <= 0 && bc.SubdueBeforeTame && bc.Hits > bc.HitsMax / 10;
@@ -154,12 +153,12 @@ namespace Server.SkillHandlers
                     return;
                 }
 
-                if (creature is CuSidhe && from.Race != Race.Elf)
+                /*if (creature is CuSidhe && from.Race != Race.Elf)
                 {
                     // You can't tame that!
                     creature.PrivateOverheadMessage(MessageType.Regular, 0x3B2, 502801, from.NetState);
                     return;
-                }
+                }*/
 
                 if (from.Followers + creature.ControlSlots > from.FollowersMax)
                 {
@@ -186,18 +185,6 @@ namespace Server.SkillHandlers
                     // You have no chance of taming this creature.
                     creature.PrivateOverheadMessage(MessageType.Regular, 0x3B2, 502806, from.NetState);
                     return;
-                }
-
-                if (creature is FactionWarHorse warHorse)
-                {
-                    var faction = Faction.Find(from);
-
-                    if (faction == null || faction != warHorse.Faction)
-                    {
-                        // You cannot tame this creature.
-                        creature.PrivateOverheadMessage(MessageType.Regular, 0x3B2, 1042590, from.NetState);
-                        return;
-                    }
                 }
 
                 if (m_BeingTamed.Contains(creature))
@@ -227,8 +214,7 @@ namespace Server.SkillHandlers
                     creature.AIObject?.DoMove(creature.Direction);
 
                     if (from is PlayerMobile pm &&
-                        !(pm.HonorActive ||
-                          TransformationSpellHelper.UnderTransformation(pm, typeof(EtherealVoyageSpell))))
+                        !(TransformationSpellHelper.UnderTransformation(pm, typeof(EtherealVoyageSpell))))
                     {
                         creature.Combatant = pm;
                     }
@@ -412,13 +398,13 @@ namespace Server.SkillHandlers
                         {
                             if (m_Creature.Owners.Count == 0) // First tame
                             {
-                                if (m_Creature is GreaterDragon)
+                                /*if (m_Creature is GreaterDragon)
                                 {
                                     ScaleSkills(m_Creature, 0.72, 0.90); // 72% of original skills trainable to 90%
                                     // Greater dragons have a 90% cap reduction and 90% skill reduction on magery
                                     m_Creature.Skills.Magery.Base = m_Creature.Skills.Magery.Cap;
                                 }
-                                else if (m_Paralyzed)
+                                else */if (m_Paralyzed)
                                 {
                                     // 86% of original skills if they were paralyzed during the taming
                                     ScaleSkills(m_Creature, 0.86);

@@ -60,7 +60,7 @@ namespace Server.Multis
 
             AddMobile(new OrcCaptain(), 2, Utility.RandomMinMax(-7, 7), Utility.RandomMinMax(-7, 7), 0);
 
-            m_Prisoner = Utility.Random(2) switch
+            /*m_Prisoner = Utility.Random(2) switch
             {
                 0 => new Noble(),
                 _ => new SeekerOfAdventure()
@@ -74,7 +74,7 @@ namespace Server.Multis
             bc.CantWalk = true;
 
             m_Prisoner.YellHue = Utility.RandomList(0x57, 0x67, 0x77, 0x87, 0x117);
-            AddMobile(m_Prisoner, 2, Utility.RandomMinMax(-2, 2), Utility.RandomMinMax(-2, 2), 0);
+            AddMobile(m_Prisoner, 2, Utility.RandomMinMax(-2, 2), Utility.RandomMinMax(-2, 2), 0);*/
         }
 
         private void AddCampChests()

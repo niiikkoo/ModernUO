@@ -58,7 +58,7 @@ namespace Server.Misc
 
         public static void Initialize()
         {
-            m_Facets = new[] { Map.Felucca, Map.Trammel };
+            m_Facets = new[] { Map.Gaia };
 
             /* Static weather:
              *

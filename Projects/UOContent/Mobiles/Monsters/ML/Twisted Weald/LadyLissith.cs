@@ -9,7 +9,6 @@ namespace Server.Mobiles
         [Constructible]
         public LadyLissith()
         {
-            IsParagon = true;
             Hue = 0x452;
 
             SetStr(81, 130);
@@ -48,19 +47,18 @@ namespace Server.Mobiles
         public override void OnDeath( Container c )
         {
           base.OnDeath( c );
-    
+
           if (Utility.RandomDouble() < 0.025)
             c.DropItem( new GreymistChest() );
-    
+
           if (Utility.RandomDouble() < 0.45)
             c.DropItem( new LissithsSilk() );
-    
+
           if (Utility.RandomDouble() < 0.1)
             c.DropItem( new ParrotItem() );
         }
         */
 
-        public override bool GivesMLMinorArtifact => true;
 
         public override void GenerateLoot()
         {

@@ -1,6 +1,5 @@
 using System;
 using ModernUO.Serialization;
-using Server.Engines.ConPVP;
 
 namespace Server.Items
 {
@@ -202,11 +201,6 @@ namespace Server.Items
                 return;
             }
 
-            if (!DuelContext.AllowSpecialAbility(m, "Disarm", true))
-            {
-                return;
-            }
-
             var armsValue = m.Skills.ArmsLore.Value;
             var wresValue = m.Skills.Wrestling.Value;
 
@@ -230,11 +224,6 @@ namespace Server.Items
 
         private static void EventSink_StunRequest(Mobile m)
         {
-            if (Core.AOS || !DuelContext.AllowSpecialAbility(m, "Stun", true))
-            {
-                return;
-            }
-
             var anatValue = m.Skills.Anatomy.Value;
             var wresValue = m.Skills.Wrestling.Value;
 

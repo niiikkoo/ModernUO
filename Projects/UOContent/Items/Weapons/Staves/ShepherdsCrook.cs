@@ -1,6 +1,5 @@
 using System;
 using ModernUO.Serialization;
-using Server.Engines.CannedEvil;
 using Server.Mobiles;
 using Server.Targeting;
 
@@ -43,7 +42,7 @@ namespace Server.Items
                 typeof(StrongMongbat), typeof(Imp), typeof(Scorpion), typeof(GiantSpider),
                 typeof(Snake), typeof(LavaLizard), typeof(Drake), typeof(Dragon),
                 typeof(Kirin), typeof(Unicorn), typeof(GiantRat), typeof(Slime),
-                typeof(DireWolf), typeof(HellHound), typeof(DeathwatchBeetle),
+                typeof(DireWolf), typeof(HellHound), //typeof(DeathwatchBeetle),
                 typeof(LesserHiryu), typeof(Hiryu)
             };
 
@@ -83,34 +82,9 @@ namespace Server.Items
 
             private bool IsHerdable(BaseCreature bc)
             {
-                if (bc.IsParagon)
-                {
-                    return false;
-                }
-
                 if (bc.Tamable)
                 {
                     return true;
-                }
-
-                var map = bc.Map;
-
-                if (Region.Find(bc.Home, map) is ChampionSpawnRegion region)
-                {
-                    var spawn = region.Spawn;
-
-                    if (spawn?.IsChampionSpawn(bc) == true)
-                    {
-                        var t = bc.GetType();
-
-                        foreach (var type in m_ChampTamables)
-                        {
-                            if (type == t)
-                            {
-                                return true;
-                            }
-                        }
-                    }
                 }
 
                 return false;

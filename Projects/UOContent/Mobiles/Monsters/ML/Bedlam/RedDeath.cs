@@ -9,8 +9,6 @@ namespace Server.Mobiles
         [Constructible]
         public RedDeath() : base()
         {
-            IsParagon = true;
-
             Hue = 0x21;
             BaseSoundID = 0x1C3;
 
@@ -57,7 +55,6 @@ namespace Server.Mobiles
 
         public override string CorpseName => "a Red Death corpse";
 
-        public override bool GivesMLMinorArtifact => true;
         public override bool AlwaysMurderer => true;
 
         private static MonsterAbility[] _abilities = { MonsterAbilities.ChaosBreath };

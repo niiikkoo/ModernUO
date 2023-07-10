@@ -9,7 +9,6 @@ namespace Server.Mobiles
         [Constructible]
         public Miasma()
         {
-            IsParagon = true;
 
             Hue = 0x8FD;
 
@@ -80,7 +79,6 @@ namespace Server.Mobiles
         public override double HitPoisonChance => 0.35;
         public override Poison HitPoison => Poison.Lethal;
         public override bool HasManaOveride => true;
-        public override bool GivesMLMinorArtifact => true;
         public override int TreasureMapLevel => 5;
 
         public override void GenerateLoot()

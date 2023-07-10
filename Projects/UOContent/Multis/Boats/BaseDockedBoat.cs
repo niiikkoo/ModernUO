@@ -1,4 +1,3 @@
-using Server.Engines.CannedEvil;
 using Server.Regions;
 using Server.Targeting;
 
@@ -155,8 +154,7 @@ namespace Server.Multis
 
                 p = new Point3D(p.X - Offset.X, p.Y - Offset.Y, p.Z - Offset.Z);
 
-                if (BaseBoat.IsValidLocation(p, map) && boat.CanFit(p, map, boat.ItemID) && map != Map.Ilshenar &&
-                    map != Map.Malas)
+                if (BaseBoat.IsValidLocation(p, map) && boat.CanFit(p, map, boat.ItemID))
                 {
                     Delete();
 
@@ -212,7 +210,7 @@ namespace Server.Multis
                 {
                     from.SendLocalizedMessage(502488); // You can not place a ship inside a dungeon.
                 }
-                else if (region.IsPartOf<HouseRegion>() || region.IsPartOf<ChampionSpawnRegion>())
+                else if (region.IsPartOf<HouseRegion>())
                 {
                     from.SendLocalizedMessage(1042549); // A boat may not be placed in this area.
                 }

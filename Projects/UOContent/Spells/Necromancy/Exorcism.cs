@@ -1,7 +1,5 @@
 using System;
-using Server.Engines.CannedEvil;
 using Server.Engines.PartySystem;
-using Server.Factions;
 using Server.Guilds;
 using Server.Items;
 using Server.Regions;
@@ -21,7 +19,7 @@ namespace Server.Spells.Necromancy
 
         private static readonly int Range = Core.ML ? 48 : 18;
 
-        private static readonly Point3D[] m_BritanniaLocs =
+        private static readonly Point3D[] m_GaiaLocs =
         {
             new(1470, 843, 0),
             new(1857, 865, -1),
@@ -32,29 +30,6 @@ namespace Server.Spells.Necromancy
             new(1606, 2490, 5),
             new(2500, 3931, 3),
             new(4264, 3707, 0)
-        };
-
-        private static readonly Point3D[] m_IllshLocs =
-        {
-            new(1222, 474, -17),
-            new(718, 1360, -60),
-            new(297, 1014, -19),
-            new(986, 1006, -36),
-            new(1180, 1288, -30),
-            new(1538, 1341, -3),
-            new(528, 223, -38)
-        };
-
-        private static readonly Point3D[] m_MalasLocs =
-        {
-            new(976, 517, -30)
-        };
-
-        private static readonly Point3D[] m_TokunoLocs =
-        {
-            new(710, 1162, 25),
-            new(1034, 515, 18),
-            new(295, 712, 55)
         };
 
         public ExorcismSpell(Mobile caster, Item scroll = null) : base(caster, scroll, _info)
@@ -83,19 +58,14 @@ namespace Server.Spells.Necromancy
 
         public override void OnCast()
         {
-            var r = Caster.Region.GetRegion<ChampionSpawnRegion>();
-            if (r == null || !Caster.InRange(r.Spawn, Range))
-            {
-                Caster.SendLocalizedMessage(1072111); // You are not in a valid exorcism region.
-            }
-            else if (CheckSequence())
+            if (CheckSequence())
             {
                 var map = Caster.Map;
 
                 if (map != null)
                 {
                     // Surprisingly, no sparkle type effects
-                    foreach (var m in r.Spawn.GetMobilesInRange(Range))
+                    foreach (var m in Caster.GetMobilesInRange(Range))
                     {
                         if (IsValidTarget(m))
                         {
@@ -120,11 +90,6 @@ namespace Server.Spells.Necromancy
 
             if (c?.Deleted == false && map != null && c.Map == map)
             {
-                if (SpellHelper.IsAnyT2A(map, c.Location) && SpellHelper.IsAnyT2A(map, m.Location))
-                {
-                    return false; // Same Map, both in T2A, ie, same 'sub server'.
-                }
-
                 if (m.Region.IsPartOf<DungeonRegion>() == Region.Find(c.Location, map).IsPartOf<DungeonRegion>())
                 {
                     return false; // Same Map, both in Dungeon region OR They're both NOT in a dungeon region.
@@ -149,9 +114,7 @@ namespace Server.Spells.Necromancy
                 }
             }
 
-            var f = Faction.Find(m);
-
-            return m.Map != Faction.Facet || f == null || f != Faction.Find(Caster);
+            return true;
         }
 
         private static Point3D GetNearestShrine(Mobile m)
@@ -160,21 +123,9 @@ namespace Server.Spells.Necromancy
 
             Point3D[] locList;
 
-            if (map == Map.Felucca || map == Map.Trammel)
+            if (map == Map.Gaia)
             {
-                locList = m_BritanniaLocs;
-            }
-            else if (map == Map.Ilshenar)
-            {
-                locList = m_IllshLocs;
-            }
-            else if (map == Map.Tokuno)
-            {
-                locList = m_TokunoLocs;
-            }
-            else if (map == Map.Malas)
-            {
-                locList = m_MalasLocs;
+                locList = m_GaiaLocs;
             }
             else
             {

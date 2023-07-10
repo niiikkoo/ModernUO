@@ -1,5 +1,4 @@
 using System;
-using Server.Engines.VeteranRewards;
 using Server.Gumps;
 using Server.Multis;
 using Server.Network;
@@ -129,7 +128,7 @@ namespace Server.Items
         }
     }
 
-    public class MonsterStatuette : Item, IRewardItem
+    public class MonsterStatuette : Item
     {
         private bool m_TurnedOn;
         private MonsterStatuetteType m_Type;
@@ -230,11 +229,6 @@ namespace Server.Items
         public override void GetProperties(IPropertyList list)
         {
             base.GetProperties(list);
-
-            if (Core.ML && IsRewardItem)
-            {
-                list.Add(RewardSystem.GetRewardYearLabel(this, new object[] { m_Type })); // X Year Veteran Reward
-            }
 
             if (m_TurnedOn)
             {

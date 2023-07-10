@@ -1,5 +1,4 @@
 using System;
-using Server.Factions;
 using Server.Gumps;
 using Server.Mobiles;
 using Server.Network;
@@ -102,35 +101,6 @@ namespace Server.Menus.Questions
             )
         };
 
-        private static readonly StuckMenuEntry[] m_T2AEntries =
-        {
-            // Papua
-            new(
-                1011057,
-                new[]
-                {
-                    new Point3D(5720, 3109, -1),
-                    new Point3D(5677, 3176, -3),
-                    new Point3D(5678, 3227, 0),
-                    new Point3D(5769, 3206, -2),
-                    new Point3D(5777, 3270, -1)
-                }
-            ),
-
-            // Delucia
-            new(
-                1011058,
-                new[]
-                {
-                    new Point3D(5216, 4033, 37),
-                    new Point3D(5262, 4049, 37),
-                    new Point3D(5284, 4006, 37),
-                    new Point3D(5189, 3971, 39),
-                    new Point3D(5243, 3960, 37)
-                }
-            )
-        };
-
         private readonly bool m_MarkUse;
 
         private readonly Mobile m_Mobile;
@@ -152,11 +122,9 @@ namespace Server.Menus.Questions
 
             AddHtmlLocalized(50, 20, 250, 35, 1011027); // Chose a town:
 
-            var entries = IsInSecondAgeArea(beheld) ? m_T2AEntries : m_Entries;
-
-            for (var i = 0; i < entries.Length; i++)
+            for (var i = 0; i < m_Entries.Length; i++)
             {
-                var entry = entries[i];
+                var entry = m_Entries[i];
 
                 AddButton(50, 55 + 35 * i, 208, 209, i + 1);
                 AddHtmlLocalized(75, 55 + 35 * i, 335, 40, entry.Name);
@@ -165,10 +133,6 @@ namespace Server.Menus.Questions
             AddButton(55, 263, 4005, 4007, 0);
             AddHtmlLocalized(90, 265, 200, 35, 1011012); // CANCEL
         }
-
-        private static bool IsInSecondAgeArea(Mobile m) =>
-            (m.Map == Map.Trammel || m.Map == Map.Felucca) &&
-            (m.X >= 5120 && m.Y >= 2304 || m.Region.IsPartOf("Terathan Keep"));
 
         public void BeginClose()
         {
@@ -191,11 +155,7 @@ namespace Server.Menus.Questions
         {
             StopClose();
 
-            if (Sigil.ExistsOn(m_Mobile))
-            {
-                m_Mobile.SendLocalizedMessage(1061632); // You can't do that while carrying the sigil.
-            }
-            else if (info.ButtonID == 0)
+            if (info.ButtonID == 0)
             {
                 if (m_Mobile == m_Sender)
                 {
@@ -205,11 +165,10 @@ namespace Server.Menus.Questions
             else
             {
                 var index = info.ButtonID - 1;
-                var entries = IsInSecondAgeArea(m_Mobile) ? m_T2AEntries : m_Entries;
 
-                if (index >= 0 && index < entries.Length)
+                if (index >= 0 && index < m_Entries.Length)
                 {
-                    Teleport(entries[index]);
+                    Teleport(m_Entries[index]);
                 }
             }
         }
@@ -288,30 +247,10 @@ namespace Server.Menus.Questions
                     m_Mobile.Frozen = false;
                     Stop();
 
-                    if (Sigil.ExistsOn(m_Mobile))
-                    {
-                        m_Mobile.SendLocalizedMessage(1061632); // You can't do that while carrying the sigil.
-                        return;
-                    }
-
                     var dest = m_Destination.Locations.RandomElement();
 
-                    Map destMap;
-                    if (m_Mobile.Map == Map.Trammel)
-                    {
-                        destMap = Map.Trammel;
-                    }
-                    else if (m_Mobile.Map == Map.Felucca)
-                    {
-                        destMap = Map.Felucca;
-                    }
-                    else
-                    {
-                        destMap = m_Mobile.Kills >= 5 ? Map.Felucca : Map.Trammel;
-                    }
-
-                    BaseCreature.TeleportPets(m_Mobile, dest, destMap);
-                    m_Mobile.MoveToWorld(dest, destMap);
+                    BaseCreature.TeleportPets(m_Mobile, dest, Map.Gaia);
+                    m_Mobile.MoveToWorld(dest, Map.Gaia);
                 }
             }
         }

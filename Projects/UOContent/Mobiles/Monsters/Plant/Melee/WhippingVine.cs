@@ -40,7 +40,6 @@ namespace Server.Mobiles
             VirtualArmor = 45;
 
             PackReg(3);
-            PackItem(new FertileDirt(Utility.RandomMinMax(1, 10)));
 
             if (Utility.RandomDouble() < 0.2)
             {

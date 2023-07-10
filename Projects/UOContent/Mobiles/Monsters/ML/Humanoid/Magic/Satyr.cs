@@ -186,7 +186,7 @@ namespace Server.Mobiles
             {
                 if (m is BaseCreature c)
                 {
-                    if (c == this || c == target || c.Unprovokable || c.IsParagon || c.BardProvoked ||
+                    if (c == this || c == target || c.Unprovokable || c.BardProvoked ||
                         c.AccessLevel != AccessLevel.Player || !c.CanBeHarmful(target))
                     {
                         continue;

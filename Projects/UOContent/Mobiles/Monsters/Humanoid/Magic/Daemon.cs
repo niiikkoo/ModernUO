@@ -1,6 +1,4 @@
 using ModernUO.Serialization;
-using Server.Ethics;
-using Server.Factions;
 
 namespace Server.Mobiles
 {
@@ -46,9 +44,6 @@ namespace Server.Mobiles
         public override string CorpseName => "a daemon corpse";
         public override double DispelDifficulty => 125.0;
         public override double DispelFocus => 45.0;
-
-        public override Faction FactionAllegiance => Shadowlords.Instance;
-        public override Ethic EthicAllegiance => Ethic.Evil;
 
         public override bool CanRummageCorpses => true;
         public override Poison PoisonImmune => Poison.Regular;

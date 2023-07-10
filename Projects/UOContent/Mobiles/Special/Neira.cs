@@ -1,10 +1,9 @@
 using System;
-using Server.Engines.CannedEvil;
 using Server.Items;
 
 namespace Server.Mobiles
 {
-    public class Neira : BaseChampion
+    public class Neira : BaseCreature
     {
         private const double SpeedBoostScalar = 1.2;
 
@@ -47,12 +46,6 @@ namespace Server.Mobiles
             VirtualArmor = 30;
             Female = true;
 
-            Item shroud = new HoodedShroudOfShadows();
-
-            shroud.Movable = false;
-
-            AddItem(shroud);
-
             var weapon = new Scimitar();
 
             weapon.Skill = SkillName.Wrestling;
@@ -68,21 +61,6 @@ namespace Server.Mobiles
         public Neira(Serial serial) : base(serial)
         {
         }
-
-        public override ChampionSkullType SkullType => ChampionSkullType.Death;
-
-        public override Type[] UniqueList => new[] { typeof(ShroudOfDeciet) };
-
-        public override Type[] SharedList => new[]
-        {
-            typeof(ANecromancerShroud),
-
-            typeof(CaptainJohnsHat)
-        };
-
-        public override Type[] DecorativeList => new[] { typeof(WallBlood), typeof(TatteredAncientMummyWrapping) };
-
-        public override MonsterStatuetteType[] StatueTypes => Array.Empty<MonsterStatuetteType>();
 
         public override string DefaultName => "Neira";
 

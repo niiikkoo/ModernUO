@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using Server.Collections;
 using Server.ContextMenus;
-using Server.Engines.BulkOrders;
-using Server.Factions;
 using Server.Items;
 using Server.Misc;
 using Server.Mobiles;
@@ -113,7 +111,7 @@ namespace Server.Mobiles
             }
         }
 
-        public virtual bool IsTokunoVendor => Map == Map.Tokuno;
+        public virtual bool IsTokunoVendor => false;
 
         public virtual VendorShoeType ShoeType => VendorShoeType.Shoes;
 
@@ -551,20 +549,6 @@ namespace Server.Mobiles
                 seller.AddToBackpack(new Gold(GiveGold));
 
                 seller.PlaySound(0x0037); // Gold dropping sound
-
-                if (SupportsBulkOrders(seller))
-                {
-                    var bulkOrder = CreateBulkOrder(seller, false);
-
-                    if (bulkOrder is LargeBOD largeBod)
-                    {
-                        seller.SendGump(new LargeBODAcceptGump(seller, largeBod));
-                    }
-                    else if (bulkOrder is SmallBOD smallBod)
-                    {
-                        seller.SendGump(new SmallBODAcceptGump(seller, smallBod));
-                    }
-                }
             }
             // no cliloc for this?
             // SayTo( seller, true, "Thank you! I bought {0} item{1}. Here is your {2}gp.", Sold, (Sold > 1 ? "s" : ""), GiveGold );
@@ -665,7 +649,7 @@ namespace Server.Mobiles
 
         public virtual bool CheckTokuno()
         {
-            if (Map != Map.Tokuno)
+            /*if (Map != Map.Tokuno)
             {
                 return false;
             }
@@ -675,9 +659,9 @@ namespace Server.Mobiles
             if (!n.ContainsName(Name))
             {
                 TurnToTokuno();
-            }
+            }*/
 
-            return true;
+            return false;
         }
 
         public virtual void TurnToTokuno()
@@ -689,12 +673,9 @@ namespace Server.Mobiles
         {
             var map = Map;
 
-            if (map != Map.Ilshenar)
-            {
-                return false;
-            }
+            return false;
 
-            if (!Region.IsPartOf("Gargoyle City"))
+            /*if (!Region.IsPartOf("Gargoyle City"))
             {
                 return false;
             }
@@ -704,19 +685,14 @@ namespace Server.Mobiles
                 TurnToGargoyle();
             }
 
-            return true;
+            return true;*/
         }
 
         public virtual bool CheckNecromancer()
         {
             var map = Map;
 
-            if (map != Map.Malas)
-            {
-                return false;
-            }
-
-            if (!Region.IsPartOf("Umbra"))
+            /*if (!Region.IsPartOf("Umbra"))
             {
                 return false;
             }
@@ -724,9 +700,9 @@ namespace Server.Mobiles
             if (Hue != 0x83E8)
             {
                 TurnToNecromancer();
-            }
+            }*/
 
-            return true;
+            return false;
         }
 
         public override void OnAfterSpawn()
@@ -1075,81 +1051,6 @@ namespace Server.Mobiles
             }
         }
 
-        public override bool OnDragDrop(Mobile from, Item dropped)
-        {
-            /* TODO: Thou art giving me? and fame/karma for gold gifts */
-
-            var smallBod = dropped as SmallBOD;
-            var largeBod = dropped as LargeBOD;
-
-            if (!(smallBod != null || largeBod != null))
-            {
-                return base.OnDragDrop(from, dropped);
-            }
-
-            var pm = from as PlayerMobile;
-
-            if (Core.ML && pm?.NextBODTurnInTime > Core.Now)
-            {
-                SayTo(from, 1079976); // You'll have to wait a few seconds while I inspect the last order.
-                return false;
-            }
-
-            if (!IsValidBulkOrder(dropped))
-            {
-                SayTo(from, 1045130); // That order is for some other shopkeeper.
-                return false;
-            }
-
-            if (smallBod?.Complete == false || largeBod?.Complete == false)
-            {
-                SayTo(from, 1045131); // You have not completed the order yet.
-                return false;
-            }
-
-            Item reward;
-            int gold, fame;
-
-            if (smallBod != null)
-            {
-                smallBod.GetRewards(out reward, out gold, out fame);
-            }
-            else
-            {
-                largeBod.GetRewards(out reward, out gold, out fame);
-            }
-
-            from.SendSound(0x3D);
-
-            SayTo(from, 1045132); // Thank you so much!  Here is a reward for your effort.
-
-            if (reward != null)
-            {
-                from.AddToBackpack(reward);
-            }
-
-            if (gold > 1000)
-            {
-                from.AddToBackpack(new BankCheck(gold));
-            }
-            else if (gold > 0)
-            {
-                from.AddToBackpack(new Gold(gold));
-            }
-
-            Titles.AwardFame(from, fame, true);
-
-            OnSuccessfulBulkOrderReceive(from);
-
-            if (Core.ML && pm != null)
-            {
-                pm.NextBODTurnInTime = Core.Now + TimeSpan.FromSeconds(10.0);
-            }
-
-            dropped.Delete();
-            return true;
-        }
-
         private GenericBuyInfo LookupDisplayObject(object obj)
         {
             var buyInfo = GetBuyInfo();
@@ -1377,22 +1278,12 @@ namespace Server.Mobiles
                         break;
                     }
             }
-
-            if (IsParagon)
-            {
-                IsParagon = false;
-            }
         }
 
         public override void AddCustomContextEntries(Mobile from, List<ContextMenuEntry> list)
         {
             if (from.Alive && IsActiveVendor)
             {
-                if (SupportsBulkOrders(from))
-                {
-                    list.Add(new BulkOrderInfoEntry(from, this));
-                }
-
                 if (IsActiveSeller)
                 {
                     list.Add(new VendorBuyEntry(from, this));
@@ -1411,7 +1302,7 @@ namespace Server.Mobiles
 
         public virtual IBuyItemInfo[] GetBuyInfo() => _buyInfo.ToArray();
 
-        public virtual int GetPriceScalar() => 100 + Town.FromRegion(Region)?.Tax ?? 0;
+        public virtual int GetPriceScalar() => 100;// + Town.FromRegion(Region)?.Tax ?? 0;
 
         public void UpdateBuyInfo()
         {
@@ -1420,74 +1311,6 @@ namespace Server.Mobiles
             foreach (var info in _buyInfo.ToArray())
             {
                 info.PriceScalar = priceScalar;
-            }
-        }
-
-        private class BulkOrderInfoEntry : ContextMenuEntry
-        {
-            private readonly Mobile m_From;
-            private readonly BaseVendor m_Vendor;
-
-            public BulkOrderInfoEntry(Mobile from, BaseVendor vendor)
-                : base(6152)
-            {
-                m_From = from;
-                m_Vendor = vendor;
-            }
-
-            public override void OnClick()
-            {
-                if (m_Vendor.SupportsBulkOrders(m_From))
-                {
-                    var ts = m_Vendor.GetNextBulkOrder(m_From);
-
-                    var totalSeconds = (int)ts.TotalSeconds;
-                    var totalHours = (totalSeconds + 3599) / 3600;
-                    var totalMinutes = (totalSeconds + 59) / 60;
-
-                    if (Core.SE ? totalMinutes == 0 : totalHours == 0)
-                    {
-                        m_From.SendLocalizedMessage(1049038); // You can get an order now.
-
-                        if (Core.AOS)
-                        {
-                            var bulkOrder = m_Vendor.CreateBulkOrder(m_From, true);
-
-                            if (bulkOrder is LargeBOD bod)
-                            {
-                                m_From.SendGump(new LargeBODAcceptGump(m_From, bod));
-                            }
-                            else if (bulkOrder is SmallBOD smallBod)
-                            {
-                                m_From.SendGump(new SmallBODAcceptGump(m_From, smallBod));
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var oldSpeechHue = m_Vendor.SpeechHue;
-                        m_Vendor.SpeechHue = 0x3B2;
-
-                        if (Core.SE)
-                        {
-                            m_Vendor.SayTo(
-                                m_From,
-                                1072058,
-                                totalMinutes.ToString()
-                            ); // An offer may be available in about ~1_minutes~ minutes.
-                        }
-                        else
-                        {
-                            m_Vendor.SayTo(
-                                m_From,
-                                1049039,
-                                totalHours.ToString()
-                            ); // An offer may be available in about ~1_hours~ hours.
-                        }
-
-                        m_Vendor.SpeechHue = oldSpeechHue;
-                    }
-                }
             }
         }
     }

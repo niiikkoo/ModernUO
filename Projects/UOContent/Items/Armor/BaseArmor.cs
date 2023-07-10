@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using ModernUO.Serialization;
 using Server.Engines.Craft;
-using Server.Ethics;
-using Server.Factions;
 using Server.Network;
 using Server.Utilities;
 using AMA = Server.Items.ArmorMeditationAllowance;
@@ -12,7 +10,7 @@ using AMT = Server.Items.ArmorMaterialType;
 namespace Server.Items
 {
     [SerializationGenerator(9, false)]
-    public abstract partial class BaseArmor : Item, IScissorable, IFactionItem, ICraftable, IWearableDurability, IAosItem
+    public abstract partial class BaseArmor : Item, IScissorable, ICraftable, IWearableDurability, IAosItem
     {
         [SerializableField(0, setter: "private")]
         [SerializedCommandProperty(AccessLevel.GameMaster, canModify: true)]
@@ -148,8 +146,6 @@ namespace Server.Items
 
         [SerializableFieldSaveFlag(24)]
         private bool ShouldSerializePlayerConstructed() => _playerConstructed;
-
-        private FactionItem m_FactionState;
 
         public BaseArmor(int itemID) : base(itemID)
         {
@@ -613,33 +609,11 @@ namespace Server.Items
             return quality;
         }
 
-        public FactionItem FactionItemState
-        {
-            get => m_FactionState;
-            set
-            {
-                m_FactionState = value;
-
-                if (m_FactionState == null)
-                {
-                    Hue = CraftResources.GetHue(Resource);
-                }
-
-                LootType = m_FactionState == null ? LootType.Regular : LootType.Blessed;
-            }
-        }
-
         public bool Scissor(Mobile from, Scissors scissors)
         {
             if (!IsChildOf(from.Backpack))
             {
                 from.SendLocalizedMessage(502437); // Items you wish to cut must be in your backpack.
-                return false;
-            }
-
-            if (Ethic.IsImbued(this))
-            {
-                from.SendLocalizedMessage(502440); // Scissors can not be used on that to produce anything.
                 return false;
             }
 
@@ -1036,23 +1010,8 @@ namespace Server.Items
             m?.CheckStatTimers();
         }
 
-        public override bool AllowSecureTrade(Mobile from, Mobile to, Mobile newOwner, bool accepted)
-        {
-            if (!Ethic.CheckTrade(from, to, newOwner, this))
-            {
-                return false;
-            }
-
-            return base.AllowSecureTrade(from, to, newOwner, accepted);
-        }
-
         public override bool CanEquip(Mobile from)
         {
-            if (!Ethic.CheckEquip(from, this))
-            {
-                return false;
-            }
-
             if (from.AccessLevel < AccessLevel.GameMaster)
             {
                 if (!CheckRace(from))
@@ -1263,11 +1222,6 @@ namespace Server.Items
                 list.Add(1050043, _crafter); // crafted by ~1_NAME~
             }
 
-            if (m_FactionState != null)
-            {
-                list.Add(1041350); // faction item
-            }
-
             if (RequiredRaces == Race.AllowElvesOnly)
             {
                 list.Add(1075086); // Elves Only
@@ -1454,11 +1408,6 @@ namespace Server.Items
                 {
                     attrs.Add(new EquipInfoAttribute(1049643)); // cursed
                 }
-            }
-
-            if (m_FactionState != null)
-            {
-                attrs.Add(new EquipInfoAttribute(1041350)); // faction item
             }
 
             if (_quality == ArmorQuality.Exceptional)

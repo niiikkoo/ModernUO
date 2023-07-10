@@ -64,30 +64,6 @@ namespace Server.Mobiles
         private static MonsterAbility[] _abilities = { MonsterAbilities.ColossalBlow };
         public override MonsterAbility[] GetMonsterAbilities() => _abilities;
 
-        public override void OnDeath(Container c)
-        {
-            base.OnDeath(c);
-
-            if (Utility.RandomDouble() < 0.05)
-            {
-                if (!IsParagon)
-                {
-                    if (Utility.RandomDouble() < 0.75)
-                    {
-                        c.DropItem(DawnsMusicGear.RandomCommon);
-                    }
-                    else
-                    {
-                        c.DropItem(DawnsMusicGear.RandomUncommon);
-                    }
-                }
-                else
-                {
-                    c.DropItem(DawnsMusicGear.RandomRare);
-                }
-            }
-        }
-
         public override void GenerateLoot()
         {
             AddLoot(LootPack.Rich);

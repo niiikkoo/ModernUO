@@ -1,4 +1,3 @@
-using Server.Engines.MLQuests;
 using Server.Items;
 using Server.Mobiles;
 
@@ -49,18 +48,6 @@ namespace Server.Spells.Spellweaving
                 // You must upgrade to the Mondain's Legacy Expansion Pack before using that ability
                 caster.SendLocalizedMessage(1072176);
                 return false;
-            }
-
-            if (caster is PlayerMobile mobile)
-            {
-                var context = MLQuestSystem.GetContext(mobile);
-
-                if (context?.Spellweaving != true)
-                {
-                    // You must have completed the epic arcanist quest to use this ability.
-                    mobile.SendLocalizedMessage(1073220);
-                    return false;
-                }
             }
 
             var mana = ScaleMana(RequiredMana);

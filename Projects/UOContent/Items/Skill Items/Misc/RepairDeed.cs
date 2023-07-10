@@ -1,7 +1,6 @@
 using System;
 using ModernUO.Serialization;
 using Server.Engines.Craft;
-using Server.Factions;
 using Server.Mobiles;
 using Server.Regions;
 
@@ -167,8 +166,7 @@ public partial class RepairDeed : Item
         return true;
     }
 
-    public bool VerifyRegion(Mobile m) => m.Region.IsPartOf<TownRegion>() &&
-                                          Faction.IsNearType(m, RepairSkillInfo.GetInfo(_skill).NearbyTypes, 6);
+    public bool VerifyRegion(Mobile m) => m.Region.IsPartOf<TownRegion>();
 
     private void Deserialize(IGenericReader reader, int version)
     {

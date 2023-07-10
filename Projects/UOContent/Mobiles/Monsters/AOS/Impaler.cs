@@ -44,8 +44,6 @@ namespace Server.Mobiles
 
         public override string CorpseName => "an impaler corpse";
 
-        public override bool IgnoreYoungProtection => Core.ML;
-
         public override bool AutoDispel => true;
         public override bool BardImmune => !Core.SE;
         public override bool Unprovokable => Core.SE;
